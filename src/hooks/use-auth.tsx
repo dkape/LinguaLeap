@@ -43,12 +43,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) {
-      const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
-      if (isProtectedRoute) {
+    const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
+    
+    // If loading is finished and there's no user, redirect from protected routes
+    if (!loading && !user && isProtectedRoute) {
         router.push('/');
-      }
     }
+
+    // If loading is finished and there IS a user, redirect from auth pages
+    if (!loading && user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
+        router.push(`/${user.role}/dashboard`);
+    }
+
   }, [loading, user, pathname, router]);
 
   const logIn = (email: string, pass: string) => {
