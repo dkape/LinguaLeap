@@ -1,31 +1,17 @@
-'use client';
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { LayoutDashboard, Users, BookPlus } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { usePathname } from 'next/navigation';
+import React from "react";
 import { Locale } from '@/i18n-config';
 import { getDictionary } from "@/get-dictionary";
 
-export default function TeacherLayout({ 
+export default async function TeacherLayout({ 
   children,
   params: { lang }
 }: { 
   children: React.ReactNode,
   params: { lang: Locale }
 }) {
-  const [dictionary, setDictionary] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchDictionary = async () => {
-      const dict = await getDictionary(lang);
-      setDictionary(dict);
-    };
-    fetchDictionary();
-  }, [lang]);
-
-  if (!dictionary) {
-    return <div>Loading...</div>; // Or a proper loading skeleton
-  }
+  const dictionary = await getDictionary(lang);
 
   const teacherNavItems = [
     { href: "dashboard", label: "Dashboard", icon: LayoutDashboard },

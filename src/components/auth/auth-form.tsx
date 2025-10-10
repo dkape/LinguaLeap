@@ -37,7 +37,7 @@ type AuthFormProps = {
 export function AuthForm({ mode, role }: AuthFormProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { signUp, logIn, user } = useAuth();
+  const { signUp, logIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
