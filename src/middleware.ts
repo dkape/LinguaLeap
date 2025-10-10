@@ -27,6 +27,11 @@ function getLocale(request: NextRequest): string | undefined {
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // Add x-next-pathname header to be used in server components
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-next-pathname', pathname);
+
+
   // // `/_next/` and `/api/` are ignored by the watcher, but we need to ignore files in `public` manually.
   // // If you have one
   if (
@@ -56,6 +61,12 @@ export function middleware(request: NextRequest) {
       )
     );
   }
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {
