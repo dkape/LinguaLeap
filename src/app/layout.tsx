@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { i18n, type Locale } from "@/i18n-config";
 import { AuthProvider } from "@/hooks/use-auth";
+import { i18n, type Locale } from "@/i18n-config";
 
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));

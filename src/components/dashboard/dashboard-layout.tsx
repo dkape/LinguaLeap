@@ -1,9 +1,10 @@
+'use client';
 import React from "react";
 import { DashboardHeader } from "./header";
 import { Logo } from "../icons";
 import Link from "next/link";
-import { i18n, type Locale } from "@/i18n-config";
-import { usePathname } from 'next/navigation'
+import { type Locale } from "@/i18n-config";
+import { usePathname } from 'next/navigation';
 import { cn } from "@/lib/utils";
 
 type DashboardLayoutProps = {
