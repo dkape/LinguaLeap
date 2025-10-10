@@ -1,3 +1,4 @@
+
 'use client';
 import React from "react";
 import { DashboardHeader } from "./header";
@@ -30,7 +31,7 @@ export function DashboardLayout({ children, navItems, role, lang }: DashboardLay
           {navItems.map((item) => {
             const Icon = item.icon;
             const fullPath = `/${lang}/${role}/${item.href}`;
-            const isActive = pathname === fullPath || (item.href === 'dashboard' && pathname === `/${lang}/${role}`);
+            const isActive = pathname === fullPath;
             return (
               <Link
                 key={item.href}
@@ -59,7 +60,7 @@ export function DashboardLayout({ children, navItems, role, lang }: DashboardLay
       </aside>
       <div className="flex flex-col">
         <DashboardHeader sidebarContent={sidebarContent} />
-        <main className="flex flex-1 flex-col gap-4 p-4 md:p-6 lg:p-8 bg-background">
+        <main className="flex flex-1 flex-col gap-4 p-4 md:p-6 lg:p-8 bg-muted/40">
           {children}
         </main>
       </div>

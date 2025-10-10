@@ -1,3 +1,4 @@
+
 import { Logo } from "@/components/icons";
 import Link from "next/link";
 import { getDictionary } from "@/get-dictionary";

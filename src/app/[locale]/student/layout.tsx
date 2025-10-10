@@ -1,3 +1,4 @@
+
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { LayoutDashboard, Trophy } from "lucide-react";
 import React from "react";
@@ -14,7 +15,7 @@ export default async function StudentLayout({
   const dictionary = await getDictionary(lang);
 
   const studentNavItems = [
-    { href: "dashboard", label: "Dashboard", icon: LayoutDashboard }, // Label is a fallback
+    { href: "dashboard", label: dictionary.roles.student, icon: LayoutDashboard },
     { href: "leaderboard", label: "Leaderboard", icon: Trophy },
   ];
 

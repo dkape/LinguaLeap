@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,13 +16,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { UserRole } from "@/lib/types";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { i18n } from "@/i18n-config";
+import { Locale } from "@/i18n-config";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -32,16 +33,14 @@ const formSchema = z.object({
 type AuthFormProps = {
   mode: 'login' | 'signup';
   role: UserRole;
+  lang: Locale;
 };
 
-export function AuthForm({ mode, role }: AuthFormProps) {
+export function AuthForm({ mode, role, lang }: AuthFormProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const { signUp, logIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-
-  const lang = pathname.split('/')[1] || i18n.defaultLocale;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema.extend({
