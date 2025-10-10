@@ -24,18 +24,18 @@ export default function Home() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
-              <Link href="/login/student" legacyBehavior passHref>
-                <Button size="lg" className="w-full text-lg py-8">
+              <Button size="lg" className="w-full text-lg py-8" asChild>
+                <Link href="/login/student">
                   I'm a Student
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/login/teacher" legacyBehavior passHref>
-                <Button size="lg" variant="secondary" className="w-full text-lg py-8">
+                </Link>
+              </Button>
+              <Button size="lg" variant="secondary" className="w-full text-lg py-8" asChild>
+                <Link href="/login/teacher">
                   I'm a Teacher
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
         </div>
       </main>
