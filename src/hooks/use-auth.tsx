@@ -30,7 +30,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (userDoc.exists()) {
           setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
-            // Handle case where user exists in auth but not firestore
+            // This can happen if the user record is created in Auth but the Firestore doc creation fails.
+            // Or if a user is deleted from Firestore but not Auth.
+            console.warn("User exists in Auth but not in Firestore. Logging out.");
+            await signOut(auth);
             setUser(null);
         }
       } else {
@@ -43,22 +46,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading) {
+      return; // Do nothing while loading
+    }
 
     const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
     const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
 
-    // If we have a user, and they are on an auth page, redirect them to their dashboard.
-    if (user && isAuthPage) {
+    if (user) {
+      // If we have a user and they are on an auth page, redirect to their dashboard
+      if (isAuthPage) {
         router.push(`/${user.role}/dashboard`);
-    }
-
-    // If we don't have a user, and they are on a protected route, redirect them to the homepage.
-    if (!user && isProtectedRoute) {
+      }
+    } else {
+      // If we don't have a user and they are on a protected route, redirect to home
+      if (isProtectedRoute) {
         router.push('/');
+      }
     }
-
-  }, [loading, user, pathname, router]);
+  }, [user, loading, pathname, router]);
 
   const logIn = (email: string, pass: string) => {
     return signInWithEmailAndPassword(auth, email, pass);
@@ -79,7 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
-    setUser({ id: firebaseUser.uid, ...newUser } as User);
+    // The onAuthStateChanged listener will handle setting the user state
     return userCredential;
   };
   
@@ -96,6 +102,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signUp,
     logOut,
   };
+
+  // While loading, we can show a blank screen or a loader to prevent flashes of incorrect content
+  if (loading) {
+      return null;
+  }
 
   return (
     <AuthContext.Provider value={value}>
