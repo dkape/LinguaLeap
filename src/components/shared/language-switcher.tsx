@@ -1,13 +1,8 @@
+
 'use client'
 
-<<<<<<< HEAD
 import { usePathname, useRouter } from 'next/navigation'
-import { i18n, type Locale } from '@/app/[locale]/i18n-config'
-=======
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
 import { i18n, type Locale } from '@/i18n-config'
->>>>>>> origin/main
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
