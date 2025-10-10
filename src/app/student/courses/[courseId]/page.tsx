@@ -1,12 +1,50 @@
-import { courses } from "@/lib/data";
+'use client';
+
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookOpen, Lock, PlayCircle } from "lucide-react";
+import { ArrowLeft, BookOpen, Lock, PlayCircle, Rocket, Castle } from "lucide-react";
+import type { Course } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+const iconMap: { [key: string]: React.ElementType } = {
+  Rocket: Rocket,
+  Castle: Castle,
+  BookOpen: BookOpen,
+};
 
 export default function CoursePage({ params }: { params: { courseId: string } }) {
-  const course = courses.find((c) => c.id === params.courseId);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const courseDocRef = doc(db, 'courses', params.courseId);
+        const courseDoc = await getDoc(courseDocRef);
+
+        if (courseDoc.exists()) {
+          const courseData = { id: courseDoc.id, ...courseDoc.data() } as Course;
+          courseData.icon = iconMap[courseData.icon as string] || BookOpen;
+          setCourse(courseData);
+        } else {
+          notFound();
+        }
+      } catch (error) {
+        console.error("Error fetching course:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourse();
+  }, [params.courseId]);
+
+  if (loading) {
+    return <div>Loading course...</div>;
+  }
 
   if (!course) {
     notFound();

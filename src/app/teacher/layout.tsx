@@ -10,7 +10,7 @@ const teacherNavItems = [
 
 export default function TeacherLayout({ children }: { children: React.ReactNode }) {
   // A placeholder for future pages
-  const navItems = [teacherNavItems[0]];
+  const navItems = teacherNavItems;
   
   return (
     <DashboardLayout navItems={navItems} role="teacher">

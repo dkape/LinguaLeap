@@ -30,7 +30,7 @@ export function DashboardLayout({ children, navItems, role }: DashboardLayoutPro
             return (
               <Link
                 key={item.href}
-                href={`/${lang}/${role}${item.href}`}
+                href={`/${role}${item.href}`}
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted"
               >
                 <Icon className="h-4 w-4" />

@@ -1,48 +1,72 @@
 'use client';
 
-import { useState } from 'react';
-import { courses } from "@/lib/data";
+import { useState, useEffect } from 'react';
 import { notFound, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, XCircle, Trophy, ArrowRight } from "lucide-react";
+import { Trophy, ArrowRight } from "lucide-react";
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import type { Course, Level } from '@/lib/types';
 
 export default function QuizPage({ params }: { params: { courseId: string, levelId: string } }) {
   const router = useRouter();
-  const course = courses.find((c) => c.id === params.courseId);
-  const level = course?.levels.find((l) => l.id === params.levelId);
+  const { user } = useAuth();
+  const [course, setCourse] = useState<Course | null>(null);
+  const [level, setLevel] = useState<Level | null>(null);
+  const [loading, setLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [formSchema, setFormSchema] = useState<z.ZodObject<any> | null>(null);
 
-  if (!course || !level) {
-    notFound();
-  }
+  useEffect(() => {
+    const fetchLevel = async () => {
+      try {
+        const courseDocRef = doc(db, 'courses', params.courseId);
+        const courseDoc = await getDoc(courseDocRef);
 
-  const formSchema = z.object(
-    Object.fromEntries(
-      level.quiz.map((_, index) => [`q${index}`, z.string().min(1, "Please select an answer.")])
-    )
-  );
+        if (courseDoc.exists()) {
+          const courseData = { id: courseDoc.id, ...courseDoc.data() } as Course;
+          setCourse(courseData);
+          const levelData = courseData.levels.find(l => l.id === params.levelId);
+
+          if (levelData) {
+            setLevel(levelData);
+            const schema = z.object(
+              Object.fromEntries(
+                levelData.quiz.map((_, index) => [`q${index}`, z.string().min(1, "Please select an answer.")])
+              )
+            );
+            setFormSchema(schema);
+          } else {
+            notFound();
+          }
+        } else {
+          notFound();
+        }
+      } catch (error) {
+        console.error("Error fetching quiz:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLevel();
+  }, [params.courseId, params.levelId]);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: formSchema ? zodResolver(formSchema) : undefined,
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!level || !user) return;
+    
     let correctAnswers = 0;
     level.quiz.forEach((q, index) => {
       if (values[`q${index}` as keyof typeof values] === q.answer) {
@@ -51,6 +75,20 @@ export default function QuizPage({ params }: { params: { courseId: string, level
     });
     setScore(correctAnswers);
     setSubmitted(true);
+
+    const pointsEarned = correctAnswers * 25;
+    const userRef = doc(db, 'users', user.uid);
+    await updateDoc(userRef, {
+        points: increment(pointsEarned)
+    });
+  }
+
+  if (loading || !formSchema) {
+    return <div>Loading quiz...</div>;
+  }
+  
+  if (!level || !course) {
+      notFound();
   }
 
   if (submitted) {

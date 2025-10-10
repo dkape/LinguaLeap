@@ -1,12 +1,16 @@
+import type { Timestamp } from "firebase/firestore";
+
 export type UserRole = 'student' | 'teacher';
 
 export type User = {
   id: string;
+  uid: string;
   name: string;
   email: string;
   role: UserRole;
   avatarUrl: string;
   points?: number;
+  createdAt: Timestamp;
 };
 
 export type QuizQuestion = {
@@ -28,7 +32,7 @@ export type Course = {
   title: string;
   description: string;
   levels: Level[];
-  icon: React.ElementType;
+  icon: React.ElementType | string;
 };
 
 export type LeaderboardEntry = {

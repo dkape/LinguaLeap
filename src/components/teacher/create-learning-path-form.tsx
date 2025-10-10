@@ -22,6 +22,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { generateSuggestedLearningPath, GenerateSuggestedLearningPathOutput } from "@/ai/flows/generate-suggested-learning-path";
 import { Loader2, Wand2, BookText, FileQuestion } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 
 const formSchema = z.object({
@@ -34,7 +38,10 @@ const formSchema = z.object({
 
 export function CreateLearningPathForm() {
   const [learningPath, setLearningPath] = useState<GenerateSuggestedLearningPathOutput | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const router = useRouter();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,6 +70,44 @@ export function CreateLearningPathForm() {
         title: "Oh no! Something went wrong.",
         description: "There was a problem generating the learning path. Please try again.",
       });
+    }
+  }
+
+  async function onSavePath() {
+    if (!learningPath || !user) return;
+    setIsSaving(true);
+    try {
+        const docRef = await addDoc(collection(db, "courses"), {
+            title: form.getValues('topic'),
+            description: form.getValues('studentGroupDescription'),
+            // For now, we'll hardcode an icon. This could be a user choice in the future.
+            icon: 'BookOpen',
+            createdBy: user.uid,
+            createdAt: serverTimestamp(),
+            levels: learningPath.learningPath.map((item, index) => ({
+                id: (index + 1).toString(),
+                title: item.title,
+                content: item.content,
+                unlocked: index === 0, // Unlock the first level
+                quiz: [], // Quiz generation will be another step
+            })),
+        });
+        toast({
+            title: "Learning Path Saved!",
+            description: "The new course is now available for your students."
+        });
+        setLearningPath(null);
+        form.reset();
+        // Maybe redirect to the new course page in the future
+    } catch (error) {
+        console.error("Error saving learning path:", error);
+        toast({
+            variant: "destructive",
+            title: "Save Failed",
+            description: "Could not save the learning path. Please try again.",
+        });
+    } finally {
+        setIsSaving(false);
     }
   }
 
@@ -229,7 +274,9 @@ export function CreateLearningPathForm() {
                 </Accordion>
             </CardContent>
             <CardFooter>
-                <Button>Save Learning Path</Button>
+                <Button onClick={onSavePath} disabled={isSaving}>
+                    {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Learning Path'}
+                </Button>
             </CardFooter>
         </Card>
       )}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { i18n, type Locale } from "./i18n-config";
+import { AuthProvider } from "@/hooks/use-auth";
 
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
@@ -34,8 +35,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        {children}
-        <Toaster />
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

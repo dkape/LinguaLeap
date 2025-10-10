@@ -1,18 +1,55 @@
-import { courses } from "@/lib/data";
+'use client';
+
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, CheckCircle, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Course, Level } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function ReadingPage({ params }: { params: { courseId: string, levelId: string } }) {
-  const course = courses.find((c) => c.id === params.courseId);
-  const level = course?.levels.find((l) => l.id === params.levelId);
+    const [course, setCourse] = useState<Course | null>(null);
+    const [level, setLevel] = useState<Level | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  if (!course || !level || !level.unlocked) {
-    notFound();
-  }
+    useEffect(() => {
+        const fetchLevel = async () => {
+            try {
+                const courseDocRef = doc(db, 'courses', params.courseId);
+                const courseDoc = await getDoc(courseDocRef);
+
+                if (courseDoc.exists()) {
+                    const courseData = { id: courseDoc.id, ...courseDoc.data() } as Course;
+                    setCourse(courseData);
+                    const levelData = courseData.levels.find(l => l.id === params.levelId);
+                    if (levelData && levelData.unlocked) {
+                        setLevel(levelData);
+                    } else {
+                        notFound();
+                    }
+                } else {
+                    notFound();
+                }
+            } catch (error) {
+                console.error("Error fetching level:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchLevel();
+    }, [params.courseId, params.levelId]);
+
+    if (loading) {
+        return <div>Loading level...</div>;
+    }
+
+    if (!course || !level) {
+        notFound();
+    }
 
   return (
     <div className="flex flex-col h-full">
@@ -37,7 +74,7 @@ export default function ReadingPage({ params }: { params: { courseId: string, le
             <CardContent className="flex-grow flex flex-col">
                 <ScrollArea className="flex-grow pr-4 -mr-4">
                     <article className="prose prose-lg max-w-none text-foreground/90">
-                        {level.content.split('\n').map((paragraph, index) => (
+                        {level.content.split('\\n').map((paragraph, index) => (
                             <p key={index}>{paragraph}</p>
                         ))}
                     </article>

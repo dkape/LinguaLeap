@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,21 +12,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { users } from "@/lib/data";
-import { CreditCard, LogOut, Settings, User as UserIcon } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { LogOut, Settings, User as UserIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function UserNav() {
-    const user = users['student-1']; // Mock user
-    const avatarUrl = PlaceHolderImages.find(p => p.id === 'user-avatar')?.imageUrl;
+  const { user, logOut } = useAuth();
+  const pathname = usePathname();
+  const lang = pathname.split('/')[1] || 'en';
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={avatarUrl} alt={user.name} data-ai-hint="person portrait" />
-            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="person portrait" />
+            <AvatarFallback>{user.name?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -49,8 +56,8 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/">
+        <DropdownMenuItem onClick={logOut} asChild>
+          <Link href={`/${lang}/`}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </Link>
