@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -14,12 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, Settings, User as UserIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
 
 export function UserNav() {
   const { user, logOut } = useAuth();
-  const pathname = usePathname();
-  const lang = pathname.split('/')[1] || 'en';
 
   if (!user) {
     return null;
@@ -57,7 +55,7 @@ export function UserNav() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logOut} asChild>
-          <Link href={`/${lang}/`}>
+          <Link href="/">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </Link>

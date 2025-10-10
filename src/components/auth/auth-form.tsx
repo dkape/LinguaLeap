@@ -22,7 +22,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Locale } from "@/i18n-config";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -33,14 +33,14 @@ const formSchema = z.object({
 type AuthFormProps = {
   mode: 'login' | 'signup';
   role: UserRole;
-  lang: Locale;
 };
 
-export function AuthForm({ mode, role, lang }: AuthFormProps) {
+export function AuthForm({ mode, role }: AuthFormProps) {
   const router = useRouter();
   const { signUp, logIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { dictionary } = useDictionary();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema.extend({
@@ -67,7 +67,7 @@ export function AuthForm({ mode, role, lang }: AuthFormProps) {
       } else {
         await logIn(values.email, values.password);
       }
-      router.push(`/${lang}/${role}/dashboard`);
+      router.push(`/${role}/dashboard`);
     } catch (error: any) {
       console.error(error);
       toast({
@@ -84,7 +84,7 @@ export function AuthForm({ mode, role, lang }: AuthFormProps) {
   const description = `Enter your credentials to ${mode} as a ${role}.`;
   const buttonText = mode === 'login' ? 'Login' : 'Sign Up';
   const linkText = mode === 'login' ? "Don't have an account?" : "Already have an account?";
-  const linkHref = `/${lang}/${mode === 'login' ? 'signup' : 'login'}/${role}`;
+  const linkHref = `/${mode === 'login' ? 'signup' : 'login'}/${role}`;
 
   return (
     <Card>

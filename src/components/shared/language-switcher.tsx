@@ -1,7 +1,6 @@
 
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
 import { i18n, type Locale } from '@/i18n-config'
 import { Button } from "@/components/ui/button";
 import {
@@ -11,22 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Languages } from "lucide-react";
+import { useDictionary } from '@/hooks/use-dictionary';
 
 export function LanguageSwitcher() {
-  const pathName = usePathname()
-  const router = useRouter()
-
-  const redirectedPathName = (locale: Locale) => {
-    if (!pathName) return '/'
-    const segments = pathName.split('/')
-    const hasLocale = i18n.locales.includes(segments[1] as Locale);
-    if (hasLocale) {
-        segments[1] = locale
-    } else {
-        segments.splice(1, 0, locale);
-    }
-    return segments.join('/')
-  }
+  const { setLocale } = useDictionary();
 
   return (
     <DropdownMenu>
@@ -41,7 +28,7 @@ export function LanguageSwitcher() {
           const flag = locale === 'en' ? '🇺🇸' : '🇩🇪';
           const label = locale === 'en' ? 'English' : 'German';
           return (
-            <DropdownMenuItem key={locale} onClick={() => router.push(redirectedPathName(locale))}>
+            <DropdownMenuItem key={locale} onClick={() => setLocale(locale)}>
               <span className="mr-2">{flag}</span> {label}
             </DropdownMenuItem>
           )

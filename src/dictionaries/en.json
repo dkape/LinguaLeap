@@ -1,3 +1,4 @@
+
 {
     "brand": {
         "name": "LinguaLeap"
@@ -13,10 +14,19 @@
     },
     "student": {
         "title": "Welcome, future language hero!",
-        "description": "Your adventure in reading is about to begin. Get ready to explore magical worlds and make new friends, all while learning to read."
+        "description": "Your adventure in reading is about to begin. Get ready to explore magical worlds and make new friends, all while learning to read.",
+        "nav": {
+            "dashboard": "Dashboard",
+            "leaderboard": "Leaderboard"
+        }
     },
     "teacher": {
         "title": "Welcome, language guide!",
-        "description": "You're about to embark on a journey to inspire young minds. Here, you'll find all the tools you need to make learning an unforgettable adventure."
+        "description": "You're about to embark on a journey to inspire young minds. Here, you'll find all the tools you need to make learning an unforgettable adventure.",
+        "nav": {
+            "dashboard": "Dashboard",
+            "groups": "Student Groups",
+            "create": "Create Path"
+        }
     }
 }

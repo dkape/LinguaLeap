@@ -1,3 +1,4 @@
+
 {
     "brand": {
       "name": "LinguaLeap"
@@ -13,10 +14,19 @@
     },
     "student": {
         "title": "Willkommen, zukünftiger Sprachheld!",
-        "description": "Dein Leseabenteuer beginnt gleich. Mach dich bereit, magische Welten zu erkunden und neue Freunde zu finden, während du lesen lernst."
+        "description": "Dein Leseabenteuer beginnt gleich. Mach dich bereit, magische Welten zu erkunden und neue Freunde zu finden, während du lesen lernst.",
+        "nav": {
+            "dashboard": "Dashboard",
+            "leaderboard": "Bestenliste"
+        }
     },
     "teacher": {
         "title": "Willkommen, Sprachführer!",
-        "description": "Du bist dabei, eine Reise zu beginnen, um junge Köpfe zu inspirieren. Hier findest du alle Werkzeuge, die du brauchst, um das Lernen zu einem unvergesslichen Abenteuer zu machen."
+        "description": "Du bist dabei, eine Reise zu beginnen, um junge Köpfe zu inspirieren. Hier findest du alle Werkzeuge, die du brauchst, um das Lernen zu einem unvergesslichen Abenteuer zu machen.",
+        "nav": {
+            "dashboard": "Dashboard",
+            "groups": "Schülergruppen",
+            "create": "Pfad erstellen"
+        }
     }
 }
