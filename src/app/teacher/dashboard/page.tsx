@@ -1,10 +1,16 @@
-import { users } from "@/lib/data";
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreateLearningPathForm } from "@/components/teacher/create-learning-path-form";
 import { BookCopy, GraduationCap, Users as UsersIcon } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function TeacherDashboard() {
-  const user = users['teacher-1'];
+  const { user } = useAuth();
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
