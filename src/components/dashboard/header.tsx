@@ -16,7 +16,7 @@ export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
       <div className="flex items-center gap-2">
-        <div className="md:hidden">
+        <div className="lg:hidden">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -25,11 +25,11 @@ export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0">
-                    <div className="flex h-full flex-col p-4">{sidebarContent}</div>
+                    <div className="flex h-full flex-col">{sidebarContent}</div>
                 </SheetContent>
             </Sheet>
         </div>
-        <Link href="/" className="items-center gap-2 hidden md:flex">
+        <Link href="/" className="items-center gap-2 hidden lg:flex">
           <Logo className="h-7 w-7 text-primary" />
           <span className="text-xl font-bold text-primary">LinguaLeap</span>
         </Link>

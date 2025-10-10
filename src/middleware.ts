@@ -1,10 +1,16 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+ 
 export function middleware(request: NextRequest) {
-  return NextResponse.next();
+  // Simple middleware, no i18n logic anymore
+  return NextResponse.next()
 }
-
+ 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
-};
+  matcher: [
+    // Skip all internal paths (_next)
+    '/((?!_next).*)',
+    // Optional: only run on root (/) URL
+    // '/'
+  ],
+}

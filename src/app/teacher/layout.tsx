@@ -16,7 +16,7 @@ export default function TeacherLayout({
   ];
   
   return (
-    <DashboardLayout navItems={teacherNavItems} role="teacher">
+    <DashboardLayout navItems={teacherNavItems}>
       {children}
     </DashboardLayout>
   );

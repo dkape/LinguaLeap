@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons";
 import { ArrowRight } from "lucide-react";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
 export default function Home() {
   return (

@@ -8,6 +8,7 @@ type LoginPageProps = {
 export default function LoginPage({ params }: LoginPageProps) {
   const role = params.role;
   if (role !== 'student' && role !== 'teacher') {
+    // Or handle this more gracefully, e.g., notFound() from next/navigation
     return <div>Invalid role specified.</div>
   }
 

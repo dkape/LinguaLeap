@@ -15,7 +15,7 @@ export default function StudentLayout({
   ];
 
   return (
-    <DashboardLayout navItems={studentNavItems} role="student">
+    <DashboardLayout navItems={studentNavItems}>
       {children}
     </DashboardLayout>
   );

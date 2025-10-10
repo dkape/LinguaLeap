@@ -9,10 +9,9 @@ import { cn } from "@/lib/utils";
 type DashboardLayoutProps = {
   children: React.ReactNode;
   navItems: { href: string; label: string; icon: React.ElementType }[];
-  role: 'student' | 'teacher';
 };
 
-export function DashboardLayout({ children, navItems, role }: DashboardLayoutProps) {
+export function DashboardLayout({ children, navItems }: DashboardLayoutProps) {
   const pathname = usePathname();
   
   const sidebarContent = (
