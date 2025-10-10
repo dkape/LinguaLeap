@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +21,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useDictionary } from "@/hooks/use-dictionary";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -40,14 +38,12 @@ export function AuthForm({ mode, role }: AuthFormProps) {
   const { signUp, logIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { dictionary } = useDictionary();
-  const authDict = dictionary.auth;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema.extend({
-      name: mode === 'signup' ? z.string().min(2, authDict.validations.nameMin) : z.string().optional(),
-      email: z.string().email(authDict.validations.emailInvalid),
-      password: z.string().min(6, authDict.validations.passwordMin),
+      name: mode === 'signup' ? z.string().min(2, "Name must be at least 2 characters.") : z.string().optional(),
+      email: z.string().email("Invalid email address."),
+      password: z.string().min(6, "Password must be at least 6 characters."),
     })),
     defaultValues: {
       name: "",
@@ -61,12 +57,12 @@ export function AuthForm({ mode, role }: AuthFormProps) {
     try {
       if (mode === 'signup') {
         if (!values.name) {
-          toast({ variant: 'destructive', title: authDict.errors.error, description: authDict.errors.nameRequired });
+          toast({ variant: 'destructive', title: "Error", description: "Name is required for signup." });
           setIsLoading(false);
           return;
         }
         await signUp(values.email, values.password, values.name, role);
-        toast({ title: authDict.success.title, description: authDict.success.accountCreated });
+        toast({ title: "Success", description: "Account created successfully!" });
       } else {
         await logIn(values.email, values.password);
       }
@@ -75,21 +71,20 @@ export function AuthForm({ mode, role }: AuthFormProps) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: authDict.errors.authFailed,
-        description: error.message || authDict.errors.unexpected,
+        title: "Authentication Failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsLoading(false);
     }
   }
 
-  const roleName = role === 'student' ? dictionary.roles.studentShort : dictionary.roles.teacherShort;
-
-  const title = mode === 'login' ? authDict.login.title : authDict.signup.title;
-  const description = authDict.form.description.replace('{mode}', mode === 'login' ? authDict.form.mode.login : authDict.form.mode.signup).replace('{role}', roleName);
-  const buttonText = mode === 'login' ? authDict.login.button : authDict.signup.button;
-  const linkText = mode === 'login' ? authDict.login.prompt : authDict.signup.prompt;
-  const linkActionText = mode === 'login' ? authDict.signup.button : authDict.login.button;
+  const roleName = role === 'student' ? "Student" : "Teacher";
+  const title = mode === 'login' ? `Welcome Back, ${roleName}!` : `Create ${roleName} Account`;
+  const description = `Enter your credentials to ${mode}.`;
+  const buttonText = mode === 'login' ? "Login" : "Sign Up";
+  const linkText = mode === 'login' ? "Don't have an account?" : "Already have an account?";
+  const linkActionText = mode === 'login' ? "Sign Up" : "Login";
   const linkHref = `/${mode === 'login' ? 'signup' : 'login'}/${role}`;
 
   return (
@@ -107,9 +102,9 @@ export function AuthForm({ mode, role }: AuthFormProps) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{authDict.form.nameLabel}</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder={authDict.form.namePlaceholder} {...field} />
+                      <Input placeholder="Your Name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,9 +116,9 @@ export function AuthForm({ mode, role }: AuthFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{authDict.form.emailLabel}</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder={authDict.form.emailPlaceholder} {...field} />
+                    <Input placeholder="name@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -134,7 +129,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{authDict.form.passwordLabel}</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>

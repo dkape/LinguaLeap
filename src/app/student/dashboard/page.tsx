@@ -1,11 +1,9 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
-import { useDictionary } from '@/hooks/use-dictionary';
 
 export default function StudentDashboard() {
   const { user } = useAuth();
-  const { dictionary } = useDictionary();
 
   if (!user) {
     return <div>Loading...</div>;
@@ -14,9 +12,9 @@ export default function StudentDashboard() {
   return (
     <div>
       <h1 className="text-3xl font-bold font-headline">
-        {dictionary.student.title.replace('{name}', user.name)}
+        Welcome, {user.name}!
       </h1>
-      <p className="text-muted-foreground">{dictionary.student.description}</p>
+      <p className="text-muted-foreground">Your adventure in reading is about to begin. Get ready to explore magical worlds and make new friends, all while learning to read.</p>
     </div>
   );
 }

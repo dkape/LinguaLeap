@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -15,12 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, Settings, User as UserIcon } from "lucide-react";
-import { useDictionary } from "@/hooks/use-dictionary";
 
 export function UserNav() {
   const { user, logOut } = useAuth();
-  const { dictionary } = useDictionary();
-  const navDict = dictionary.userNav;
 
   if (!user) {
     return null;
@@ -49,18 +45,18 @@ export function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <UserIcon className="mr-2 h-4 w-4" />
-            <span>{navDict.profile}</span>
+            <span>Profile</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
-            <span>{navDict.settings}</span>
+            <span>Settings</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logOut} asChild>
           <Link href="/">
             <LogOut className="mr-2 h-4 w-4" />
-            <span>{navDict.logout}</span>
+            <span>Log out</span>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -1,4 +1,3 @@
-
 import { AuthForm } from "@/components/auth/auth-form";
 import type { UserRole } from "@/lib/types";
 

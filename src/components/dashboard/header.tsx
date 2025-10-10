@@ -1,22 +1,18 @@
-
 'use client';
 
 import Link from "next/link";
 import { Logo } from "@/components/icons";
 import { UserNav } from "@/components/shared/user-nav";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import React from "react";
-import { useDictionary } from "@/hooks/use-dictionary";
 
 type DashboardHeaderProps = {
   sidebarContent: React.ReactNode;
 };
 
 export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
-  const { dictionary } = useDictionary();
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
       <div className="flex items-center gap-2">
@@ -35,12 +31,11 @@ export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
         </div>
         <Link href="/" className="items-center gap-2 hidden md:flex">
           <Logo className="h-7 w-7 text-primary" />
-          <span className="text-xl font-bold text-primary">{dictionary.brand.name}</span>
+          <span className="text-xl font-bold text-primary">LinguaLeap</span>
         </Link>
       </div>
 
       <div className="flex w-full items-center justify-end gap-4">
-        <LanguageSwitcher />
         <UserNav />
       </div>
     </header>
