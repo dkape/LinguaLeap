@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import type { User, UserRole } from '@/lib/types';
@@ -25,20 +25,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      let currentUser: User | null = null;
       if (firebaseUser) {
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         if (userDoc.exists()) {
-          setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
+          currentUser = { uid: firebaseUser.uid, ...userDoc.data() } as User;
         } else {
-            // This can happen if the user record is created in Auth but the Firestore doc creation fails.
-            // Or if a user is deleted from Firestore but not Auth.
             console.warn("User exists in Auth but not in Firestore. Logging out.");
             await signOut(auth);
-            setUser(null);
         }
-      } else {
-        setUser(null);
       }
+      setUser(currentUser);
       setLoading(false);
     });
 
@@ -46,24 +43,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (loading) {
-      return; // Do nothing while loading
-    }
+    if (loading) return;
 
     const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
     const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
 
-    if (user) {
-      // If we have a user and they are on an auth page, redirect to their dashboard
-      if (isAuthPage) {
-        router.push(`/${user.role}/dashboard`);
-      }
-    } else {
-      // If we don't have a user and they are on a protected route, redirect to home
-      if (isProtectedRoute) {
-        router.push('/');
-      }
+    if (!user && isProtectedRoute) {
+      router.push('/');
     }
+    
+    if (user && isAuthPage) {
+      router.push(`/${user.role}/dashboard`);
+    }
+
   }, [user, loading, pathname, router]);
 
   const logIn = (email: string, pass: string) => {
@@ -85,7 +77,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
-    // The onAuthStateChanged listener will handle setting the user state
     return userCredential;
   };
   
@@ -103,7 +94,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logOut,
   };
 
-  // While loading, we can show a blank screen or a loader to prevent flashes of incorrect content
+  // While the initial user check is loading, we can return null to avoid rendering flashes of incorrect UI.
+  // The route protection useEffect will handle redirects once loading is complete.
   if (loading) {
       return null;
   }
