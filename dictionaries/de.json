@@ -10,5 +10,13 @@
       "headline": "Erschließe die Welt, ein Wort nach dem anderen",
       "tagline": "LinguaLeap macht das Lesenlernen in Englisch und Deutsch zu einem lustigen Abenteuer. Spielerische Lektionen und personalisierte Pfade helfen jungen Lernenden, einen Sprung nach vorne zu machen.",
       "footerRights": "Alle Rechte vorbehalten."
+    },
+    "student": {
+        "title": "Willkommen, zukünftiger Sprachheld!",
+        "description": "Dein Leseabenteuer beginnt gleich. Mach dich bereit, magische Welten zu erkunden und neue Freunde zu finden, während du lesen lernst."
+    },
+    "teacher": {
+        "title": "Willkommen, Sprachführer!",
+        "description": "Du bist dabei, eine Reise zu beginnen, um junge Köpfe zu inspirieren. Hier findest du alle Werkzeuge, die du brauchst, um das Lernen zu einem unvergesslichen Abenteuer zu machen."
     }
 }

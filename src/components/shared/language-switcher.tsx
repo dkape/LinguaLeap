@@ -1,7 +1,6 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { i18n, type Locale } from '@/app/[locale]/i18n-config'
 import { Button } from "@/components/ui/button";
 import {
@@ -12,9 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Languages } from "lucide-react";
 
-
 export function LanguageSwitcher() {
   const pathName = usePathname()
+  const router = useRouter()
 
   const redirectedPathName = (locale: Locale) => {
     if (!pathName) return '/'
@@ -36,10 +35,8 @@ export function LanguageSwitcher() {
           const flag = locale === 'en' ? '🇺🇸' : '🇩🇪';
           const label = locale === 'en' ? 'English' : 'German';
           return (
-            <DropdownMenuItem key={locale} asChild>
-              <Link href={redirectedPathName(locale)}>
-                <span className="mr-2">{flag}</span> {label}
-              </Link>
+            <DropdownMenuItem key={locale} onClick={() => router.push(redirectedPathName(locale))}>
+              <span className="mr-2">{flag}</span> {label}
             </DropdownMenuItem>
           )
         })}
