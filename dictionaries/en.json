@@ -10,5 +10,13 @@
         "headline": "Unlock the World, One Word at a Time",
         "tagline": "LinguaLeap makes learning to read in English and German a fun adventure. Gamified lessons and personalized paths help young learners leap ahead.",
         "footerRights": "All rights reserved."
+    },
+    "student": {
+        "title": "Welcome, future language hero!",
+        "description": "Your adventure in reading is about to begin. Get ready to explore magical worlds and make new friends, all while learning to read."
+    },
+    "teacher": {
+        "title": "Welcome, language guide!",
+        "description": "You're about to embark on a journey to inspire young minds. Here, you'll find all the tools you need to make learning an unforgettable adventure."
     }
 }
