@@ -4,6 +4,7 @@ import { Logo } from "@/components/icons";
 import { ArrowRight } from "lucide-react";
 import { getDictionary } from "./get-dictionary";
 import { Locale } from "./i18n-config";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
 export default async function Home({
   params: { lang },
@@ -18,6 +19,7 @@ export default async function Home({
           <Logo className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-bold text-primary">{dictionary.brand.name}</h1>
         </div>
+        <LanguageSwitcher />
       </header>
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="text-center max-w-2xl mx-auto">
