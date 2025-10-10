@@ -1,0 +1,14 @@
+{
+    "brand": {
+        "name": "LinguaLeap"
+    },
+    "roles": {
+        "student": "I'm a Student",
+        "teacher": "I'm a Teacher"
+    },
+    "home": {
+        "headline": "Unlock the World, One Word at a Time",
+        "tagline": "LinguaLeap makes learning to read in English and German a fun adventure. Gamified lessons and personalized paths help young learners leap ahead.",
+        "footerRights": "All rights reserved."
+    }
+}

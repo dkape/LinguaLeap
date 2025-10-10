@@ -1,0 +1,14 @@
+{
+    "brand": {
+      "name": "LinguaLeap"
+    },
+    "roles": {
+        "student": "Ich bin ein(e) Schüler(in)",
+        "teacher": "Ich bin ein(e) Lehrer(in)"
+    },
+    "home": {
+      "headline": "Erschließe die Welt, ein Wort nach dem anderen",
+      "tagline": "LinguaLeap macht das Lesenlernen in Englisch und Deutsch zu einem lustigen Abenteuer. Spielerische Lektionen und personalisierte Pfade helfen jungen Lernenden, einen Sprung nach vorne zu machen.",
+      "footerRights": "Alle Rechte vorbehalten."
+    }
+}

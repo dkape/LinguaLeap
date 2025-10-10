@@ -2,6 +2,7 @@ import React from "react";
 import { DashboardHeader } from "./header";
 import { Logo } from "../icons";
 import Link from "next/link";
+import { i18n, type Locale } from "@/app/[locale]/i18n-config";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -10,10 +11,14 @@ type DashboardLayoutProps = {
 };
 
 export function DashboardLayout({ children, navItems, role }: DashboardLayoutProps) {
+  // This is a temporary solution to get the locale.
+  // In a real app, you would get this from the context or a hook.
+  const lang : Locale = 'en';
+
   const sidebarContent = (
     <>
       <div className="flex h-16 items-center border-b px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold text-primary">
+        <Link href={`/${lang}/`} className="flex items-center gap-2 font-semibold text-primary">
           <Logo className="h-7 w-7" />
           <span className="text-xl font-bold">LinguaLeap</span>
         </Link>
@@ -25,7 +30,7 @@ export function DashboardLayout({ children, navItems, role }: DashboardLayoutPro
             return (
               <Link
                 key={item.href}
-                href={`/${role}${item.href}`}
+                href={`/${lang}/${role}${item.href}`}
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted"
               >
                 <Icon className="h-4 w-4" />
