@@ -18,10 +18,10 @@ export default function RootLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { lang?: Locale };
+  params: { lang: Locale };
 }) {
   return (
-    <html lang={params?.lang ?? i18n.defaultLocale} suppressHydrationWarning>
+    <html lang={params.lang} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
