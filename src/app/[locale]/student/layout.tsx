@@ -15,7 +15,7 @@ export default async function StudentLayout({
   const dictionary = await getDictionary(lang);
 
   const studentNavItems = [
-    { href: "dashboard", label: dictionary.roles.student, icon: LayoutDashboard },
+    { href: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "leaderboard", label: "Leaderboard", icon: Trophy },
   ];
 
