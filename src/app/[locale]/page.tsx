@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons";
 import { ArrowRight } from "lucide-react";
-import { getDictionary } from "./get-dictionary";
-import { Locale } from "./i18n-config";
+import { getDictionary } from "@/get-dictionary";
+import { Locale } from "@/i18n-config";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
 export default async function Home({

@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { i18n } from "@/i18n-config";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -40,7 +41,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const lang = pathname.split('/')[1] || 'en';
+  const lang = pathname.split('/')[1] || i18n.defaultLocale;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema.extend({

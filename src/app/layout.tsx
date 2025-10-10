@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { i18n, type Locale } from "@/i18n-config";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -21,7 +21,7 @@ export default function RootLayout({
   params: { lang: Locale };
 }) {
   return (
-    <html lang={params.lang} suppressHydrationWarning>
+    <html lang={params?.lang ?? i18n.defaultLocale} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

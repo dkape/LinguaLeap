@@ -1,6 +1,9 @@
+'use client';
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { LayoutDashboard, Users, BookPlus } from "lucide-react";
 import React from "react";
+import { usePathname } from 'next/navigation';
+import { Locale } from '@/i18n-config';
 
 const teacherNavItems = [
   { href: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -9,11 +12,12 @@ const teacherNavItems = [
 ];
 
 export default function TeacherLayout({ children }: { children: React.ReactNode }) {
-  // A placeholder for future pages
   const navItems = teacherNavItems;
+  const pathname = usePathname();
+  const lang = pathname.split('/')[1] as Locale;
   
   return (
-    <DashboardLayout navItems={navItems} role="teacher">
+    <DashboardLayout navItems={navItems} role="teacher" lang={lang}>
       {children}
     </DashboardLayout>
   );

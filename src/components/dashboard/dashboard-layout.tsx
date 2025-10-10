@@ -2,20 +2,19 @@ import React from "react";
 import { DashboardHeader } from "./header";
 import { Logo } from "../icons";
 import Link from "next/link";
-import { i18n, type Locale } from "@/app/[locale]/i18n-config";
-import { headers } from "next/headers";
+import { i18n, type Locale } from "@/i18n-config";
+import { usePathname } from 'next/navigation'
 import { cn } from "@/lib/utils";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
   navItems: { href: string; label: string; icon: React.ElementType }[];
   role: 'student' | 'teacher';
+  lang: Locale;
 };
 
-export function DashboardLayout({ children, navItems, role }: DashboardLayoutProps) {
-  const headersList = headers();
-  const pathname = headersList.get('x-next-pathname') || '';
-  const lang = (pathname.split('/')[1] || i18n.defaultLocale) as Locale;
+export function DashboardLayout({ children, navItems, role, lang }: DashboardLayoutProps) {
+  const pathname = usePathname();
   
   const sidebarContent = (
     <>
@@ -29,8 +28,8 @@ export function DashboardLayout({ children, navItems, role }: DashboardLayoutPro
         <nav className="grid items-start px-4 text-sm font-medium">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const fullPath = `/${lang}/${role}${item.href}`;
-            const isActive = pathname === fullPath || (item.href === '/dashboard' && pathname === `/${lang}/${role}`);
+            const fullPath = `/${lang}/${role}/${item.href}`;
+            const isActive = pathname === fullPath || (item.href === 'dashboard' && pathname === `/${lang}/${role}`);
             return (
               <Link
                 key={item.href}
