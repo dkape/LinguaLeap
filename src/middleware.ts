@@ -3,8 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  // This middleware is no longer needed for i18n routing,
-  // but can be kept for future use (e.g., protected routes).
+  // This middleware can be used for future use (e.g., protected routes).
   return NextResponse.next();
 }
 
