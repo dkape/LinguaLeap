@@ -5,15 +5,61 @@
     },
     "roles": {
         "student": "Ich bin ein(e) Schüler(in)",
-        "teacher": "Ich bin ein(e) Lehrer(in)"
+        "studentShort": "Schüler(in)",
+        "teacher": "Ich bin ein(e) Lehrer(in)",
+        "teacherShort": "Lehrer(in)"
     },
     "home": {
       "headline": "Erschließe die Welt, ein Wort nach dem anderen",
       "tagline": "LinguaLeap macht das Lesenlernen in Englisch und Deutsch zu einem lustigen Abenteuer. Spielerische Lektionen und personalisierte Pfade helfen jungen Lernenden, einen Sprung nach vorne zu machen.",
       "footerRights": "Alle Rechte vorbehalten."
     },
+    "auth": {
+        "login": {
+            "title": "Willkommen zurück!",
+            "button": "Anmelden",
+            "prompt": "Du hast noch kein Konto?"
+        },
+        "signup": {
+            "title": "Konto erstellen",
+            "button": "Registrieren",
+            "prompt": "Du hast bereits ein Konto?"
+        },
+        "form": {
+            "description": "Gib deine Anmeldedaten ein, um dich als {role} {mode}.",
+            "mode": {
+                "login": "anzumelden",
+                "signup": "zu registrieren"
+            },
+            "nameLabel": "Name",
+            "namePlaceholder": "Dein Name",
+            "emailLabel": "E-Mail",
+            "emailPlaceholder": "name@example.com",
+            "passwordLabel": "Passwort"
+        },
+        "validations": {
+            "nameMin": "Der Name muss mindestens 2 Zeichen lang sein.",
+            "emailInvalid": "Ungültige E-Mail-Adresse.",
+            "passwordMin": "Das Passwort muss mindestens 6 Zeichen lang sein."
+        },
+        "errors": {
+            "error": "Fehler",
+            "nameRequired": "Name ist für die Registrierung erforderlich.",
+            "authFailed": "Authentifizierung fehlgeschlagen",
+            "unexpected": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut."
+        },
+        "success": {
+            "title": "Erfolg",
+            "accountCreated": "Konto erfolgreich erstellt!"
+        }
+    },
+    "userNav": {
+        "profile": "Profil",
+        "settings": "Einstellungen",
+        "logout": "Abmelden"
+    },
     "student": {
-        "title": "Willkommen, zukünftiger Sprachheld!",
+        "title": "Willkommen, {name}!",
         "description": "Dein Leseabenteuer beginnt gleich. Mach dich bereit, magische Welten zu erkunden und neue Freunde zu finden, während du lesen lernst.",
         "nav": {
             "dashboard": "Dashboard",
@@ -21,12 +67,82 @@
         }
     },
     "teacher": {
-        "title": "Willkommen, Sprachführer!",
+        "title": "Willkommen, {name}!",
         "description": "Du bist dabei, eine Reise zu beginnen, um junge Köpfe zu inspirieren. Hier findest du alle Werkzeuge, die du brauchst, um das Lernen zu einem unvergesslichen Abenteuer zu machen.",
         "nav": {
             "dashboard": "Dashboard",
             "groups": "Schülergruppen",
             "create": "Pfad erstellen"
+        },
+        "dashboard": {
+            "totalStudents": "Schüler insgesamt",
+            "studentsInGroups": "in {count} Gruppen",
+            "activeCourses": "Aktive Kurse",
+            "coursesThisMonth": "diesen Monat erstellt",
+            "studentGroups": "Schülergruppen",
+            "newGroupsThisWeek": "+{count} neue Gruppe diese Woche"
+        },
+        "createPath": {
+            "title": "Einen Lernpfad erstellen",
+            "description": "Verwende KI, um sofort einen maßgeschneiderten Lesekurs für deine Schüler zu erstellen. Gib einfach das Thema und die Schülerdetails an.",
+            "topic": {
+                "label": "Thema",
+                "placeholder": "z.B. Das Sonnensystem, Dinosaurier, Altes Rom",
+                "description": "Welches Thema möchtest du unterrichten?"
+            },
+            "groupDescription": {
+                "label": "Beschreibung der Schülergruppe",
+                "placeholder": "z.B. Eine Klasse von Zweitklässlern, die Geschichten über Tiere und Abenteuer mögen.",
+                "description": "Beschreibe deine Schüler, um den Inhalt anzupassen."
+            },
+            "ageRange": {
+                "label": "Altersgruppe",
+                "placeholder": "Wähle eine Altersgruppe",
+                "options": {
+                    "younger": "5-6 Jahre",
+                    "middle": "7-8 Jahre",
+                    "older": "9-10 Jahre",
+                    "oldest": "11-12 Jahre"
+                }
+            },
+            "readingLevel": {
+                "label": "Leseniveau",
+                "placeholder": "Wähle ein Leseniveau",
+                "options": {
+                    "beginner": "Anfänger",
+                    "intermediate": "Mittelstufe",
+                    "advanced": "Fortgeschritten"
+                }
+            },
+            "language": {
+                "label": "Sprache",
+                "placeholder": "Wähle eine Sprache",
+                "options": {
+                    "en": "Englisch",
+                    "de": "Deutsch"
+                }
+            },
+            "buttons": {
+                "generate": "Lernpfad generieren",
+                "generating": "Wird generiert...",
+                "save": "Lernpfad speichern",
+                "saving": "Wird gespeichert..."
+            },
+            "generatingState": "Unsere KI erstellt den perfekten Lernpfad... Bitte warte.",
+            "generatedPath": {
+                "title": "Generierter Lernpfad",
+                "description": "Hier ist der von der KI vorgeschlagene Lernpfad basierend auf deinen Kriterien. Du kannst ihn jetzt für deine Schüler speichern."
+            },
+            "notifications": {
+                "generateSuccessTitle": "Erfolg!",
+                "generateSuccessDescription": "Dein neuer Lernpfad wurde generiert.",
+                "generateErrorTitle": "Oh nein! Etwas ist schief gelaufen.",
+                "generateErrorDescription": "Beim Generieren des Lernpfads ist ein Problem aufgetreten. Bitte versuche es erneut.",
+                "saveSuccessTitle": "Lernpfad gespeichert!",
+                "saveSuccessDescription": "Der neue Kurs ist jetzt für deine Schüler verfügbar.",
+                "saveErrorTitle": "Speichern fehlgeschlagen",
+                "saveErrorDescription": "Der Lernpfad konnte nicht gespeichert werden. Bitte versuche es erneut."
+            }
         }
     }
 }

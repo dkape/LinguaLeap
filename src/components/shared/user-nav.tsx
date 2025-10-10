@@ -15,9 +15,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, Settings, User as UserIcon } from "lucide-react";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 export function UserNav() {
   const { user, logOut } = useAuth();
+  const { dictionary } = useDictionary();
+  const navDict = dictionary.userNav;
 
   if (!user) {
     return null;
@@ -46,18 +49,18 @@ export function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <UserIcon className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>{navDict.profile}</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>{navDict.settings}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logOut} asChild>
           <Link href="/">
             <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
+            <span>{navDict.logout}</span>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

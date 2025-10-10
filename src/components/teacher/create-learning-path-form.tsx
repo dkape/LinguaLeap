@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -26,6 +27,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import { useDictionary } from '@/hooks/use-dictionary';
 
 
 const formSchema = z.object({
@@ -42,6 +44,8 @@ export function CreateLearningPathForm() {
   const { toast } = useToast();
   const { user } = useAuth();
   const router = useRouter();
+  const { dictionary } = useDictionary();
+  const formDict = dictionary.teacher.createPath;
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,15 +64,15 @@ export function CreateLearningPathForm() {
       const result = await generateSuggestedLearningPath(values);
       setLearningPath(result);
       toast({
-        title: "Success!",
-        description: "Your new learning path has been generated.",
+        title: formDict.notifications.generateSuccessTitle,
+        description: formDict.notifications.generateSuccessDescription,
       });
     } catch (error) {
       console.error("Error generating learning path:", error);
       toast({
         variant: "destructive",
-        title: "Oh no! Something went wrong.",
-        description: "There was a problem generating the learning path. Please try again.",
+        title: formDict.notifications.generateErrorTitle,
+        description: formDict.notifications.generateErrorDescription,
       });
     }
   }
@@ -93,8 +97,8 @@ export function CreateLearningPathForm() {
             })),
         });
         toast({
-            title: "Learning Path Saved!",
-            description: "The new course is now available for your students."
+            title: formDict.notifications.saveSuccessTitle,
+            description: formDict.notifications.saveSuccessDescription,
         });
         setLearningPath(null);
         form.reset();
@@ -103,8 +107,8 @@ export function CreateLearningPathForm() {
         console.error("Error saving learning path:", error);
         toast({
             variant: "destructive",
-            title: "Save Failed",
-            description: "Could not save the learning path. Please try again.",
+            title: formDict.notifications.saveErrorTitle,
+            description: formDict.notifications.saveErrorDescription,
         });
     } finally {
         setIsSaving(false);
@@ -117,10 +121,10 @@ export function CreateLearningPathForm() {
         <CardHeader>
           <div className='flex items-center gap-2'>
             <Wand2 className='h-6 w-6 text-primary' />
-            <CardTitle className="text-2xl font-headline">Create a Learning Path</CardTitle>
+            <CardTitle className="text-2xl font-headline">{formDict.title}</CardTitle>
           </div>
           <CardDescription>
-            Use AI to instantly generate a tailored reading course for your students. Just provide the topic and student details.
+            {formDict.description}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -133,11 +137,11 @@ export function CreateLearningPathForm() {
                     name="topic"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Topic</FormLabel>
+                        <FormLabel>{formDict.topic.label}</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., The Solar System, Dinosaurs, Ancient Rome" {...field} />
+                          <Input placeholder={formDict.topic.placeholder} {...field} />
                         </FormControl>
-                        <FormDescription>What subject do you want to teach?</FormDescription>
+                        <FormDescription>{formDict.topic.description}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -147,15 +151,15 @@ export function CreateLearningPathForm() {
                     name="studentGroupDescription"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Student Group Description</FormLabel>
+                        <FormLabel>{formDict.groupDescription.label}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="e.g., A class of 2nd graders who enjoy stories about animals and adventure."
+                            placeholder={formDict.groupDescription.placeholder}
                             className="resize-none"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>Describe your students to help tailor the content.</FormDescription>
+                        <FormDescription>{formDict.groupDescription.description}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -167,16 +171,16 @@ export function CreateLearningPathForm() {
                         name="ageRange"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Age Range</FormLabel>
+                            <FormLabel>{formDict.ageRange.label}</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                                <SelectTrigger><SelectValue placeholder="Select an age range" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={formDict.ageRange.placeholder} /></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="5-6">5-6 years</SelectItem>
-                                <SelectItem value="7-8">7-8 years</SelectItem>
-                                <SelectItem value="9-10">9-10 years</SelectItem>
-                                <SelectItem value="11-12">11-12 years</SelectItem>
+                                <SelectItem value="5-6">{formDict.ageRange.options.younger}</SelectItem>
+                                <SelectItem value="7-8">{formDict.ageRange.options.middle}</SelectItem>
+                                <SelectItem value="9-10">{formDict.ageRange.options.older}</SelectItem>
+                                <SelectItem value="11-12">{formDict.ageRange.options.oldest}</SelectItem>
                             </SelectContent>
                             </Select>
                             <FormMessage />
@@ -188,15 +192,15 @@ export function CreateLearningPathForm() {
                         name="readingLevel"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Reading Level</FormLabel>
+                            <FormLabel>{formDict.readingLevel.label}</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                                <SelectTrigger><SelectValue placeholder="Select a reading level" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={formDict.readingLevel.placeholder} /></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="beginner">Beginner</SelectItem>
-                                <SelectItem value="intermediate">Intermediate</SelectItem>
-                                <SelectItem value="advanced">Advanced</SelectItem>
+                                <SelectItem value="beginner">{formDict.readingLevel.options.beginner}</SelectItem>
+                                <SelectItem value="intermediate">{formDict.readingLevel.options.intermediate}</SelectItem>
+                                <SelectItem value="advanced">{formDict.readingLevel.options.advanced}</SelectItem>
                             </SelectContent>
                             </Select>
                             <FormMessage />
@@ -208,14 +212,14 @@ export function CreateLearningPathForm() {
                         name="language"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Language</FormLabel>
+                            <FormLabel>{formDict.language.label}</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                                <SelectTrigger><SelectValue placeholder="Select a language" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={formDict.language.placeholder} /></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="en">English</SelectItem>
-                                <SelectItem value="de">German</SelectItem>
+                                <SelectItem value="en">{formDict.language.options.en}</SelectItem>
+                                <SelectItem value="de">{formDict.language.options.de}</SelectItem>
                             </SelectContent>
                             </Select>
                             <FormMessage />
@@ -229,12 +233,12 @@ export function CreateLearningPathForm() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
+                    {formDict.buttons.generating}
                   </>
                 ) : (
                     <>
                         <Wand2 className="mr-2 h-4 w-4" />
-                        Generate Learning Path
+                        {formDict.buttons.generate}
                     </>
                 )}
               </Button>
@@ -246,15 +250,15 @@ export function CreateLearningPathForm() {
       {isSubmitting && (
         <div className="text-center p-8">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Our AI is crafting the perfect learning path... Please wait.</p>
+            <p className="text-muted-foreground">{formDict.generatingState}</p>
         </div>
       )}
 
       {learningPath && (
         <Card className="mt-8">
             <CardHeader>
-                <CardTitle className="text-2xl font-headline">Generated Learning Path</CardTitle>
-                <CardDescription>Here is the AI-suggested learning path based on your criteria. You can now save it for your students.</CardDescription>
+                <CardTitle className="text-2xl font-headline">{formDict.generatedPath.title}</CardTitle>
+                <CardDescription>{formDict.generatedPath.description}</CardDescription>
             </CardHeader>
             <CardContent>
                 <Accordion type="single" collapsible className="w-full">
@@ -275,7 +279,7 @@ export function CreateLearningPathForm() {
             </CardContent>
             <CardFooter>
                 <Button onClick={onSavePath} disabled={isSaving}>
-                    {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save Learning Path'}
+                    {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {formDict.buttons.saving}</> : formDict.buttons.save}
                 </Button>
             </CardFooter>
         </Card>

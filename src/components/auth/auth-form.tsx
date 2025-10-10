@@ -41,10 +41,13 @@ export function AuthForm({ mode, role }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { dictionary } = useDictionary();
+  const authDict = dictionary.auth;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema.extend({
-      name: mode === 'signup' ? z.string().min(2, "Name must be at least 2 characters.") : z.string().optional(),
+      name: mode === 'signup' ? z.string().min(2, authDict.validations.nameMin) : z.string().optional(),
+      email: z.string().email(authDict.validations.emailInvalid),
+      password: z.string().min(6, authDict.validations.passwordMin),
     })),
     defaultValues: {
       name: "",
@@ -58,12 +61,12 @@ export function AuthForm({ mode, role }: AuthFormProps) {
     try {
       if (mode === 'signup') {
         if (!values.name) {
-          toast({ variant: 'destructive', title: 'Error', description: 'Name is required for signup.' });
+          toast({ variant: 'destructive', title: authDict.errors.error, description: authDict.errors.nameRequired });
           setIsLoading(false);
           return;
         }
         await signUp(values.email, values.password, values.name, role);
-        toast({ title: 'Success', description: 'Account created successfully!' });
+        toast({ title: authDict.success.title, description: authDict.success.accountCreated });
       } else {
         await logIn(values.email, values.password);
       }
@@ -72,18 +75,21 @@ export function AuthForm({ mode, role }: AuthFormProps) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: 'Authentication Failed',
-        description: error.message || 'An unexpected error occurred. Please try again.',
+        title: authDict.errors.authFailed,
+        description: error.message || authDict.errors.unexpected,
       });
     } finally {
       setIsLoading(false);
     }
   }
 
-  const title = mode === 'login' ? 'Welcome Back!' : 'Create an Account';
-  const description = `Enter your credentials to ${mode} as a ${role}.`;
-  const buttonText = mode === 'login' ? 'Login' : 'Sign Up';
-  const linkText = mode === 'login' ? "Don't have an account?" : "Already have an account?";
+  const roleName = role === 'student' ? dictionary.roles.studentShort : dictionary.roles.teacherShort;
+
+  const title = mode === 'login' ? authDict.login.title : authDict.signup.title;
+  const description = authDict.form.description.replace('{mode}', mode === 'login' ? authDict.form.mode.login : authDict.form.mode.signup).replace('{role}', roleName);
+  const buttonText = mode === 'login' ? authDict.login.button : authDict.signup.button;
+  const linkText = mode === 'login' ? authDict.login.prompt : authDict.signup.prompt;
+  const linkActionText = mode === 'login' ? authDict.signup.button : authDict.login.button;
   const linkHref = `/${mode === 'login' ? 'signup' : 'login'}/${role}`;
 
   return (
@@ -101,9 +107,9 @@ export function AuthForm({ mode, role }: AuthFormProps) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{authDict.form.nameLabel}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Name" {...field} />
+                      <Input placeholder={authDict.form.namePlaceholder} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -115,9 +121,9 @@ export function AuthForm({ mode, role }: AuthFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{authDict.form.emailLabel}</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder={authDict.form.emailPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,7 +134,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{authDict.form.passwordLabel}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -145,7 +151,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
             <div className="text-sm text-muted-foreground">
               {linkText}{" "}
               <Link href={linkHref} className="text-primary hover:underline">
-                {mode === 'login' ? 'Sign up' : 'Login'}
+                {linkActionText}
               </Link>
             </div>
           </CardFooter>

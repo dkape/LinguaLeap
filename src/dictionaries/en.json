@@ -5,15 +5,61 @@
     },
     "roles": {
         "student": "I'm a Student",
-        "teacher": "I'm a Teacher"
+        "studentShort": "Student",
+        "teacher": "I'm a Teacher",
+        "teacherShort": "Teacher"
     },
     "home": {
         "headline": "Unlock the World, One Word at a Time",
         "tagline": "LinguaLeap makes learning to read in English and German a fun adventure. Gamified lessons and personalized paths help young learners leap ahead.",
         "footerRights": "All rights reserved."
     },
+    "auth": {
+        "login": {
+            "title": "Welcome Back!",
+            "button": "Login",
+            "prompt": "Don't have an account?"
+        },
+        "signup": {
+            "title": "Create an Account",
+            "button": "Sign Up",
+            "prompt": "Already have an account?"
+        },
+        "form": {
+            "description": "Enter your credentials to {mode} as a {role}.",
+            "mode": {
+                "login": "login",
+                "signup": "sign up"
+            },
+            "nameLabel": "Name",
+            "namePlaceholder": "Your Name",
+            "emailLabel": "Email",
+            "emailPlaceholder": "name@example.com",
+            "passwordLabel": "Password"
+        },
+        "validations": {
+            "nameMin": "Name must be at least 2 characters.",
+            "emailInvalid": "Invalid email address.",
+            "passwordMin": "Password must be at least 6 characters."
+        },
+        "errors": {
+            "error": "Error",
+            "nameRequired": "Name is required for signup.",
+            "authFailed": "Authentication Failed",
+            "unexpected": "An unexpected error occurred. Please try again."
+        },
+        "success": {
+            "title": "Success",
+            "accountCreated": "Account created successfully!"
+        }
+    },
+    "userNav": {
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Log out"
+    },
     "student": {
-        "title": "Welcome, future language hero!",
+        "title": "Welcome, {name}!",
         "description": "Your adventure in reading is about to begin. Get ready to explore magical worlds and make new friends, all while learning to read.",
         "nav": {
             "dashboard": "Dashboard",
@@ -21,12 +67,82 @@
         }
     },
     "teacher": {
-        "title": "Welcome, language guide!",
+        "title": "Welcome, {name}!",
         "description": "You're about to embark on a journey to inspire young minds. Here, you'll find all the tools you need to make learning an unforgettable adventure.",
         "nav": {
             "dashboard": "Dashboard",
             "groups": "Student Groups",
             "create": "Create Path"
+        },
+        "dashboard": {
+            "totalStudents": "Total Students",
+            "studentsInGroups": "in {count} groups",
+            "activeCourses": "Active Courses",
+            "coursesThisMonth": "created this month",
+            "studentGroups": "Student Groups",
+            "newGroupsThisWeek": "+{count} new group this week"
+        },
+        "createPath": {
+            "title": "Create a Learning Path",
+            "description": "Use AI to instantly generate a tailored reading course for your students. Just provide the topic and student details.",
+            "topic": {
+                "label": "Topic",
+                "placeholder": "e.g., The Solar System, Dinosaurs, Ancient Rome",
+                "description": "What subject do you want to teach?"
+            },
+            "groupDescription": {
+                "label": "Student Group Description",
+                "placeholder": "e.g., A class of 2nd graders who enjoy stories about animals and adventure.",
+                "description": "Describe your students to help tailor the content."
+            },
+            "ageRange": {
+                "label": "Age Range",
+                "placeholder": "Select an age range",
+                "options": {
+                    "younger": "5-6 years",
+                    "middle": "7-8 years",
+                    "older": "9-10 years",
+                    "oldest": "11-12 years"
+                }
+            },
+            "readingLevel": {
+                "label": "Reading Level",
+                "placeholder": "Select a reading level",
+                "options": {
+                    "beginner": "Beginner",
+                    "intermediate": "Intermediate",
+                    "advanced": "Advanced"
+                }
+            },
+            "language": {
+                "label": "Language",
+                "placeholder": "Select a language",
+                "options": {
+                    "en": "English",
+                    "de": "German"
+                }
+            },
+            "buttons": {
+                "generate": "Generate Learning Path",
+                "generating": "Generating...",
+                "save": "Save Learning Path",
+                "saving": "Saving..."
+            },
+            "generatingState": "Our AI is crafting the perfect learning path... Please wait.",
+            "generatedPath": {
+                "title": "Generated Learning Path",
+                "description": "Here is the AI-suggested learning path based on your criteria. You can now save it for your students."
+            },
+            "notifications": {
+                "generateSuccessTitle": "Success!",
+                "generateSuccessDescription": "Your new learning path has been generated.",
+                "generateErrorTitle": "Oh no! Something went wrong.",
+                "generateErrorDescription": "There was a problem generating the learning path. Please try again.",
+                "saveSuccessTitle": "Learning Path Saved!",
+                "saveSuccessDescription": "The new course is now available for your students.",
+                "saveErrorTitle": "Save Failed",
+                "saveErrorDescription": "Could not save the learning path. Please try again."
+            }
         }
     }
 }
