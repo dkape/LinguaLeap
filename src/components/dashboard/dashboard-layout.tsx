@@ -4,6 +4,7 @@ import { Logo } from "../icons";
 import Link from "next/link";
 import { i18n, type Locale } from "@/app/[locale]/i18n-config";
 import { headers } from "next/headers";
+import { cn } from "@/lib/utils";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -12,9 +13,10 @@ type DashboardLayoutProps = {
 };
 
 export function DashboardLayout({ children, navItems, role }: DashboardLayoutProps) {
-  const pathname = headers().get('x-next-pathname') || '';
+  const headersList = headers();
+  const pathname = headersList.get('x-next-pathname') || '';
   const lang = (pathname.split('/')[1] || i18n.defaultLocale) as Locale;
-
+  
   const sidebarContent = (
     <>
       <div className="flex h-16 items-center border-b px-6">
@@ -27,11 +29,16 @@ export function DashboardLayout({ children, navItems, role }: DashboardLayoutPro
         <nav className="grid items-start px-4 text-sm font-medium">
           {navItems.map((item) => {
             const Icon = item.icon;
+            const fullPath = `/${lang}/${role}${item.href}`;
+            const isActive = pathname === fullPath || (item.href === '/dashboard' && pathname === `/${lang}/${role}`);
             return (
               <Link
                 key={item.href}
-                href={`/${lang}/${role}${item.href}`}
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted"
+                href={fullPath}
+                className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted",
+                    isActive && "bg-muted text-primary"
+                )}
               >
                 <Icon className="h-4 w-4" />
                 {item.label}
