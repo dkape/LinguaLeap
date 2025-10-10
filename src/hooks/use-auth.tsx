@@ -5,7 +5,7 @@ import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndP
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import type { User, UserRole } from '@/lib/types';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -40,6 +41,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
+      if (isProtectedRoute) {
+        router.push('/');
+      }
+    }
+  }, [loading, user, pathname, router]);
 
   const logIn = (email: string, pass: string) => {
     return signInWithEmailAndPassword(auth, email, pass);
@@ -65,7 +75,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const logOut = () => {
-    return signOut(auth);
+    return signOut(auth).then(() => {
+      router.push('/');
+    });
   };
 
   const value = {
@@ -78,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

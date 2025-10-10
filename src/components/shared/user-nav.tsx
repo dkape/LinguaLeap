@@ -1,6 +1,5 @@
 'use client';
 
-import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,11 +52,9 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logOut} asChild>
-          <Link href="/">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-          </Link>
+        <DropdownMenuItem onClick={logOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
