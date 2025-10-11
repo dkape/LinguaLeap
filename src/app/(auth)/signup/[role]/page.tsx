@@ -5,7 +5,9 @@ type SignupPageProps = {
   params: { role: UserRole };
 };
 
-export default function SignupPage({ params: { role } }: SignupPageProps) {
+export default function SignupPage({ params }: SignupPageProps) {
+  const { role } = params;
+
   if (role !== 'student' && role !== 'teacher') {
     return <div>Invalid role specified.</div>
   }
