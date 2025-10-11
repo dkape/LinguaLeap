@@ -17,46 +17,65 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function AuthGuard({ children }: { children: ReactNode }) {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (loading) {
+            return; 
+        }
+
+        const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
+        const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
+
+        if (!user && isProtectedRoute) {
+            router.push('/');
+        }
+        
+        if (user && isAuthPage) {
+            router.push(`/${user.role}/dashboard`);
+        }
+
+    }, [user, loading, pathname, router]);
+
+    // Show a loading indicator on protected routes while auth state is being checked
+    if (loading && (pathname.startsWith('/student') || pathname.startsWith('/teacher'))) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div>Loading...</div>
+            </div>
+        )
+    }
+
+    return <>{children}</>;
+}
+
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      let currentUser: User | null = null;
       if (firebaseUser) {
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         if (userDoc.exists()) {
-          currentUser = { uid: firebaseUser.uid, ...userDoc.data() } as User;
+          setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
             console.warn("User exists in Auth but not in Firestore. Logging out.");
             await signOut(auth);
+            setUser(null);
         }
+      } else {
+        setUser(null);
       }
-      setUser(currentUser);
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (loading) return;
-
-    const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
-    const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
-
-    if (!user && isProtectedRoute) {
-      router.push('/');
-    }
-    
-    if (user && isAuthPage) {
-      router.push(`/${user.role}/dashboard`);
-    }
-
-  }, [user, loading, pathname, router]);
 
   const logIn = (email: string, pass: string) => {
     return signInWithEmailAndPassword(auth, email, pass);
@@ -77,13 +96,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
+    // The onAuthStateChanged listener will handle setting the user state
     return userCredential;
   };
   
-  const logOut = () => {
-    return signOut(auth).then(() => {
-      router.push('/');
-    });
+  const logOut = async () => {
+    await signOut(auth);
+    // The onAuthStateChanged listener will handle setting user to null
   };
 
   const value = {
@@ -94,11 +113,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logOut,
   };
   
-  // Render children immediately and let the useEffect handle redirects.
-  // Returning null here can cause a flash of a blank screen.
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      <AuthGuard>{children}</AuthGuard>
     </AuthContext.Provider>
   );
 };
