@@ -40,7 +40,6 @@ function AuthGuard({ children }: { children: ReactNode }) {
 
     }, [user, loading, pathname, router]);
 
-    // Show a loading indicator on protected routes while auth state is being checked
     if (loading && (pathname.startsWith('/student') || pathname.startsWith('/teacher'))) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -64,9 +63,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (userDoc.exists()) {
           setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
-            console.warn("User exists in Auth but not in Firestore. Logging out.");
-            await signOut(auth);
-            setUser(null);
+          // This case can happen if a user is created in Auth but the Firestore doc creation fails.
+          // It can also happen for a brief moment during signup.
+          // We will let the signup flow handle the doc creation. If it's a login, and the doc is missing,
+          // we might need a recovery flow, but for now, we'll just not set the user.
+          console.warn("User document not found in Firestore for authenticated user.");
+          setUser(null);
         }
       } else {
         setUser(null);
@@ -96,7 +98,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
-    // The onAuthStateChanged listener will handle setting the user state
+    // The onAuthStateChanged listener will pick up the new user state.
+    // We can set it here as well to make the UI update faster.
+    setUser({ ...newUser, id: firebaseUser.uid } as User);
     return userCredential;
   };
   
