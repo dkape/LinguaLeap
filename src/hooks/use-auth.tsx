@@ -63,12 +63,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (userDoc.exists()) {
           setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
-          // This case can happen if a user is created in Auth but the Firestore doc creation fails.
-          // It can also happen for a brief moment during signup.
-          // We will let the signup flow handle the doc creation. If it's a login, and the doc is missing,
-          // we might need a recovery flow, but for now, we'll just not set the user.
-          console.warn("User document not found in Firestore for authenticated user.");
-          setUser(null);
+          // During signup, the doc may not exist yet. The signUp function handles doc creation.
+          // We don't want to log the user out here immediately.
+          // The state will be updated once the doc is created and on next auth state change or app reload.
+          // For a normal login, if the doc is missing, the user might be stuck in a loading state
+          // or unable to access user-specific data. This indicates a data integrity issue.
+          // For this app's flow, we'll let the user proceed, but features might be limited.
         }
       } else {
         setUser(null);
@@ -100,13 +100,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
     // The onAuthStateChanged listener will pick up the new user state.
     // We can set it here as well to make the UI update faster.
-    setUser({ ...newUser, id: firebaseUser.uid } as User);
+    setUser({ ...newUser, uid: firebaseUser.uid } as User); // Correctly set the user state
     return userCredential;
   };
   
   const logOut = async () => {
     await signOut(auth);
-    // The onAuthStateChanged listener will handle setting user to null
+    setUser(null);
   };
 
   const value = {
