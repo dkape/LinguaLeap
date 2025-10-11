@@ -67,12 +67,16 @@ export function AuthForm({ mode, role }: AuthFormProps) {
         await logIn(values.email, values.password);
       }
       router.push(`/${role}/dashboard`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       toast({
         variant: 'destructive',
         title: "Authentication Failed",
-        description: error.message || "An unexpected error occurred. Please try again.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
