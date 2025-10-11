@@ -6,10 +6,9 @@ type SignupPageProps = {
 };
 
 export default function SignupPage({ params }: SignupPageProps) {
-  const role = params.role;
-  if (role !== 'student' && role !== 'teacher') {
+  if (params.role !== 'student' && params.role !== 'teacher') {
     return <div>Invalid role specified.</div>
   }
   
-  return <AuthForm mode="signup" role={role} />;
+  return <AuthForm mode="signup" role={params.role} />;
 }
