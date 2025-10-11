@@ -24,28 +24,28 @@ function AuthGuard({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (loading) {
-            return; 
+            return; // Do nothing while loading
         }
 
         const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
         const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
 
         if (!user && isProtectedRoute) {
+            // If not logged in and on a protected route, redirect to home
             router.push('/');
-        }
-        
-        if (user && isAuthPage) {
+        } else if (user && isAuthPage) {
+            // If logged in and on an auth page, redirect to their dashboard
             router.push(`/${user.role}/dashboard`);
         }
-
     }, [user, loading, pathname, router]);
 
+    // Show a loading indicator on protected pages while auth state is being determined
     if (loading && (pathname.startsWith('/student') || pathname.startsWith('/teacher'))) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div>Loading...</div>
             </div>
-        )
+        );
     }
 
     return <>{children}</>;
@@ -58,17 +58,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
       if (firebaseUser) {
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
         if (userDoc.exists()) {
           setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
-          // During signup, the doc may not exist yet. The signUp function handles doc creation.
-          // We don't want to log the user out here immediately.
-          // The state will be updated once the doc is created and on next auth state change or app reload.
-          // For a normal login, if the doc is missing, the user might be stuck in a loading state
-          // or unable to access user-specific data. This indicates a data integrity issue.
-          // For this app's flow, we'll let the user proceed, but features might be limited.
+            // This case might happen during signup race condition or if db entry is missing.
+            // For now, we don't assume it's an error, just that data might not be there yet.
+            // The signUp function is responsible for creating the doc.
+            setUser(null);
         }
       } else {
         setUser(null);
@@ -98,9 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
-    // The onAuthStateChanged listener will pick up the new user state.
-    // We can set it here as well to make the UI update faster.
-    setUser({ ...newUser, uid: firebaseUser.uid } as User); // Correctly set the user state
+    setUser({ ...newUser, uid: firebaseUser.uid } as User);
     return userCredential;
   };
   
