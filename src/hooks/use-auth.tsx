@@ -7,12 +7,14 @@ import { auth, db } from '@/lib/firebase';
 import type { User, UserRole } from '@/lib/types';
 import { useRouter, usePathname } from 'next/navigation';
 
+import { UserCredential } from "firebase/auth";
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  logIn: (email: string, pass: string) => Promise<any>;
-  signUp: (email: string, pass:string, name: string, role: UserRole) => Promise<any>;
-  logOut: () => Promise<any>;
+  logIn: (email: string, pass: string) => Promise<UserCredential>;
+  signUp: (email: string, pass:string, name: string, role: UserRole) => Promise<UserCredential>;
+  logOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

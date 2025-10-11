@@ -26,7 +26,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
             <Button size="lg" className="w-full text-lg py-8" asChild>
               <Link href="/login/student">
-                I'm a Student
+                I&apos;m a Student
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -37,7 +37,7 @@ export default function Home() {
               asChild
             >
               <Link href="/login/teacher">
-                I'm a Teacher
+                I&apos;m a Teacher
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

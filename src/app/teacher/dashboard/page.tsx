@@ -16,7 +16,7 @@ export default function TeacherDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold font-headline">Welcome, {user.name}!</h1>
-        <p className="text-muted-foreground">You're about to embark on a journey to inspire young minds. Here, you'll find all the tools you need to make learning an unforgettable adventure.</p>
+        <p className="text-muted-foreground">You&apos;re about to embark on a journey to inspire young minds. Here, you&apos;ll find all the tools you need to make learning an unforgettable adventure.</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

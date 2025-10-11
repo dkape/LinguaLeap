@@ -25,7 +25,6 @@ import { useToast } from '@/hooks/use-toast';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
 
 
 const formSchema = z.object({
@@ -41,7 +40,6 @@ export function CreateLearningPathForm() {
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
-  const router = useRouter();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,7 +75,7 @@ export function CreateLearningPathForm() {
     if (!learningPath || !user) return;
     setIsSaving(true);
     try {
-        const docRef = await addDoc(collection(db, "courses"), {
+        await addDoc(collection(db, "courses"), {
             title: form.getValues('topic'),
             description: form.getValues('studentGroupDescription'),
             // For now, we'll hardcode an icon. This could be a user choice in the future.
