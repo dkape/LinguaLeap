@@ -93,13 +93,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signUp,
     logOut,
   };
-
-  // While the initial user check is loading, we can return null to avoid rendering flashes of incorrect UI.
-  // The route protection useEffect will handle redirects once loading is complete.
-  if (loading) {
-      return null;
-  }
-
+  
+  // Render children immediately and let the useEffect handle redirects.
+  // Returning null here can cause a flash of a blank screen.
   return (
     <AuthContext.Provider value={value}>
       {children}
