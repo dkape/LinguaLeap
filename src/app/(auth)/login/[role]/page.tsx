@@ -5,11 +5,11 @@ type LoginPageProps = {
   params: { role: UserRole };
 };
 
-export default function LoginPage({ params }: LoginPageProps) {
-  if (params.role !== 'student' && params.role !== 'teacher') {
+export default function LoginPage({ params: { role } }: LoginPageProps) {
+  if (role !== 'student' && role !== 'teacher') {
     // Or handle this more gracefully, e.g., notFound() from next/navigation
     return <div>Invalid role specified.</div>
   }
 
-  return <AuthForm mode="login" role={params.role} />;
+  return <AuthForm mode="login" role={role} />;
 }
