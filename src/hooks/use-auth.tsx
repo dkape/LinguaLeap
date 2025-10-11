@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import type { User, UserRole } from '@/lib/types';
 import { useRouter, usePathname } from 'next/navigation';
@@ -64,9 +64,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (userDoc.exists()) {
           setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
-            // This case might happen during signup race condition or if db entry is missing.
-            // For now, we don't assume it's an error, just that data might not be there yet.
-            // The signUp function is responsible for creating the doc.
+            // If the user exists in Firebase Auth but not in Firestore, it's an inconsistent state.
+            // This can happen if a user is deleted from Firestore but not from Auth.
+            // To prevent the user from being in a broken state, we sign them out.
+            console.warn(`User with UID ${firebaseUser.uid} exists in Firebase Auth but not in Firestore. Signing out.`);
+            await signOut(auth);
             setUser(null);
         }
       } else {
@@ -93,7 +95,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       role,
       avatarUrl: `https://picsum.photos/seed/${firebaseUser.uid}/100/100`,
       points: 0,
-      createdAt: serverTimestamp(),
+      // The client-side User type expects a Timestamp, but serverTimestamp() returns a FieldValue.
+      // This type assertion is safe because Firestore converts the FieldValue to a Timestamp on the server.
+      createdAt: serverTimestamp() as Timestamp,
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
