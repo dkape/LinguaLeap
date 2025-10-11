@@ -31,15 +31,12 @@ function AuthGuard({ children }: { children: ReactNode }) {
         const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
 
         if (!user && isProtectedRoute) {
-            // If not logged in and on a protected route, redirect to home
             router.push('/');
         } else if (user && isAuthPage) {
-            // If logged in and on an auth page, redirect to their dashboard
             router.push(`/${user.role}/dashboard`);
         }
     }, [user, loading, pathname, router]);
 
-    // Show a loading indicator on protected pages while auth state is being determined
     if (loading && (pathname.startsWith('/student') || pathname.startsWith('/teacher'))) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -64,11 +61,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (userDoc.exists()) {
           setUser({ uid: firebaseUser.uid, ...userDoc.data() } as User);
         } else {
-            // If the user exists in Firebase Auth but not in Firestore, it's an inconsistent state.
-            // This can happen if a user is deleted from Firestore but not from Auth.
-            // To prevent the user from being in a broken state, we sign them out.
-            console.warn(`User with UID ${firebaseUser.uid} exists in Firebase Auth but not in Firestore. Signing out.`);
-            await signOut(auth);
+            // This can happen briefly during signup before the user doc is created.
+            // We'll let the signUp function handle setting the user.
+            // If it's not a signup, then the user might be in an inconsistent state.
+            // For now, we'll just wait for the user doc to be created.
             setUser(null);
         }
       } else {
@@ -95,8 +91,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       role,
       avatarUrl: `https://picsum.photos/seed/${firebaseUser.uid}/100/100`,
       points: 0,
-      // The client-side User type expects a Timestamp, but serverTimestamp() returns a FieldValue.
-      // This type assertion is safe because Firestore converts the FieldValue to a Timestamp on the server.
       createdAt: serverTimestamp() as Timestamp,
     };
 
