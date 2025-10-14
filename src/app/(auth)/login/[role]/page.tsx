@@ -5,7 +5,8 @@ type LoginPageProps = {
   params: { role: UserRole };
 };
 
-export default function LoginPage({ params: { role } }: LoginPageProps) {
+export default async function LoginPage({ params }: LoginPageProps) {
+  const { role } = await params;
   if (role !== 'student' && role !== 'teacher') {
     // Or handle this more gracefully, e.g., notFound() from next/navigation
     return <div>Invalid role specified.</div>

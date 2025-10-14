@@ -25,7 +25,9 @@ const forgotPassword = async (req, res) => {
       text: `Click the following link to reset your password: ${process.env.CLIENT_URL}/reset-password?token=${resetToken}`,
     };
 
-    await transporter.sendMail(mailOptions);
+    console.log('Sending email...');
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info);
 
     res.status(200).json({ message: 'Password reset email sent' });
   } catch (error) {
