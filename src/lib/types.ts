@@ -1,5 +1,3 @@
-import type { Timestamp } from "firebase/firestore";
-
 export type UserRole = 'student' | 'teacher';
 
 export type User = {
@@ -10,7 +8,7 @@ export type User = {
   role: UserRole;
   avatarUrl: string;
   points?: number;
-  createdAt: Timestamp;
+  createdAt: Date;
 };
 
 export type QuizQuestion = {

@@ -22,9 +22,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { generateSuggestedLearningPath, GenerateSuggestedLearningPathOutput } from "@/ai/flows/generate-suggested-learning-path";
 import { Loader2, Wand2, BookText, FileQuestion } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/use-auth';
+import axios from 'axios';
 
 
 const formSchema = z.object({
@@ -75,19 +74,13 @@ export function CreateLearningPathForm() {
     if (!learningPath || !user) return;
     setIsSaving(true);
     try {
-        await addDoc(collection(db, "courses"), {
+        await axios.post("/api/learning-paths", {
             title: form.getValues('topic'),
             description: form.getValues('studentGroupDescription'),
-            // For now, we'll hardcode an icon. This could be a user choice in the future.
-            icon: 'BookOpen',
-            createdBy: user.uid,
-            createdAt: serverTimestamp(),
             levels: learningPath.learningPath.map((item, index) => ({
-                id: (index + 1).toString(),
-                title: item.title,
+                type: item.type,
                 content: item.content,
-                unlocked: index === 0, // Unlock the first level
-                quiz: [], // Quiz generation will be another step
+                order_index: index + 1,
             })),
         });
         toast({
