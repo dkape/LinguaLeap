@@ -7,13 +7,27 @@ const signup = async (req, res) => {
   const { email, password, name, role } = req.body;
 
   try {
+    // Check if user already exists
+    const [existingUsers] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (existingUsers.length > 0) {
+        return res.status(409).json({ message: 'User with this email already exists.' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
+    const uid = Date.now().toString();
+    const avatarUrl = `https://picsum.photos/seed/${uid}/100/100`;
+
     const [result] = await pool.query(
       'INSERT INTO users (uid, name, email, password, role, avatarUrl) VALUES (?, ?, ?, ?, ?, ?)',
-      [Date.now().toString(), name, email, hashedPassword, role, `https://picsum.photos/seed/${Date.now().toString()}/100/100`]
+      [uid, name, email, hashedPassword, role, avatarUrl]
     );
 
-    res.status(201).json({ message: 'User created successfully' });
+    const [rows] = await pool.query('SELECT id, uid, name, email, role, avatarUrl, points, createdAt FROM users WHERE id = ?', [result.insertId]);
+    const user = rows[0];
+
+    const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(201).json({ token, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
