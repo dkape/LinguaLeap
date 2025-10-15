@@ -1,18 +1,20 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import type { User, UserRole } from '@/lib/types';
 import { useRouter, usePathname } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  logIn: (email: string, pass: string) => Promise<any>;
-  signUp: (email: string, pass:string, name: string, role: UserRole) => Promise<any>;
-  logOut: () => void;
-  forgotPassword: (email: string) => Promise<any>;
-  resetPassword: (token: string, newPassword: string) => Promise<any>;
+  logIn: (email: string, pass: string) => Promise<AxiosResponse<unknown>>;
+  signUp: (email: string, pass:string, name: string, role: UserRole) => Promise<AxiosResponse<unknown>>;
+  logOut:
+
+() => void;
+  forgotPassword: (email: string) => Promise<AxiosResponse<unknown>>;
+  resetPassword: (token: string, newPassword: string) => Promise<AxiosResponse<unknown>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,8 +90,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, pass: string, name: string, role: UserRole) => {
     const response = await axios.post('http://localhost:3001/api/auth/signup', { email, password: pass, name, role });
-    // After signup, you might want to automatically log in the user
-    // For now, we'll just return the response
+    const { token, user } = response.data;
+    localStorage.setItem('token', token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setUser(user);
     return response;
   };
   
