@@ -17,6 +17,8 @@ interface AuthContextType {
   resetPassword: (token: string, newPassword: string) => Promise<AxiosResponse<unknown>>;
 }
 
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function AuthGuard({ children }: { children: ReactNode }) {
@@ -61,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (token) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
-          const response = await axios.get('http://localhost:3001/api/auth/me');
+          const response = await axios.get('/auth/me');
           setUser(response.data.user);
         } catch (error) {
           console.error(error);
@@ -80,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const logIn = async (email: string, pass: string) => {
-    const response = await axios.post('http://localhost:3001/api/auth/login', { email, password: pass });
+    const response = await axios.post('/auth/login', { email, password: pass });
     const { token, user } = response.data;
     localStorage.setItem('token', token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -89,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signUp = async (email: string, pass: string, name: string, role: UserRole) => {
-    const response = await axios.post('http://localhost:3001/api/auth/signup', { email, password: pass, name, role });
+    const response = await axios.post('/auth/signup', { email, password: pass, name, role });
     const { token, user } = response.data;
     localStorage.setItem('token', token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -104,11 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const forgotPassword = async (email: string) => {
-    return await axios.post('http://localhost:3001/api/user/forgot-password', { email });
+    return await axios.post('/user/forgot-password', { email });
   };
 
   const resetPassword = async (token: string, newPassword: string) => {
-    return await axios.post('http://localhost:3001/api/user/reset-password', { token, newPassword });
+    return await axios.post('/user/reset-password', { token, newPassword });
   };
 
   const value = {
