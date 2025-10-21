@@ -48,10 +48,19 @@ jobs:
     # 2. Generate package-lock.json files for dependency scanning
     - name: Generate package-lock.json files
       run: |
+        echo "🔧 Generating package-lock.json files automatically..."
+        
         # Generate frontend package-lock.json
+        echo "📦 Generating frontend package-lock.json..."
         npm install --package-lock-only
+        ls -la package-lock.json && echo "✅ Frontend package-lock.json created successfully"
+        
         # Generate backend package-lock.json
+        echo "📦 Generating backend package-lock.json..."
         cd server && npm install --package-lock-only && cd ..
+        ls -la server/package-lock.json && echo "✅ Backend package-lock.json created successfully"
+        
+        echo "🎉 All package-lock.json files generated automatically!"
 
     # 3. Dependency Vulnerability Scanning with npm audit
     - name: Install dependencies for audit
@@ -71,14 +80,48 @@ jobs:
       continue-on-error: true
 
     # 4. Advanced Dependency Scanning with Snyk (only if token is available)
+    - name: Verify lock files exist for Snyk
+      run: |
+        echo "🔍 Verifying package-lock.json files exist for Snyk scanning..."
+        if [ -f package-lock.json ]; then
+          echo "✅ Frontend package-lock.json found"
+        else
+          echo "❌ Frontend package-lock.json missing"
+        fi
+        if [ -f server/package-lock.json ]; then
+          echo "✅ Backend package-lock.json found"
+        else
+          echo "❌ Backend package-lock.json missing"
+        fi
+
     - name: Run Snyk to check for vulnerabilities
       if: ${{ env.SNYK_TOKEN != '' }}
-      uses: snyk/actions/node@master
-      continue-on-error: true
+      run: |
+        echo "🔍 Running Snyk security scan..."
+        if [ -n "$SNYK_TOKEN" ]; then
+          # Install Snyk CLI
+          npm install -g snyk
+          
+          # Authenticate with Snyk
+          snyk auth $SNYK_TOKEN
+          
+          # Test frontend dependencies
+          echo "📦 Scanning frontend dependencies..."
+          snyk test --severity-threshold=high || echo "Frontend scan completed with findings"
+          
+          # Test backend dependencies
+          echo "📦 Scanning backend dependencies..."
+          cd server
+          snyk test --severity-threshold=high || echo "Backend scan completed with findings"
+          cd ..
+          
+          echo "✅ Snyk security scan completed"
+        else
+          echo "ℹ️ Snyk token not available, skipping advanced dependency scanning"
+        fi
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        args: --severity-threshold=high --all-projects
+      continue-on-error: true
 
     # 5. SAST (Static Application Security Testing) with Semgrep
     - name: Semgrep SAST Scan

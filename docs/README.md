@@ -27,6 +27,7 @@ Welcome to the LinguaLeap documentation! This directory contains comprehensive d
 
 ### 🔒 Security & Maintenance
 - **[Security Policy](SECURITY.md)** - Security guidelines and vulnerability reporting
+- **[Automatic Package Lock Generation](automatic-package-lock-generation.md)** - How dependency management works automatically
 - **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
 
 ### 📋 Project Management

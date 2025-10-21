@@ -34,25 +34,36 @@ jobs:
         # Remove cache to ensure clean install
         # cache: 'npm'
 
-    # 1. Generate package-lock.json files
-    - name: Generate lock files
+    # 1. Automatically generate package-lock.json files (no manual action needed!)
+    - name: Auto-generate package-lock.json files
       run: |
-        echo "Generating package-lock.json files..."
-        # Ensure we have clean package.json files
-        ls -la package.json
-        npm install --package-lock-only
-        echo "Frontend lock file generated:"
-        ls -la package-lock.json
+        echo "🔧 Automatically generating package-lock.json files..."
+        echo "ℹ️  Note: This happens automatically - no manual action required!"
         
-        # Generate backend lock file
-        cd server
-        ls -la package.json
+        # Frontend package-lock.json
+        echo "📦 Generating frontend package-lock.json..."
         npm install --package-lock-only
-        echo "Backend lock file generated:"
-        ls -la package-lock.json
+        if [ -f package-lock.json ]; then
+          echo "✅ Frontend package-lock.json generated successfully"
+        else
+          echo "❌ Failed to generate frontend package-lock.json"
+          exit 1
+        fi
+        
+        # Backend package-lock.json
+        echo "📦 Generating backend package-lock.json..."
+        cd server
+        npm install --package-lock-only
+        if [ -f package-lock.json ]; then
+          echo "✅ Backend package-lock.json generated successfully"
+        else
+          echo "❌ Failed to generate backend package-lock.json"
+          exit 1
+        fi
         cd ..
         
-        echo "Lock files generated successfully"
+        echo "🎉 All package-lock.json files generated automatically!"
+        echo "📊 Ready for dependency scanning..."
 
     # 2. Install dependencies
     - name: Install dependencies
@@ -94,6 +105,8 @@ jobs:
           p/javascript
           p/typescript
         generateSarif: "1"
+      env:
+        SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN || '' }}
       continue-on-error: true
 
     # 6. CodeQL Analysis (GitHub's built-in security scanning)

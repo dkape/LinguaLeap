@@ -25,6 +25,9 @@ jobs:
       actions: read
       pull-requests: write
       issues: write
+    env:
+      SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
+      API_SECURITY_TOKEN: ${{ secrets.API_SECURITY_TOKEN }}
 
     steps:
     - name: Checkout code
@@ -120,7 +123,7 @@ jobs:
         # Convert retire.js results to SARIF if needed
 
     - name: Safety - Python Dependencies (for any Python tools)
-      if: ${{ secrets.SAFETY_API_KEY != '' }}
+      if: ${{ env.SAFETY_API_KEY != '' }}
       uses: pyupio/safety@2.3.5
       with:
         api-key: ${{ secrets.SAFETY_API_KEY }}
@@ -151,7 +154,7 @@ jobs:
 
     # 8. API Security Testing
     - name: 42Crunch API Security Audit
-      if: ${{ secrets.API_SECURITY_TOKEN != '' }}
+      if: ${{ env.API_SECURITY_TOKEN != '' }}
       uses: 42Crunch/api-security-audit-action@v3
       with:
         api-token: ${{ secrets.API_SECURITY_TOKEN }}

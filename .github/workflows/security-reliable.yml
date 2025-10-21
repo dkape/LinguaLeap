@@ -35,19 +35,25 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         # Remove cache to ensure clean install
 
-    # 1. Generate package-lock.json files
-    - name: Generate lock files
+    # 1. Automatically generate package-lock.json files
+    - name: Auto-generate package-lock.json files
       run: |
-        echo "Generating package-lock.json files..."
+        echo "🔧 Automatically generating package-lock.json files..."
+        echo "ℹ️  This is fully automated - no manual steps required!"
+        
         # Frontend
+        echo "📦 Frontend package-lock.json..."
         npm install --package-lock-only
-        echo "Frontend lock file generated"
+        [ -f package-lock.json ] && echo "✅ Frontend: Success" || echo "❌ Frontend: Failed"
         
         # Backend
+        echo "📦 Backend package-lock.json..."
         cd server
         npm install --package-lock-only
-        echo "Backend lock file generated"
+        [ -f package-lock.json ] && echo "✅ Backend: Success" || echo "❌ Backend: Failed"
         cd ..
+        
+        echo "🎉 Automatic generation complete!"
 
     # 2. Install dependencies
     - name: Install dependencies

@@ -14,6 +14,7 @@ This directory contains detailed documentation of all fixes and improvements app
 - **[Security Workflow Fixes](./SECURITY_WORKFLOW_FIXES.md)** - CI/CD security scanning fixes
 - **[Security Workflow Action Fixes](./security-workflow-action-fixes.md)** - GitHub Actions version fixes
 - **[Workflow Syntax Fixes](./workflow-syntax-fixes.md)** - GitHub Actions syntax and secrets handling
+- **[Final Workflow Fixes](./final-workflow-fixes.md)** - Complete resolution of all workflow issues
 - **[Next.js Security Advisory](./SECURITY_ADVISORY_NEXTJS.md)** - Critical middleware vulnerability fix
 - **[Next.js Security Fix Summary](./NEXTJS_SECURITY_FIX_SUMMARY.md)** - Quick security update summary
 
