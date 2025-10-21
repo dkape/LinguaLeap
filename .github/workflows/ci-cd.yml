@@ -39,21 +39,40 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
 
-    - name: Install frontend dependencies
-      run: npm ci
+    - name: Clean and install frontend dependencies
+      run: |
+        # Remove lock file if it exists and is out of sync
+        if [ -f package-lock.json ]; then
+          rm package-lock.json
+        fi
+        npm install
+        # Generate new lock file for future consistency
+        npm install --package-lock-only
 
-    - name: Install backend dependencies
+    - name: Clean and install backend dependencies
       run: |
         cd server
-        npm ci
+        # Remove lock file if it exists and is out of sync
+        if [ -f package-lock.json ]; then
+          rm package-lock.json
+        fi
+        npm install
+        # Generate new lock file for future consistency
+        npm install --package-lock-only
 
     - name: Run frontend linting
       run: npm run lint
 
     - name: Run frontend type checking
       run: npm run typecheck
+
+    - name: Test MongoDB connection
+      env:
+        MONGODB_URI: mongodb://admin:password123@localhost:27017/lingualeap_test?authSource=admin
+      run: |
+        cd server
+        npm run test:db
 
     - name: Run backend tests
       env:

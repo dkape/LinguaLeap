@@ -1,8 +1,7 @@
 
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const pool = require('../config/db');
+const User = require('../models/User');
 const transporter = require('../config/mailer');
 
 const signup = async (req, res) => {
@@ -20,23 +19,29 @@ const signup = async (req, res) => {
     }
 
     // Check if user already exists
-    const [existingUsers] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-    if (existingUsers.length > 0) {
-        return res.status(409).json({ message: 'User with this email already exists.' });
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(409).json({ message: 'User with this email already exists.' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const uid = Date.now().toString();
-    const avatarUrl = `https://picsum.photos/seed/${uid}/100/100`;
     
     // Generate email verification token
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
     const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    const [result] = await pool.query(
-      'INSERT INTO users (uid, name, email, password, role, avatarUrl, emailVerificationToken, emailVerificationExpires) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [uid, name, email, hashedPassword, role, avatarUrl, emailVerificationToken, emailVerificationExpires]
-    );
+    // Create new user
+    const user = new User({
+      uid,
+      name,
+      email: email.toLowerCase(),
+      password,
+      role,
+      emailVerificationToken,
+      emailVerificationExpires
+    });
+
+    await user.save();
 
     // Send verification email
     const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${emailVerificationToken}`;
@@ -78,15 +83,13 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const user = await User.findOne({ email: email.toLowerCase() });
 
-    if (rows.length === 0) {
+    if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const user = rows[0];
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -100,10 +103,21 @@ const login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     // Remove sensitive data before sending user info
-    const { password: _, emailVerificationToken: __, ...userInfo } = user;
+    const userInfo = {
+      id: user._id,
+      uid: user.uid,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatarUrl: user.avatarUrl,
+      points: user.points,
+      preferredLanguage: user.preferredLanguage,
+      isEmailVerified: user.isEmailVerified,
+      createdAt: user.createdAt
+    };
 
     res.status(200).json({ token, user: userInfo });
   } catch (error) {
@@ -121,22 +135,20 @@ const verifyEmail = async (req, res) => {
       return res.status(400).json({ message: 'Verification token is required' });
     }
 
-    const [rows] = await pool.query(
-      'SELECT * FROM users WHERE emailVerificationToken = ? AND emailVerificationExpires > NOW()',
-      [token]
-    );
+    const user = await User.findOne({
+      emailVerificationToken: token,
+      emailVerificationExpires: { $gt: new Date() }
+    });
 
-    if (rows.length === 0) {
+    if (!user) {
       return res.status(400).json({ message: 'Invalid or expired verification token' });
     }
 
-    const user = rows[0];
-
     // Update user as verified and clear verification token
-    await pool.query(
-      'UPDATE users SET isEmailVerified = TRUE, emailVerificationToken = NULL, emailVerificationExpires = NULL WHERE id = ?',
-      [user.id]
-    );
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
 
     res.status(200).json({ message: 'Email verified successfully! You can now log in.' });
   } catch (error) {
@@ -153,13 +165,11 @@ const resendVerification = async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const user = await User.findOne({ email: email.toLowerCase() });
 
-    if (rows.length === 0) {
+    if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    const user = rows[0];
 
     if (user.isEmailVerified) {
       return res.status(400).json({ message: 'Email is already verified' });
@@ -169,10 +179,9 @@ const resendVerification = async (req, res) => {
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
     const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    await pool.query(
-      'UPDATE users SET emailVerificationToken = ?, emailVerificationExpires = ? WHERE id = ?',
-      [emailVerificationToken, emailVerificationExpires, user.id]
-    );
+    user.emailVerificationToken = emailVerificationToken;
+    user.emailVerificationExpires = emailVerificationExpires;
+    await user.save();
 
     // Send verification email
     const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${emailVerificationToken}`;
@@ -214,10 +223,13 @@ const updateLanguagePreference = async (req, res) => {
       return res.status(400).json({ message: 'Invalid language. Must be "de" or "en".' });
     }
 
-    await pool.query(
-      'UPDATE users SET preferredLanguage = ? WHERE id = ?',
-      [language, req.user.userId]
-    );
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.preferredLanguage = language;
+    await user.save();
 
     res.status(200).json({ message: 'Language preference updated successfully' });
   } catch (error) {
@@ -228,15 +240,26 @@ const updateLanguagePreference = async (req, res) => {
 
 const me = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT id, uid, name, email, role, avatarUrl, points, isEmailVerified, preferredLanguage, createdAt FROM users WHERE id = ?', [req.user.userId]);
+    const user = await User.findById(req.user.userId).select('-password -emailVerificationToken');
 
-    if (rows.length === 0) {
+    if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const user = rows[0];
+    const userInfo = {
+      id: user._id,
+      uid: user.uid,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatarUrl: user.avatarUrl,
+      points: user.points,
+      preferredLanguage: user.preferredLanguage,
+      isEmailVerified: user.isEmailVerified,
+      createdAt: user.createdAt
+    };
 
-    res.status(200).json({ user });
+    res.status(200).json({ user: userInfo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

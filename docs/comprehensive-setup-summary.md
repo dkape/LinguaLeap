@@ -210,11 +210,20 @@ SMTP_PASS=your-smtp-password
 
 ## 🎯 Next Steps for Implementation
 
-### 1. Immediate Setup (5 minutes)
+### 1. Fix Package Dependencies (2 minutes)
 ```bash
-# Clone and start development environment
+# Fix package-lock.json sync issues first
 git clone <repository-url>
 cd LinguaLeap
+./scripts/fix-lockfile.sh
+git add package-lock.json server/package-lock.json
+git commit -m "fix: update package-lock.json files"
+git push
+```
+
+### 2. Immediate Setup (5 minutes)
+```bash
+# Start development environment
 ./scripts/setup-dev.sh
 ```
 
