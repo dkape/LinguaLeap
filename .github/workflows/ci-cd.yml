@@ -151,16 +151,16 @@ jobs:
 
     # 7. Code Quality and Security with CodeQL
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: javascript
         queries: security-and-quality
 
     - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+      uses: github/codeql-action/autobuild@v4
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:javascript"
 
@@ -176,7 +176,7 @@ jobs:
 
     - name: Upload Semgrep SARIF
       if: steps.check_semgrep.outputs.sarif_exists == 'true'
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: semgrep.sarif
         category: semgrep
@@ -395,7 +395,7 @@ jobs:
 
     - name: Upload Trivy Frontend scan results
       if: hashFiles('trivy-frontend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'trivy-frontend-results.sarif'
         category: 'trivy-frontend'
@@ -403,7 +403,7 @@ jobs:
 
     - name: Upload Trivy Backend scan results
       if: hashFiles('trivy-backend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'trivy-backend-results.sarif'
         category: 'trivy-backend'
@@ -411,7 +411,7 @@ jobs:
 
     - name: Upload Docker Scout Frontend results
       if: hashFiles('scout-frontend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'scout-frontend-results.sarif'
         category: 'docker-scout-frontend'
@@ -419,7 +419,7 @@ jobs:
 
     - name: Upload Docker Scout Backend results
       if: hashFiles('scout-backend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'scout-backend-results.sarif'
         category: 'docker-scout-backend'
@@ -427,7 +427,7 @@ jobs:
 
     - name: Upload Grype Frontend results
       if: hashFiles('grype-frontend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'grype-frontend-results.sarif'
         category: 'grype-frontend'
@@ -435,7 +435,7 @@ jobs:
 
     - name: Upload Grype Backend results
       if: hashFiles('grype-backend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'grype-backend-results.sarif'
         category: 'grype-backend'
