@@ -163,7 +163,7 @@ jobs:
     # 9. Upload all SARIF results to GitHub Security
     - name: Upload ESLint Security results
       if: hashFiles('eslint-security.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: eslint-security.sarif
         category: eslint-security-frontend
@@ -171,7 +171,7 @@ jobs:
 
     - name: Upload ESLint Security Backend results
       if: hashFiles('eslint-security-backend.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: eslint-security-backend.sarif
         category: eslint-security-backend
@@ -179,7 +179,7 @@ jobs:
 
     - name: Upload NodeJSScan results
       if: hashFiles('njsscan-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: njsscan-results.sarif
         category: njsscan
@@ -187,7 +187,7 @@ jobs:
 
     - name: Upload Checkov results
       if: hashFiles('checkov-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: checkov-results.sarif
         category: checkov-iac
@@ -195,7 +195,7 @@ jobs:
 
     - name: Upload OSV Scanner results
       if: hashFiles('osv-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: osv-results.sarif
         category: osv-scanner
