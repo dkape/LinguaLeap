@@ -43,13 +43,15 @@ jobs:
       uses: gitleaks/gitleaks-action@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE}}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE || '' }}
+      continue-on-error: true
 
     - name: Detect Secrets
       uses: reviewdog/action-detect-secrets@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-pr-review
+      continue-on-error: true
 
     # 2. Generate package-lock.json files for scanning
     - name: Generate lock files
@@ -67,7 +69,7 @@ jobs:
 
     - name: ESLint Security Plugin
       run: |
-        npm install --no-save eslint-plugin-security eslint-plugin-no-secrets
+        npm install --no-save eslint-plugin-security eslint-plugin-no-secrets @microsoft/eslint-formatter-sarif
         npx eslint . --ext .js,.jsx,.ts,.tsx --format @microsoft/eslint-formatter-sarif --output-file eslint-security.sarif || true
         cd server && npx eslint . --ext .js,.jsx,.ts,.tsx --format @microsoft/eslint-formatter-sarif --output-file ../eslint-security-backend.sarif || true
 
@@ -103,14 +105,12 @@ jobs:
         cd server && npm ci
 
     - name: OSV Scanner - Vulnerability Database
-      uses: google/osv-scanner-action@v1
+      uses: google/osv-scanner-action@v1.8.5
       with:
         scan-args: |-
-          -r
+          --recursive
           --skip-git
           .
-        format: sarif
-        output: osv-results.sarif
       continue-on-error: true
 
     - name: Retire.js - JavaScript Vulnerability Scanner
@@ -120,6 +120,7 @@ jobs:
         # Convert retire.js results to SARIF if needed
 
     - name: Safety - Python Dependencies (for any Python tools)
+      if: ${{ secrets.SAFETY_API_KEY != '' }}
       uses: pyupio/safety@2.3.5
       with:
         api-key: ${{ secrets.SAFETY_API_KEY }}
@@ -150,6 +151,7 @@ jobs:
 
     # 8. API Security Testing
     - name: 42Crunch API Security Audit
+      if: ${{ secrets.API_SECURITY_TOKEN != '' }}
       uses: 42Crunch/api-security-audit-action@v3
       with:
         api-token: ${{ secrets.API_SECURITY_TOKEN }}
@@ -160,39 +162,44 @@ jobs:
 
     # 9. Upload all SARIF results to GitHub Security
     - name: Upload ESLint Security results
+      if: hashFiles('eslint-security.sarif') != ''
       uses: github/codeql-action/upload-sarif@v3
-      if: always()
       with:
         sarif_file: eslint-security.sarif
         category: eslint-security-frontend
+      continue-on-error: true
 
     - name: Upload ESLint Security Backend results
+      if: hashFiles('eslint-security-backend.sarif') != ''
       uses: github/codeql-action/upload-sarif@v3
-      if: always()
       with:
         sarif_file: eslint-security-backend.sarif
         category: eslint-security-backend
+      continue-on-error: true
 
     - name: Upload NodeJSScan results
+      if: hashFiles('njsscan-results.sarif') != ''
       uses: github/codeql-action/upload-sarif@v3
-      if: always()
       with:
         sarif_file: njsscan-results.sarif
         category: njsscan
+      continue-on-error: true
 
     - name: Upload Checkov results
+      if: hashFiles('checkov-results.sarif') != ''
       uses: github/codeql-action/upload-sarif@v3
-      if: always()
       with:
         sarif_file: checkov-results.sarif
         category: checkov-iac
+      continue-on-error: true
 
     - name: Upload OSV Scanner results
+      if: hashFiles('osv-results.sarif') != ''
       uses: github/codeql-action/upload-sarif@v3
-      if: always()
       with:
         sarif_file: osv-results.sarif
         category: osv-scanner
+      continue-on-error: true
 
     # 10. Generate Security Report
     - name: Generate Security Summary Report

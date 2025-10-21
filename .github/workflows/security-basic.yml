@@ -31,14 +31,27 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+        # Remove cache to ensure clean install
+        # cache: 'npm'
 
     # 1. Generate package-lock.json files
     - name: Generate lock files
       run: |
         echo "Generating package-lock.json files..."
+        # Ensure we have clean package.json files
+        ls -la package.json
         npm install --package-lock-only
-        cd server && npm install --package-lock-only && cd ..
+        echo "Frontend lock file generated:"
+        ls -la package-lock.json
+        
+        # Generate backend lock file
+        cd server
+        ls -la package.json
+        npm install --package-lock-only
+        echo "Backend lock file generated:"
+        ls -la package-lock.json
+        cd ..
+        
         echo "Lock files generated successfully"
 
     # 2. Install dependencies
