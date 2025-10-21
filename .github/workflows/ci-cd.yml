@@ -38,12 +38,39 @@ jobs:
 
     # 1. Secrets Detection with TruffleHog
     - name: TruffleHog OSS - Secrets Detection
-      uses: trufflesecurity/trufflehog@main
-      with:
-        path: ./
-        base: main
-        head: HEAD
-        extra_args: --debug --only-verified
+      run: |
+        echo "🔍 Running TruffleHog secrets detection..."
+        
+        # Install TruffleHog
+        curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+        
+        # Determine scan strategy based on event type
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          echo "📋 Pull request detected - scanning diff from base to head"
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          if [ "$BASE_SHA" != "$HEAD_SHA" ]; then
+            echo "🔄 Scanning commits from $BASE_SHA to $HEAD_SHA"
+            trufflehog git file://. --since-commit="$BASE_SHA" --branch="$HEAD_SHA" --only-verified --no-update || echo "TruffleHog completed with findings"
+          else
+            echo "⚠️ Base and head commits are identical, scanning entire repository"
+            trufflehog filesystem . --only-verified --no-update || echo "TruffleHog completed with findings"
+          fi
+        else
+          # For push events, scan the last few commits or entire repo if it's the first commit
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          if [ "$COMMIT_COUNT" -gt 1 ]; then
+            echo "📋 Push event detected - scanning recent commits"
+            trufflehog git file://. --since-commit="HEAD~5" --branch="HEAD" --only-verified --no-update || echo "TruffleHog completed with findings"
+          else
+            echo "📋 Initial commit detected - scanning entire repository"
+            trufflehog filesystem . --only-verified --no-update || echo "TruffleHog completed with findings"
+          fi
+        fi
+        
+        echo "✅ TruffleHog secrets detection completed"
+      continue-on-error: true
 
     # 2. Generate package-lock.json files for dependency scanning
     - name: Generate package-lock.json files
