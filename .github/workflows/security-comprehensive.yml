@@ -39,7 +39,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+        # Note: cache disabled because we generate lock files dynamically
 
     # 1. Advanced Secrets Detection
     - name: GitLeaks Secrets Detection
