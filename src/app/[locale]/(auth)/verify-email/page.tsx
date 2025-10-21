@@ -17,16 +17,6 @@ export default function VerifyEmailPage() {
   const { t } = useTranslation();
   const token = searchParams.get('token');
 
-  useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setMessage(t('auth.verification.invalidToken'));
-      return;
-    }
-
-    verifyEmail(token);
-  }, [token, t]);
-
   const verifyEmail = async (verificationToken: string) => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -40,11 +30,23 @@ export default function VerifyEmailPage() {
         setStatus('error');
         setMessage(data.message || t('auth.verification.invalidToken'));
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage(t('auth.verification.networkError'));
     }
   };
+
+  useEffect(() => {
+    if (!token) {
+      setStatus('error');
+      setMessage(t('auth.verification.invalidToken'));
+      return;
+    }
+
+    verifyEmail(token);
+  }, [token, t, verifyEmail]);
+
+
 
   const handleResendVerification = async () => {
     const email = prompt(t('auth.verification.enterEmail'));
@@ -68,7 +70,7 @@ export default function VerifyEmailPage() {
       } else {
         alert(data.message || t('errors.general'));
       }
-    } catch (error) {
+    } catch {
       alert(t('auth.verification.networkError'));
     } finally {
       setIsResending(false);

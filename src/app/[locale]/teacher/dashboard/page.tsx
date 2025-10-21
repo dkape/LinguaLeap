@@ -6,10 +6,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateLearningPathForm } from "@/components/teacher/create-learning-path-form";
 import { CreateChallengeForm } from "@/components/teacher/create-challenge-form";
 import { ClassManagement } from "@/components/teacher/class-management";
-import { BookCopy, GraduationCap, Users as UsersIcon, Trophy, Target } from "lucide-react";
+import { BookCopy, GraduationCap, Users as UsersIcon, Target } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/contexts/locale-context";
 import axios from 'axios';
+
+interface ClassData {
+  student_count: number;
+}
+
+interface ChallengeData {
+  isActive: boolean;
+}
 
 interface DashboardStats {
   totalStudents: number;
@@ -42,8 +50,8 @@ export default function TeacherDashboard() {
       const classes = classesResponse.data.classes;
       const challenges = challengesResponse.data.challenges;
 
-      const totalStudents = classes.reduce((sum: number, cls: any) => sum + cls.student_count, 0);
-      const activeChallenges = challenges.filter((c: any) => c.isActive).length;
+      const totalStudents = classes.reduce((sum: number, cls: ClassData) => sum + cls.student_count, 0);
+      const activeChallenges = challenges.filter((c: ChallengeData) => c.isActive).length;
 
       setStats({
         totalStudents,

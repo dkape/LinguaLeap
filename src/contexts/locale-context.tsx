@@ -39,7 +39,7 @@ export function useTranslation() {
   
   const t = (key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
-    let value: any = dict;
+    let value: unknown = dict;
     
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {

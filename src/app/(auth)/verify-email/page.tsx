@@ -37,7 +37,7 @@ export default function VerifyEmailPage() {
         setStatus('error');
         setMessage(data.message || 'Verification failed');
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage('Network error. Please try again.');
     }
@@ -65,7 +65,7 @@ export default function VerifyEmailPage() {
       } else {
         alert(data.message || 'Failed to resend verification email');
       }
-    } catch (error) {
+    } catch {
       alert('Network error. Please try again.');
     } finally {
       setIsResending(false);

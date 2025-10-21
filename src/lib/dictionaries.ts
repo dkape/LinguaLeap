@@ -14,7 +14,7 @@ export type Dictionary = Awaited<ReturnType<typeof getDictionary>>;
 // Helper function to get nested translation values
 export function getTranslation(dict: Dictionary, key: string, params?: Record<string, string | number>): string {
   const keys = key.split('.');
-  let value: any = dict;
+  let value: unknown = dict;
   
   for (const k of keys) {
     if (value && typeof value === 'object' && k in value) {

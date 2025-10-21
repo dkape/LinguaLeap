@@ -11,13 +11,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Globe, Check } from 'lucide-react';
 import { locales, type Locale, getPathnameWithoutLocale, getLocalizedPath } from '@/lib/i18n';
-import type { Dictionary } from '@/lib/dictionaries';
+
 import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 
 interface LanguageSwitcherProps {
   currentLocale: Locale;
-  dict: Dictionary;
 }
 
 const languageNames: Record<Locale, { native: string; english: string }> = {
@@ -25,7 +24,7 @@ const languageNames: Record<Locale, { native: string; english: string }> = {
   en: { native: 'English', english: 'English' },
 };
 
-export function LanguageSwitcher({ currentLocale, dict }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isChanging, setIsChanging] = useState(false);

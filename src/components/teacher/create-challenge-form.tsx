@@ -21,7 +21,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { generateChallenge, GenerateChallengeOutput } from "@/ai/flows/generate-challenge";
-import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy, Users } from "lucide-react";
+import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/contexts/locale-context';
 import axios from 'axios';
@@ -48,7 +48,6 @@ export function CreateChallengeForm() {
   const [challenge, setChallenge] = useState<GenerateChallengeOutput | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
-  const { t } = useTranslation();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -113,7 +112,7 @@ export function CreateChallengeForm() {
         class_id: formValues.class_id ? parseInt(formValues.class_id) : null,
         total_points: challenge.total_points,
         time_limit_minutes: challenge.estimated_time_minutes,
-        items: challenge.items.map((item, index) => ({
+        items: challenge.items.map((item) => ({
           type: item.type,
           title: item.title,
           content: item.content,

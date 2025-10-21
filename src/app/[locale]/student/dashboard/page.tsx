@@ -10,6 +10,12 @@ import { useAuth } from '@/hooks/use-auth';
 import { useTranslation } from '@/contexts/locale-context';
 import axios from 'axios';
 
+interface Challenge {
+  attempt_status: string;
+  total_points_earned?: number;
+  total_time_spent_seconds?: number;
+}
+
 interface StudentStats {
   totalPoints: number;
   completedChallenges: number;
@@ -36,9 +42,9 @@ export default function StudentDashboard() {
       const response = await axios.get('/challenges/student');
       const challenges = response.data.challenges;
       
-      const completed = challenges.filter((c: any) => c.attempt_status === 'completed');
-      const totalPoints = completed.reduce((sum: number, c: any) => sum + (c.total_points_earned || 0), 0);
-      const totalTime = completed.reduce((sum: number, c: any) => sum + (c.total_time_spent_seconds || 0), 0);
+      const completed = challenges.filter((c: Challenge) => c.attempt_status === 'completed');
+      const totalPoints = completed.reduce((sum: number, c: Challenge) => sum + (c.total_points_earned || 0), 0);
+      const totalTime = completed.reduce((sum: number, c: Challenge) => sum + (c.total_time_spent_seconds || 0), 0);
       const averageTime = completed.length > 0 ? totalTime / completed.length : 0;
 
       setStats({

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Medal, Award, Clock, Target } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
@@ -172,7 +172,7 @@ export function Leaderboard() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {leaderboard.map((entry, index) => (
+          {leaderboard.map((entry) => (
             <Card 
               key={entry.id} 
               className={`transition-all ${
@@ -198,6 +198,7 @@ export function Leaderboard() {
 
                   {/* Avatar and Name */}
                   <div className="flex items-center space-x-3 flex-1">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={entry.avatarUrl}
                       alt={entry.name}

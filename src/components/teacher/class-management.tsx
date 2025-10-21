@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -41,9 +41,8 @@ export function ClassManagement() {
   const [isAddStudentDialogOpen, setIsAddStudentDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newStudentEmail, setNewStudentEmail] = useState('');
-  
+
   const { toast } = useToast();
-  const { t } = useTranslation();
 
   const [newClass, setNewClass] = useState({
     name: '',
@@ -52,9 +51,23 @@ export function ClassManagement() {
     age_range: ''
   });
 
+  const fetchClasses = useCallback(async () => {
+    try {
+      const response = await axios.get('/classes/teacher');
+      setClasses(response.data.classes);
+    } catch (error) {
+      console.error('Error fetching classes:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Fehler',
+        description: 'Klassen konnten nicht geladen werden.'
+      });
+    }
+  }, [toast]);
+
   useEffect(() => {
     fetchClasses();
-  }, []);
+  }, [fetchClasses]);
 
   const fetchClasses = async () => {
     try {
@@ -132,12 +145,12 @@ export function ClassManagement() {
       setIsAddStudentDialogOpen(false);
       setNewStudentEmail('');
       fetchClassDetails(selectedClass.id);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding student:', error);
       toast({
         variant: 'destructive',
         title: 'Fehler',
-        description: error.response?.data?.message || 'Schüler konnte nicht hinzugefügt werden.'
+        description: (error as any)?.response?.data?.message || 'Schüler konnte nicht hinzugefügt werden.'
       });
     } finally {
       setIsLoading(false);
@@ -171,7 +184,7 @@ export function ClassManagement() {
           <h2 className="text-2xl font-bold">Klassenverwaltung</h2>
           <p className="text-muted-foreground">Verwalten Sie Ihre Schülerklassen und weisen Sie Herausforderungen zu.</p>
         </div>
-        
+
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -317,6 +330,7 @@ export function ClassManagement() {
                   {students.map((student) => (
                     <div key={student.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={student.avatarUrl}
                           alt={student.name}
