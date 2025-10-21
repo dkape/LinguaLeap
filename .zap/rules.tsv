@@ -1,0 +1,37 @@
+# ZAP Baseline Scan Rules Configuration
+# Format: RULE_ID	THRESHOLD	[IGNORE]
+
+# Ignore rules that are not applicable to our application
+10021	OFF	# X-Content-Type-Options Header Missing (handled by Next.js)
+10020	OFF	# X-Frame-Options Header Not Set (handled by Next.js)
+10016	OFF	# Web Browser XSS Protection Not Enabled (handled by Next.js)
+
+# Set thresholds for specific rules
+10054	MEDIUM	# Cookie Without SameSite Attribute
+10055	MEDIUM	# CSP Scanner
+10056	LOW	# X-Debug-Token Information Leak
+
+# Authentication and session management
+10011	HIGH	# Cookie Without Secure Flag
+10015	HIGH	# Incomplete or No Cache-control and Pragma HTTP Header Set
+
+# Information disclosure
+10017	MEDIUM	# Cross-Domain JavaScript Source File Inclusion
+10019	LOW	# Content-Type Header Missing
+10027	LOW	# Information Disclosure - Suspicious Comments
+
+# Input validation
+40012	HIGH	# Cross Site Scripting (Reflected)
+40014	HIGH	# Cross Site Scripting (Persistent)
+40016	HIGH	# Cross Site Scripting (Persistent) - Prime
+40017	HIGH	# Cross Site Scripting (Persistent) - Spider
+40018	HIGH	# SQL Injection
+40019	HIGH	# SQL Injection - MySQL
+40020	HIGH	# SQL Injection - Hypersonic SQL
+40021	HIGH	# SQL Injection - Oracle
+40022	HIGH	# SQL Injection - PostgreSQL
+
+# Server configuration
+90001	MEDIUM	# Insecure JSF ViewState
+90011	LOW	# Charset Mismatch
+90020	LOW	# Missing Anti-clickjacking Header

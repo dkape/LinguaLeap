@@ -38,7 +38,7 @@ const formSchema = z.object({
   topic: z.string().min(3, { message: "Thema muss mindestens 3 Zeichen lang sein." }),
   class_description: z.string().min(10, { message: "Beschreibung muss mindestens 10 Zeichen lang sein." }),
   age_range: z.string({ required_error: "Bitte wählen Sie einen Altersbereich." }),
-  reading_level: z.string({ required_error: "Bitte wählen Sie ein Leseniveau." }),
+  reading_level: z.enum(['beginner', 'intermediate', 'advanced'], { required_error: "Bitte wählen Sie ein Leseniveau." }),
   language: z.enum(['en', 'de']),
   class_id: z.string().optional(),
 });

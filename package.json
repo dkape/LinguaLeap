@@ -13,7 +13,13 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "server:dev": "npm run dev --workspace=server"
+    "server:dev": "npm run dev --workspace=server",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:audit:fix": "npm audit fix",
+    "security:scan": "npm run security:audit && npm run security:lint",
+    "security:lint": "eslint . --ext .js,.jsx,.ts,.tsx --config .eslintrc.security.js",
+    "security:deps": "npm outdated && npm run security:audit",
+    "security:full": "npm run security:scan && npm run security:deps"
   },
   "dependencies": {
     "@formatjs/intl-localematcher": "^0.5.4",
@@ -68,6 +74,8 @@
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "15.0.0",
+    "eslint-plugin-security": "^3.0.1",
+    "eslint-plugin-no-secrets": "^1.0.2",
     "genkit-cli": "^1.20.0",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",

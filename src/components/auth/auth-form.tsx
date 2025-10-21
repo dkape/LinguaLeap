@@ -67,7 +67,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
         const response = await signUp(values.email, values.password, values.name, role);
         toast({ 
           title: t('auth.signup.registrationSuccessful'), 
-          description: response.data.message || t('auth.signup.checkEmail')
+          description: (response.data as { message?: string })?.message || t('auth.signup.checkEmail')
         });
         // Don't redirect to dashboard - user needs to verify email first
         router.push(`/${locale}/login/${role}`);

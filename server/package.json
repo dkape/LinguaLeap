@@ -7,7 +7,11 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "node test-registration.js",
-    "test:db": "node test-mongodb.js"
+    "test:db": "node test-mongodb.js",
+    "security:audit": "npm audit --audit-level=moderate",
+    "security:audit:fix": "npm audit fix",
+    "security:scan": "npm run security:audit",
+    "security:deps": "npm outdated && npm run security:audit"
   },
   "keywords": [],
   "author": "",

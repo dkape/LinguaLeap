@@ -38,7 +38,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             <div className="min-h-screen bg-background">
               {/* Language switcher in top right */}
               <div className="absolute top-4 right-4 z-50">
-                <LanguageSwitcher currentLocale={locale} dict={dict} />
+                <LanguageSwitcher currentLocale={locale} />
               </div>
               
               {children}

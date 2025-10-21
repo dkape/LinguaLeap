@@ -1,0 +1,52 @@
+# Semgrep ignore file for security scanning
+
+# Dependencies and build artifacts
+node_modules/
+dist/
+build/
+.next/
+coverage/
+*.min.js
+*.bundle.js
+
+# Test files (reduce noise, but still scan for secrets)
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
+__tests__/
+tests/
+
+# Configuration files that may contain false positives
+.eslintrc.*
+jest.config.*
+next.config.*
+tailwind.config.*
+
+# Documentation
+*.md
+docs/
+
+# Logs
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Lock files (already scanned by dependency tools)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

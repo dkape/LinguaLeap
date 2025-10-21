@@ -13,7 +13,110 @@ env:
   IMAGE_NAME_BACKEND: lingualeap-backend
 
 jobs:
+  # Security scanning job - runs early to catch issues fast
+  security-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for better analysis
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    # 1. Secrets Detection with TruffleHog
+    - name: TruffleHog OSS - Secrets Detection
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
+
+    # 2. Dependency Vulnerability Scanning with npm audit
+    - name: Install dependencies for audit
+      run: |
+        npm ci --audit=false
+        cd server && npm ci --audit=false
+
+    - name: Run npm audit - Frontend
+      run: |
+        npm audit --audit-level=moderate --production
+      continue-on-error: true
+
+    - name: Run npm audit - Backend  
+      run: |
+        cd server
+        npm audit --audit-level=moderate --production
+      continue-on-error: true
+
+    # 3. Advanced Dependency Scanning with Snyk
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high --all-projects
+
+    # 4. SAST (Static Application Security Testing) with Semgrep
+    - name: Semgrep SAST Scan
+      uses: semgrep/semgrep-action@v1
+      with:
+        config: >-
+          p/security-audit
+          p/secrets
+          p/owasp-top-ten
+          p/javascript
+          p/typescript
+          p/react
+          p/nodejs
+        generateSarif: "1"
+      env:
+        SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+    # 5. License Compliance Check
+    - name: FOSSA License Scan
+      uses: fossas/fossa-action@main
+      with:
+        api-key: ${{ secrets.FOSSA_API_KEY }}
+        run-tests: true
+      continue-on-error: true
+
+    # 6. Code Quality and Security with CodeQL
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+        queries: security-and-quality
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:javascript"
+
+    # 7. Upload all SARIF results to GitHub Security tab
+    - name: Upload Semgrep SARIF
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: semgrep.sarif
+        category: semgrep
+
   test:
+    needs: security-scan
     runs-on: ubuntu-latest
     
     services:
@@ -138,18 +241,29 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-  security-scan:
+  # Container Security Scanning - runs after images are built
+  container-security-scan:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      security-events: write
     
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 1. Trivy Container Vulnerability Scanning
     - name: Run Trivy vulnerability scanner - Frontend
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest'
         format: 'sarif'
         output: 'trivy-frontend-results.sarif'
+        severity: 'CRITICAL,HIGH,MEDIUM'
+        exit-code: '1'  # Fail on vulnerabilities
+        ignore-unfixed: true
 
     - name: Run Trivy vulnerability scanner - Backend
       uses: aquasecurity/trivy-action@master
@@ -157,9 +271,85 @@ jobs:
         image-ref: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest'
         format: 'sarif'
         output: 'trivy-backend-results.sarif'
+        severity: 'CRITICAL,HIGH,MEDIUM'
+        exit-code: '1'  # Fail on vulnerabilities
+        ignore-unfixed: true
 
+    # 2. Docker Scout Security Analysis
+    - name: Docker Scout CVEs - Frontend
+      uses: docker/scout-action@v1
+      with:
+        command: cves
+        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest'
+        sarif-file: 'scout-frontend-results.sarif'
+        summary: true
+
+    - name: Docker Scout CVEs - Backend
+      uses: docker/scout-action@v1
+      with:
+        command: cves
+        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest'
+        sarif-file: 'scout-backend-results.sarif'
+        summary: true
+
+    # 3. Grype Container Vulnerability Scanner (Alternative to Trivy)
+    - name: Run Grype vulnerability scanner - Frontend
+      uses: anchore/scan-action@v3
+      with:
+        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest'
+        fail-build: false
+        severity-cutoff: high
+        output-format: sarif
+        output-file: 'grype-frontend-results.sarif'
+
+    - name: Run Grype vulnerability scanner - Backend
+      uses: anchore/scan-action@v3
+      with:
+        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest'
+        fail-build: false
+        severity-cutoff: high
+        output-format: sarif
+        output-file: 'grype-backend-results.sarif'
+
+    # 4. Upload all container scan results
     - name: Upload Trivy scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
-        sarif_file: '.'
+        sarif_file: 'trivy-frontend-results.sarif'
+        category: 'trivy-frontend'
+
+    - name: Upload Trivy Backend scan results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-backend-results.sarif'
+        category: 'trivy-backend'
+
+    - name: Upload Docker Scout Frontend results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'scout-frontend-results.sarif'
+        category: 'docker-scout-frontend'
+
+    - name: Upload Docker Scout Backend results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'scout-backend-results.sarif'
+        category: 'docker-scout-backend'
+
+    - name: Upload Grype Frontend results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'grype-frontend-results.sarif'
+        category: 'grype-frontend'
+
+    - name: Upload Grype Backend results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'grype-backend-results.sarif'
+        category: 'grype-backend'
