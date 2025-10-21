@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "lingualeap.fullname" . }}-backend
+  labels:
+    {{- include "lingualeap.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount.backend }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "lingualeap.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "lingualeap.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "lingualeap.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: backend
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}/{{ .Values.image.backend.name }}:{{ .Values.image.backend.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.backend.targetPort }}
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.config.nodeEnv }}
+            - name: PORT
+              value: "{{ .Values.service.backend.targetPort }}"
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lingualeap.fullname" . }}-secrets
+                  key: mongodb-uri
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lingualeap.fullname" . }}-secrets
+                  key: jwt-secret
+            - name: EMAIL_FROM
+              value: {{ .Values.config.emailFrom }}
+            - name: CLIENT_URL
+              value: {{ .Values.config.clientUrl }}
+            - name: SMTP_HOST
+              value: {{ .Values.config.smtp.host }}
+            - name: SMTP_PORT
+              value: "{{ .Values.config.smtp.port }}"
+            - name: SMTP_SECURE
+              value: "{{ .Values.config.smtp.secure }}"
+            - name: SMTP_USER
+              value: {{ .Values.config.smtp.user }}
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lingualeap.fullname" . }}-secrets
+                  key: smtp-password
+          {{- if .Values.healthCheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.backend.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthCheck.backend.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.backend.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.backend.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthCheck.backend.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.backend.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources.backend | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

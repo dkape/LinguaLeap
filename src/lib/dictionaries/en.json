@@ -1,0 +1,122 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back!",
+      "description": "Enter your credentials to login.",
+      "button": "Login",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign Up",
+      "emailVerificationRequired": "Email verification required",
+      "invalidCredentials": "Invalid email or password",
+      "loginFailed": "Login failed"
+    },
+    "signup": {
+      "title": "Create Account",
+      "description": "Enter your details to sign up.",
+      "button": "Sign Up",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Login",
+      "registrationSuccessful": "Registration Successful!",
+      "checkEmail": "Please check your email to verify your account.",
+      "registrationFailed": "Registration failed",
+      "nameRequired": "Name is required for signup.",
+      "teacher": "Teacher",
+      "student": "Student"
+    },
+    "verification": {
+      "title": "Verify Email",
+      "verifying": "Verifying Email...",
+      "success": "Email Verified!",
+      "failed": "Verification Failed",
+      "successMessage": "Email verified successfully! You can now log in.",
+      "invalidToken": "Invalid or expired verification token",
+      "goToLogin": "Go to Login",
+      "resendVerification": "Resend Verification Email",
+      "resendSuccess": "Verification email sent successfully!",
+      "enterEmail": "Please enter your email address to resend verification:",
+      "sending": "Sending...",
+      "networkError": "Network error. Please try again."
+    },
+    "roles": {
+      "teacher": "Teacher",
+      "student": "Student"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "teacher": {
+      "title": "Teacher Dashboard",
+      "students": "Students",
+      "courses": "Courses",
+      "progress": "Progress",
+      "createCourse": "Create Course",
+      "manageCourses": "Manage Courses",
+      "viewReports": "View Reports"
+    },
+    "student": {
+      "title": "Student Dashboard",
+      "myCourses": "My Courses",
+      "progress": "My Progress",
+      "achievements": "Achievements",
+      "continueLearning": "Continue Learning",
+      "startNewCourse": "Start New Course"
+    }
+  },
+  "language": {
+    "switch": "Switch Language",
+    "german": "German",
+    "english": "English",
+    "current": "Current Language"
+  },
+  "app": {
+    "title": "LinguaLeap",
+    "description": "AI-Powered Reading App for Language Learning",
+    "tagline": "Learn to Read in English and German"
+  },
+  "errors": {
+    "general": "An unexpected error occurred. Please try again.",
+    "networkError": "Network error. Please check your internet connection.",
+    "validationError": "Please check your inputs.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "The requested page was not found.",
+    "serverError": "Server error. Please try again later."
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "At least {min} characters required",
+    "maxLength": "Maximum {max} characters allowed",
+    "passwordTooShort": "Password must be at least 6 characters long"
+  }
+}

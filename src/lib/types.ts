@@ -8,6 +8,8 @@ export type User = {
   role: UserRole;
   avatarUrl: string;
   points?: number;
+  preferredLanguage?: 'de' | 'en';
+  isEmailVerified?: boolean;
   createdAt: Date;
 };
 

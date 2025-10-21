@@ -31,17 +31,21 @@ function AuthGuard({ children }: { children: ReactNode }) {
             return; // Do nothing while loading
         }
 
-        const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
-        const isProtectedRoute = pathname.startsWith('/student') || pathname.startsWith('/teacher');
+        // Extract locale from pathname
+        const pathSegments = pathname.split('/');
+        const locale = pathSegments[1] || 'de'; // Default to German
+        
+        const isAuthPage = pathname.includes('/login') || pathname.includes('/signup');
+        const isProtectedRoute = pathname.includes('/student') || pathname.includes('/teacher');
 
         if (!user && isProtectedRoute) {
-            router.push('/');
+            router.push(`/${locale}`);
         } else if (user && isAuthPage) {
-            router.push(`/${user.role}/dashboard`);
+            router.push(`/${locale}/${user.role}/dashboard`);
         }
     }, [user, loading, pathname, router]);
 
-    if (loading && (pathname.startsWith('/student') || pathname.startsWith('/teacher'))) {
+    if (loading && (pathname.includes('/student') || pathname.includes('/teacher'))) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div>Loading...</div>
@@ -64,7 +68,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         try {
           const response = await axios.get('/auth/me');
-          setUser(response.data.user);
+          const userData = response.data.user;
+          setUser(userData);
+          
+          // Set user's preferred language as cookie if available
+          if (userData.preferredLanguage) {
+            document.cookie = `locale=${userData.preferredLanguage}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
+          }
         } catch (error) {
           console.error(error);
           localStorage.removeItem('token');
@@ -92,10 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, pass: string, name: string, role: UserRole) => {
     const response = await axios.post('/auth/signup', { email, password: pass, name, role });
-    const { token, user } = response.data;
-    localStorage.setItem('token', token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    setUser(user);
+    // New registration flow doesn't return token immediately - user needs to verify email first
     return response;
   };
   

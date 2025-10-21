@@ -1,0 +1,17 @@
+apiVersion: v2
+name: lingualeap
+description: A Helm chart for LinguaLeap - AI-Powered Reading App
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - education
+  - language-learning
+  - ai
+  - reading
+home: https://github.com/danielkape/lingualeap
+sources:
+  - https://github.com/danielkape/lingualeap
+maintainers:
+  - name: Daniel Kape
+    email: daniel@kapeplus.de

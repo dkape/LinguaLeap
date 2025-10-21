@@ -1,0 +1,122 @@
+{
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "login": "Anmelden",
+    "signup": "Registrieren"
+  },
+  "auth": {
+    "login": {
+      "title": "Willkommen zurück!",
+      "description": "Geben Sie Ihre Anmeldedaten ein.",
+      "button": "Anmelden",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "forgotPassword": "Passwort vergessen?",
+      "noAccount": "Noch kein Konto?",
+      "signupLink": "Registrieren",
+      "emailVerificationRequired": "E-Mail-Verifizierung erforderlich",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort",
+      "loginFailed": "Anmeldung fehlgeschlagen"
+    },
+    "signup": {
+      "title": "Konto erstellen",
+      "description": "Geben Sie Ihre Daten ein, um sich zu registrieren.",
+      "button": "Registrieren",
+      "name": "Name",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "hasAccount": "Bereits ein Konto?",
+      "loginLink": "Anmelden",
+      "registrationSuccessful": "Registrierung erfolgreich!",
+      "checkEmail": "Bitte überprüfen Sie Ihre E-Mail, um Ihr Konto zu verifizieren.",
+      "registrationFailed": "Registrierung fehlgeschlagen",
+      "nameRequired": "Name ist erforderlich für die Registrierung.",
+      "teacher": "Lehrer",
+      "student": "Schüler"
+    },
+    "verification": {
+      "title": "E-Mail verifizieren",
+      "verifying": "E-Mail wird verifiziert...",
+      "success": "E-Mail verifiziert!",
+      "failed": "Verifizierung fehlgeschlagen",
+      "successMessage": "E-Mail erfolgreich verifiziert! Sie können sich jetzt anmelden.",
+      "invalidToken": "Ungültiger oder abgelaufener Verifizierungstoken",
+      "goToLogin": "Zur Anmeldung",
+      "resendVerification": "Verifizierungs-E-Mail erneut senden",
+      "resendSuccess": "Verifizierungs-E-Mail erfolgreich gesendet!",
+      "enterEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein, um die Verifizierung erneut zu senden:",
+      "sending": "Wird gesendet...",
+      "networkError": "Netzwerkfehler. Bitte versuchen Sie es erneut."
+    },
+    "roles": {
+      "teacher": "Lehrer",
+      "student": "Schüler"
+    }
+  },
+  "dashboard": {
+    "welcome": "Willkommen",
+    "teacher": {
+      "title": "Lehrer Dashboard",
+      "students": "Schüler",
+      "courses": "Kurse",
+      "progress": "Fortschritt",
+      "createCourse": "Kurs erstellen",
+      "manageCourses": "Kurse verwalten",
+      "viewReports": "Berichte anzeigen"
+    },
+    "student": {
+      "title": "Schüler Dashboard",
+      "myCourses": "Meine Kurse",
+      "progress": "Mein Fortschritt",
+      "achievements": "Erfolge",
+      "continueLearning": "Weiter lernen",
+      "startNewCourse": "Neuen Kurs beginnen"
+    }
+  },
+  "language": {
+    "switch": "Sprache wechseln",
+    "german": "Deutsch",
+    "english": "Englisch",
+    "current": "Aktuelle Sprache"
+  },
+  "app": {
+    "title": "LinguaLeap",
+    "description": "KI-gestützte Lese-App für Sprachenlernen",
+    "tagline": "Lernen Sie Lesen in Englisch und Deutsch"
+  },
+  "errors": {
+    "general": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.",
+    "validationError": "Bitte überprüfen Sie Ihre Eingaben.",
+    "unauthorized": "Sie sind nicht berechtigt, diese Aktion auszuführen.",
+    "notFound": "Die angeforderte Seite wurde nicht gefunden.",
+    "serverError": "Serverfehler. Bitte versuchen Sie es später erneut."
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "minLength": "Mindestens {min} Zeichen erforderlich",
+    "maxLength": "Maximal {max} Zeichen erlaubt",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein"
+  }
+}

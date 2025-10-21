@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLocale, useTranslation } from "@/contexts/locale-context";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -38,12 +39,14 @@ export function AuthForm({ mode, role }: AuthFormProps) {
   const { signUp, logIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { locale } = useLocale();
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema.extend({
-      name: mode === 'signup' ? z.string().min(2, "Name must be at least 2 characters.") : z.string().optional(),
-      email: z.string().email("Invalid email address."),
-      password: z.string().min(6, "Password must be at least 6 characters."),
+      name: mode === 'signup' ? z.string().min(2, t('validation.minLength', { min: '2' })) : z.string().optional(),
+      email: z.string().email(t('validation.email')),
+      password: z.string().min(6, t('validation.passwordTooShort')),
     })),
     defaultValues: {
       name: "",
@@ -57,25 +60,48 @@ export function AuthForm({ mode, role }: AuthFormProps) {
     try {
       if (mode === 'signup') {
         if (!values.name) {
-          toast({ variant: 'destructive', title: "Error", description: "Name is required for signup." });
+          toast({ variant: 'destructive', title: t('common.error'), description: t('auth.signup.nameRequired') });
           setIsLoading(false);
           return;
         }
-        await signUp(values.email, values.password, values.name, role);
-        toast({ title: "Success", description: "Account created successfully!" });
+        const response = await signUp(values.email, values.password, values.name, role);
+        toast({ 
+          title: t('auth.signup.registrationSuccessful'), 
+          description: response.data.message || t('auth.signup.checkEmail')
+        });
+        // Don't redirect to dashboard - user needs to verify email first
+        router.push(`/${locale}/login/${role}`);
       } else {
         await logIn(values.email, values.password);
+        router.push(`/${locale}/${role}/dashboard`);
       }
-      router.push(`/${role}/dashboard`);
     } catch (error: unknown) {
       console.error(error);
       let errorMessage = "An unexpected error occurred. Please try again.";
-      if (error instanceof Error) {
+      
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response: { data: { message?: string; emailVerificationRequired?: boolean } } };
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        }
+        
+        // Handle email verification required for login
+        if (axiosError.response?.data?.emailVerificationRequired) {
+          toast({
+            variant: 'destructive',
+            title: t('auth.login.emailVerificationRequired'),
+            description: errorMessage,
+          });
+          setIsLoading(false);
+          return;
+        }
+      } else if (error instanceof Error) {
         errorMessage = error.message;
       }
+      
       toast({
         variant: 'destructive',
-        title: "Authentication Failed",
+        title: mode === 'signup' ? t('auth.signup.registrationFailed') : t('auth.login.loginFailed'),
         description: errorMessage,
       });
     } finally {
@@ -83,13 +109,15 @@ export function AuthForm({ mode, role }: AuthFormProps) {
     }
   }
 
-  const roleName = role === 'student' ? "Student" : "Teacher";
-  const title = mode === 'login' ? `Welcome Back, ${roleName}!` : `Create ${roleName} Account`;
-  const description = `Enter your credentials to ${mode}.`;
-  const buttonText = mode === 'login' ? "Login" : "Sign Up";
-  const linkText = mode === 'login' ? "Don't have an account?" : "Already have an account?";
-  const linkActionText = mode === 'login' ? "Sign Up" : "Login";
-  const linkHref = `/${mode === 'login' ? 'signup' : 'login'}/${role}`;
+  const roleName = t(`auth.roles.${role}`);
+  const title = mode === 'login' 
+    ? `${t('auth.login.title')} ${roleName}!` 
+    : `${t('auth.signup.title')} ${roleName}`;
+  const description = mode === 'login' ? t('auth.login.description') : t('auth.signup.description');
+  const buttonText = mode === 'login' ? t('auth.login.button') : t('auth.signup.button');
+  const linkText = mode === 'login' ? t('auth.login.noAccount') : t('auth.signup.hasAccount');
+  const linkActionText = mode === 'login' ? t('auth.signup.button') : t('auth.login.button');
+  const linkHref = `/${locale}/${mode === 'login' ? 'signup' : 'login'}/${role}`;
 
   return (
     <Card>
@@ -106,9 +134,9 @@ export function AuthForm({ mode, role }: AuthFormProps) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t('auth.signup.name')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Name" {...field} />
+                      <Input placeholder={t('auth.signup.name')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -120,7 +148,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('auth.login.email')}</FormLabel>
                   <FormControl>
                     <Input placeholder="name@example.com" {...field} />
                   </FormControl>
@@ -133,7 +161,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t('auth.login.password')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
