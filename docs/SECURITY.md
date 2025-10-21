@@ -86,6 +86,14 @@ Please include the following information:
 - Follow OWASP security guidelines
 - Use secure coding practices
 
+### 🛡️ Middleware Security
+
+- **NEVER implement authorization logic in middleware** (vulnerable to bypass attacks)
+- Use middleware only for: routing, redirects, headers, cookies, i18n
+- Implement authentication/authorization in: API routes, server components, getServerSideProps
+- Use established auth libraries: NextAuth.js, Auth0, Clerk
+- Follow Next.js security best practices for route protection
+
 ### 📦 Dependencies
 
 - Keep dependencies up to date

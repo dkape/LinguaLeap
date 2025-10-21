@@ -1,0 +1,122 @@
+name: Basic Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run security scan daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    # 1. Generate package-lock.json files
+    - name: Generate lock files
+      run: |
+        echo "Generating package-lock.json files..."
+        npm install --package-lock-only
+        cd server && npm install --package-lock-only && cd ..
+        echo "Lock files generated successfully"
+
+    # 2. Install dependencies
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd server && npm ci && cd ..
+
+    # 3. Basic secrets detection with TruffleHog
+    - name: TruffleHog OSS - Secrets Detection
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        extra_args: --debug --only-verified
+      continue-on-error: true
+
+    # 4. npm audit for dependency vulnerabilities
+    - name: Run npm audit - Frontend
+      run: |
+        echo "Running npm audit for frontend..."
+        npm audit --audit-level=moderate || echo "Frontend audit completed with warnings"
+      continue-on-error: true
+
+    - name: Run npm audit - Backend
+      run: |
+        echo "Running npm audit for backend..."
+        cd server
+        npm audit --audit-level=moderate || echo "Backend audit completed with warnings"
+      continue-on-error: true
+
+    # 5. Basic SAST with Semgrep (free tier)
+    - name: Semgrep Security Scan
+      uses: semgrep/semgrep-action@v1
+      with:
+        config: >-
+          p/security-audit
+          p/secrets
+          p/javascript
+          p/typescript
+        generateSarif: "1"
+      continue-on-error: true
+
+    # 6. CodeQL Analysis (GitHub's built-in security scanning)
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+        queries: security-and-quality
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:javascript"
+
+    # 7. Upload Semgrep results if available
+    - name: Upload Semgrep SARIF
+      if: hashFiles('semgrep.sarif') != ''
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep.sarif
+        category: semgrep
+      continue-on-error: true
+
+    # 8. Security summary
+    - name: Security Scan Summary
+      run: |
+        echo "## 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Secrets Detection: TruffleHog scan completed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Dependency Audit: npm audit completed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ SAST Analysis: Semgrep and CodeQL completed" >> $GITHUB_STEP_SUMMARY
+        echo "- 📊 Results available in Security tab" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
+        echo "1. Review findings in the Security tab" >> $GITHUB_STEP_SUMMARY
+        echo "2. Address any critical or high severity issues" >> $GITHUB_STEP_SUMMARY
+        echo "3. Update dependencies with security patches" >> $GITHUB_STEP_SUMMARY
