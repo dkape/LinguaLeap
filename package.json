@@ -22,7 +22,7 @@
     "security:full": "npm run security:scan && npm run security:deps"
   },
   "dependencies": {
-    "@formatjs/intl-localematcher": "^0.5.4",
+    "@formatjs/intl-localematcher": "^0.6.2",
     "@genkit-ai/google-genai": "^1.20.0",
     "@genkit-ai/next": "^1.20.0",
     "@hookform/resolvers": "^3.9.0",
