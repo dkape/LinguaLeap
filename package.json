@@ -54,7 +54,7 @@
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.1.6",
     "genkit": "^1.20.0",
-    "lucide-react": "^0.417.0",
+    "lucide-react": "^0.546.0",
     "negotiator": "^0.6.3",
     "next": "15.2.3",
     "react": "^18.3.1",
