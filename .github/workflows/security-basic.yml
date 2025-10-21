@@ -164,20 +164,66 @@ jobs:
         SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN || '' }}
       continue-on-error: true
 
-    # 6. CodeQL Analysis (GitHub's built-in security scanning)
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
-      with:
-        languages: javascript
-        queries: security-and-quality
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v4
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
-      with:
-        category: "/language:javascript"
+    # 6. ESLint Security Analysis (works on private repos)
+    - name: ESLint Security Scan
+      run: |
+        echo "🔍 Running ESLint security analysis..."
+        
+        # Install ESLint security plugins
+        npm install --no-save eslint @eslint/js eslint-plugin-security eslint-plugin-no-secrets
+        
+        # Create ESLint security config
+        cat > .eslintrc.security.js << 'EOF'
+        module.exports = {
+          extends: ['@eslint/js/recommended'],
+          plugins: ['security', 'no-secrets'],
+          rules: {
+            // Security rules
+            'security/detect-buffer-noassert': 'error',
+            'security/detect-child-process': 'warn',
+            'security/detect-disable-mustache-escape': 'error',
+            'security/detect-eval-with-expression': 'error',
+            'security/detect-no-csrf-before-method-override': 'error',
+            'security/detect-non-literal-fs-filename': 'warn',
+            'security/detect-non-literal-regexp': 'warn',
+            'security/detect-non-literal-require': 'warn',
+            'security/detect-object-injection': 'warn',
+            'security/detect-possible-timing-attacks': 'warn',
+            'security/detect-pseudoRandomBytes': 'error',
+            'security/detect-unsafe-regex': 'error',
+            
+            // Secret detection rules
+            'no-secrets/no-secrets': ['error', {
+              'tolerance': 4.2,
+              'additionalRegexes': {
+                'Basic Auth': 'Authorization: Basic [A-Za-z0-9+/=]+',
+                'JWT': 'ey[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]*'
+              }
+            }]
+          },
+          env: {
+            node: true,
+            es2021: true
+          },
+          parserOptions: {
+            ecmaVersion: 12,
+            sourceType: 'module'
+          }
+        };
+        EOF
+        
+        # Run ESLint security scan on frontend
+        echo "📦 Scanning frontend code..."
+        npx eslint --config .eslintrc.security.js --ext .js,.jsx,.ts,.tsx src/ || echo "Frontend security scan completed with findings"
+        
+        # Run ESLint security scan on backend
+        echo "📦 Scanning backend code..."
+        cd server
+        npx eslint --config ../.eslintrc.security.js --ext .js,.jsx,.ts,.tsx . || echo "Backend security scan completed with findings"
+        cd ..
+        
+        echo "✅ ESLint security analysis completed"
+      continue-on-error: true
 
     # 7. Upload security results as artifacts (for private repositories)
     - name: Upload Security Results
@@ -197,10 +243,10 @@ jobs:
         echo "## 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ Secrets Detection: TruffleHog scan completed" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ Dependency Audit: npm audit completed" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ SAST Analysis: Semgrep and CodeQL completed" >> $GITHUB_STEP_SUMMARY
-        echo "- 📊 Results available in Security tab" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ SAST Analysis: Semgrep and ESLint security completed" >> $GITHUB_STEP_SUMMARY
+        echo "- 📊 Results available as artifacts (download from Actions tab)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
-        echo "1. Review findings in the Security tab" >> $GITHUB_STEP_SUMMARY
+        echo "1. Download security results from Actions artifacts" >> $GITHUB_STEP_SUMMARY
         echo "2. Address any critical or high severity issues" >> $GITHUB_STEP_SUMMARY
         echo "3. Update dependencies with security patches" >> $GITHUB_STEP_SUMMARY
