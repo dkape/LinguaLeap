@@ -15,11 +15,13 @@ This directory contains detailed documentation of all fixes and improvements app
 - **[Security Workflow Action Fixes](./security-workflow-action-fixes.md)** - GitHub Actions version fixes
 - **[Workflow Syntax Fixes](./workflow-syntax-fixes.md)** - GitHub Actions syntax and secrets handling
 - **[Final Workflow Fixes](./final-workflow-fixes.md)** - Complete resolution of all workflow issues
+- **[Private Repository Security Fixes](./private-repo-security-fixes.md)** - Security workflows optimized for private repositories
 - **[Next.js Security Advisory](./SECURITY_ADVISORY_NEXTJS.md)** - Critical middleware vulnerability fix
 - **[Next.js Security Fix Summary](./NEXTJS_SECURITY_FIX_SUMMARY.md)** - Quick security update summary
 
 ### ⚡ Quick Fixes
 - **[Quick Fix Guide](./QUICK_FIX.md)** - Immediate CI/CD pipeline fixes
+- **[Backend Lock File Generation Fix](./backend-lockfile-generation-fix.md)** - Robust backend dependency handling
 
 ## 📊 Fix Timeline
 

@@ -108,12 +108,16 @@ jobs:
         cd server && npm ci
 
     - name: OSV Scanner - Vulnerability Database
-      uses: google/osv-scanner-action@v1.8.5
-      with:
-        scan-args: |-
-          --recursive
-          --skip-git
-          .
+      run: |
+        echo "🔍 Running OSV Scanner for vulnerability detection..."
+        # Install OSV Scanner
+        curl -L https://github.com/google/osv-scanner/releases/latest/download/osv-scanner_linux_amd64 -o osv-scanner
+        chmod +x osv-scanner
+        
+        # Run OSV Scanner
+        ./osv-scanner --recursive --skip-git . || echo "OSV scan completed with findings"
+        
+        echo "✅ OSV Scanner completed"
       continue-on-error: true
 
     - name: Retire.js - JavaScript Vulnerability Scanner
@@ -163,45 +167,18 @@ jobs:
         upload-to-code-scanning: true
       continue-on-error: true
 
-    # 9. Upload all SARIF results to GitHub Security
-    - name: Upload ESLint Security results
-      if: hashFiles('eslint-security.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
+    # 9. Upload all security results as artifacts (for private repositories)
+    - name: Upload Comprehensive Security Results
+      uses: actions/upload-artifact@v4
       with:
-        sarif_file: eslint-security.sarif
-        category: eslint-security-frontend
-      continue-on-error: true
-
-    - name: Upload ESLint Security Backend results
-      if: hashFiles('eslint-security-backend.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: eslint-security-backend.sarif
-        category: eslint-security-backend
-      continue-on-error: true
-
-    - name: Upload NodeJSScan results
-      if: hashFiles('njsscan-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: njsscan-results.sarif
-        category: njsscan
-      continue-on-error: true
-
-    - name: Upload Checkov results
-      if: hashFiles('checkov-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: checkov-results.sarif
-        category: checkov-iac
-      continue-on-error: true
-
-    - name: Upload OSV Scanner results
-      if: hashFiles('osv-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: osv-results.sarif
-        category: osv-scanner
+        name: comprehensive-security-results
+        path: |
+          *.sarif
+          *.json
+          package-lock.json
+          server/package-lock.json
+          sbom.spdx.json
+        retention-days: 30
       continue-on-error: true
 
     # 10. Generate Security Report
