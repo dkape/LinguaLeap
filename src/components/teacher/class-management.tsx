@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Users, Plus, Mail, Trash2, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from '@/contexts/locale-context';
+
 import axios from 'axios';
 
 interface StudentClass {
@@ -68,20 +68,6 @@ export function ClassManagement() {
   useEffect(() => {
     fetchClasses();
   }, [fetchClasses]);
-
-  const fetchClasses = async () => {
-    try {
-      const response = await axios.get('/classes/teacher');
-      setClasses(response.data.classes);
-    } catch (error) {
-      console.error('Error fetching classes:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Fehler',
-        description: 'Klassen konnten nicht geladen werden.'
-      });
-    }
-  };
 
   const fetchClassDetails = async (classId: number) => {
     try {
@@ -150,7 +136,7 @@ export function ClassManagement() {
       toast({
         variant: 'destructive',
         title: 'Fehler',
-        description: (error as any)?.response?.data?.message || 'Schüler konnte nicht hinzugefügt werden.'
+        description: (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Schüler konnte nicht hinzugefügt werden.'
       });
     } finally {
       setIsLoading(false);

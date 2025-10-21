@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { generateChallenge, GenerateChallengeOutput } from "@/ai/flows/generate-challenge";
 import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from '@/contexts/locale-context';
+
 import axios from 'axios';
 
 interface StudentClass {

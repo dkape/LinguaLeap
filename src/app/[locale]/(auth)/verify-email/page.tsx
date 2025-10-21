@@ -17,25 +17,6 @@ export default function VerifyEmailPage() {
   const { t } = useTranslation();
   const token = searchParams.get('token');
 
-  const verifyEmail = async (verificationToken: string) => {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-      const response = await fetch(`${apiUrl}/auth/verify-email?token=${verificationToken}`);
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus('success');
-        setMessage(data.message || t('auth.verification.successMessage'));
-      } else {
-        setStatus('error');
-        setMessage(data.message || t('auth.verification.invalidToken'));
-      }
-    } catch {
-      setStatus('error');
-      setMessage(t('auth.verification.networkError'));
-    }
-  };
-
   useEffect(() => {
     if (!token) {
       setStatus('error');
@@ -43,8 +24,27 @@ export default function VerifyEmailPage() {
       return;
     }
 
+    const verifyEmail = async (verificationToken: string) => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${apiUrl}/auth/verify-email?token=${verificationToken}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setStatus('success');
+          setMessage(data.message || t('auth.verification.successMessage'));
+        } else {
+          setStatus('error');
+          setMessage(data.message || t('auth.verification.invalidToken'));
+        }
+      } catch {
+        setStatus('error');
+        setMessage(t('auth.verification.networkError'));
+      }
+    };
+
     verifyEmail(token);
-  }, [token, t, verifyEmail]);
+  }, [token, t]);
 
 
 
