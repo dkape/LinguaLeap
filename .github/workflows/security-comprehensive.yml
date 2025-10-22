@@ -159,7 +159,7 @@ jobs:
     # 8. API Security Testing
     - name: 42Crunch API Security Audit
       if: ${{ env.API_SECURITY_TOKEN != '' }}
-      uses: 42Crunch/api-security-audit-action@v3
+      uses: 42Crunch/api-security-audit-action@v4
       with:
         api-token: ${{ secrets.API_SECURITY_TOKEN }}
         platform-url: https://platform.42crunch.com
