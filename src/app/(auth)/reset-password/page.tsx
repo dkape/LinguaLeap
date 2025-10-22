@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from 'next/navigation';
@@ -31,7 +31,7 @@ const formSchema = z.object({
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const { resetPassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -116,5 +116,23 @@ export default function ResetPasswordPage() {
         </form>
       </Form>
     </Card>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline">Reset Password</CardTitle>
+          <CardDescription>Loading...</CardDescription>
+        </CardHeader>
+        <CardContent className="flex justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </CardContent>
+      </Card>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
