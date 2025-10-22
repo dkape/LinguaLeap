@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "node test-registration.js",
+    "test": "node test-mongodb.js",
     "test:db": "node test-mongodb.js",
+    "test:registration": "node test-registration.js",
     "security:audit": "npm audit --audit-level=moderate",
     "security:audit:fix": "npm audit fix",
     "security:scan": "npm run security:audit",
@@ -26,6 +27,7 @@
     "nodemailer": "^6.10.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "axios": "^1.6.0"
   }
 }
