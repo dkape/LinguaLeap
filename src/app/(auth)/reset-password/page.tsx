@@ -28,6 +28,9 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 export default function ResetPasswordPage() {
   const { resetPassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
