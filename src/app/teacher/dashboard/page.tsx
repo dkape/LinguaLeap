@@ -5,6 +5,9 @@ import { CreateLearningPathForm } from "@/components/teacher/create-learning-pat
 import { BookCopy, GraduationCap, Users as UsersIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 export default function TeacherDashboard() {
   const { user } = useAuth();
 

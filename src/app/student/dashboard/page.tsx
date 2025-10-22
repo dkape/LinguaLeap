@@ -2,6 +2,9 @@
 
 import { useAuth } from '@/hooks/use-auth';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 export default function StudentDashboard() {
   const { user } = useAuth();
 

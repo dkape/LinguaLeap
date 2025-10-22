@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { PT_Sans } from "next/font/google";
+import { AuthProvider } from "@/hooks/use-auth";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const ptSans = PT_Sans({
@@ -23,7 +25,10 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning className={ptSans.variable}>
       <body className="font-body antialiased">
-        {children}
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
