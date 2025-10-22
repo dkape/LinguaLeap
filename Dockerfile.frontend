@@ -9,9 +9,9 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
 RUN if [ -f package-lock.json ]; then \
-      npm ci --omit=dev; \
+      npm ci; \
     else \
-      npm install --omit=dev && npm install --package-lock-only; \
+      npm install && npm install --package-lock-only; \
     fi
 
 # Rebuild the source code only when needed
@@ -23,6 +23,16 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Install production dependencies for runtime
+FROM base AS prod-deps
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN if [ -f package-lock.json ]; then \
+      npm ci --omit=dev; \
+    else \
+      npm install --omit=dev; \
+    fi
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
@@ -32,6 +42,8 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Copy production dependencies
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 
 # Set the correct permission for prerender cache
