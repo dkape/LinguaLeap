@@ -128,7 +128,7 @@ jobs:
 
     - name: Safety - Python Dependencies (for any Python tools)
       if: ${{ env.SAFETY_API_KEY != '' }}
-      uses: pyupio/safety@2.3.5
+      uses: pyupio/safety@3.12.13
       with:
         api-key: ${{ secrets.SAFETY_API_KEY }}
         scan: requirements.txt
