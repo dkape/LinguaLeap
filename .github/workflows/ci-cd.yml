@@ -192,21 +192,21 @@ jobs:
     #    category: "/language:javascript"
 
     # 8. Upload Semgrep SARIF results (check if file exists)
-    - name: Check if Semgrep SARIF exists
-      id: check_semgrep
-      run: |
-        if [ -f "semgrep.sarif" ]; then
-          echo "sarif_exists=true" >> $GITHUB_OUTPUT
-        else
-          echo "sarif_exists=false" >> $GITHUB_OUTPUT
-        fi
+    #- name: Check if Semgrep SARIF exists
+    #  id: check_semgrep
+    #  run: |
+    #    if [ -f "semgrep.sarif" ]; then
+    #      echo "sarif_exists=true" >> $GITHUB_OUTPUT
+    #    else
+    #      echo "sarif_exists=false" >> $GITHUB_OUTPUT
+    #    fi
 
-    - name: Upload Semgrep SARIF
-      if: steps.check_semgrep.outputs.sarif_exists == 'true'
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: semgrep.sarif
-        category: semgrep
+    #- name: Upload Semgrep SARIF
+    #  if: steps.check_semgrep.outputs.sarif_exists == 'true'
+    #  uses: github/codeql-action/upload-sarif@v4
+    #  with:
+    #    sarif_file: semgrep.sarif
+    #    category: semgrep
 
   test:
     needs: security-scan
