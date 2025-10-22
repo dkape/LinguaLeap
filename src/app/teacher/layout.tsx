@@ -1,7 +1,7 @@
 'use client';
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { LayoutDashboard, Users, BookPlus } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import React from "react";
 
 // Disable static generation for this layout
