@@ -1,9 +1,8 @@
 import { AuthForm } from "@/components/auth/auth-form";
 import type { UserRole } from "@/lib/types";
-import type { Locale } from "@/lib/i18n";
 
 type LoginPageProps = {
-  params: Promise<{ role: UserRole; locale: Locale }>;
+  params: Promise<{ role: UserRole; locale: string }>;
 };
 
 export default async function LoginPage({ params }: LoginPageProps) {

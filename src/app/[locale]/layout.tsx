@@ -9,7 +9,7 @@ import '../globals.css';
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
-  params: Promise<{ locale: Locale }>;
+  params: Promise<{ locale: string }>;
 }
 
 export async function generateStaticParams() {
@@ -17,12 +17,14 @@ export async function generateStaticParams() {
 }
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
   
   // Validate locale
-  if (!locales.includes(locale)) {
+  if (!locales.includes(localeParam as Locale)) {
     notFound();
   }
+  
+  const locale = localeParam as Locale;
 
   const dict = await getDictionary(locale);
 
