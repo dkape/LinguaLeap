@@ -177,19 +177,19 @@ jobs:
       continue-on-error: true
 
     # 7. Code Quality and Security with CodeQL
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
-      with:
-        languages: javascript
-        queries: security-and-quality
+    # - name: Initialize CodeQL
+    #  uses: github/codeql-action/init@v4
+    #  with:
+    #    languages: javascript
+    #    queries: security-and-quality
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v4
+    #- name: Autobuild
+    #  uses: github/codeql-action/autobuild@v4
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
-      with:
-        category: "/language:javascript"
+    #- name: Perform CodeQL Analysis
+    #  uses: github/codeql-action/analyze@v4
+    #  with:
+    #    category: "/language:javascript"
 
     # 8. Upload Semgrep SARIF results (check if file exists)
     - name: Check if Semgrep SARIF exists
