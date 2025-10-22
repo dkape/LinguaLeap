@@ -2,11 +2,11 @@ name: Comprehensive Security Scan
 
 on:
   schedule:
-    # Run comprehensive security scan daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    # Run comprehensive security scan sundaily at 2 AM UTC
+    - cron: '0 2 * * 0'
   workflow_dispatch:  # Allow manual trigger
   push:
-    branches: [ main ]
+   # branches: [ main ]
     paths:
       - 'package*.json'
       - 'server/package*.json'
