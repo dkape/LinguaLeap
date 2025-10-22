@@ -2,7 +2,7 @@ import { AuthForm } from "@/components/auth/auth-form";
 import type { UserRole } from "@/lib/types";
 
 type SignupPageProps = {
-  params: { role: UserRole };
+  params: Promise<{ role: UserRole }>;
 };
 
 export default async function SignupPage({ params }: SignupPageProps) {
