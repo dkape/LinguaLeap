@@ -12,7 +12,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! docker compose version &> /dev/null; then
     echo "❌ Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -30,10 +30,10 @@ chmod 755 data/mongodb
 echo "🐳 Starting Docker containers..."
 
 # Stop any existing containers
-docker-compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml down
 
 # Build and start containers
-docker-compose -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.dev.yml up -d --build
 
 echo "⏳ Waiting for services to start..."
 sleep 30
@@ -42,7 +42,7 @@ sleep 30
 echo "🔍 Checking service health..."
 
 # Check MongoDB
-if docker-compose -f docker-compose.dev.yml exec -T mongodb mongosh --eval "db.runCommand({ping: 1})" > /dev/null 2>&1; then
+if docker compose -f docker-compose.dev.yml exec -T mongodb mongosh --eval "db.runCommand({ping: 1})" > /dev/null 2>&1; then
     echo "✅ MongoDB is running"
 else
     echo "❌ MongoDB is not responding"
@@ -72,9 +72,9 @@ echo "   MailHog:   http://localhost:8025"
 echo "   MongoDB:   mongodb://localhost:27017"
 echo ""
 echo "🔧 Useful Commands:"
-echo "   View logs:     docker-compose -f docker-compose.dev.yml logs -f"
-echo "   Stop services: docker-compose -f docker-compose.dev.yml down"
-echo "   Restart:       docker-compose -f docker-compose.dev.yml restart"
+echo "   View logs:     docker compose -f docker-compose.dev.yml logs -f"
+echo "   Stop services: docker compose -f docker-compose.dev.yml down"
+echo "   Restart:       docker compose -f docker-compose.dev.yml restart"
 echo ""
 echo "📚 Next Steps:"
 echo "   1. Visit http://localhost:9002 to access the application"
