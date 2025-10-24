@@ -23,7 +23,9 @@ COPY . .
 # Ensure public directory exists
 RUN mkdir -p public
 
-# Build the application
+# Build the application with network resilience
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # Install production dependencies for runtime

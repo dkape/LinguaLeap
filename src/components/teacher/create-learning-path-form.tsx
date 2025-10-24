@@ -258,7 +258,7 @@ export function CreateLearningPathForm() {
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="prose max-w-none text-foreground/90 p-4 bg-muted/50 rounded-md">
-                        <pre className="whitespace-pre-wrap font-body text-sm bg-transparent p-0 border-0">{item.content}</pre>
+                        <pre className="whitespace-pre-wrap font-sans text-sm bg-transparent p-0 border-0">{item.content}</pre>
                     </AccordionContent>
                     </AccordionItem>
                 ))}

@@ -355,7 +355,7 @@ export function CreateChallengeForm() {
                     </AccordionTrigger>
                     <AccordionContent className="prose max-w-none text-foreground/90 p-4 bg-muted/50 rounded-md">
                       <div className="space-y-4">
-                        <pre className="whitespace-pre-wrap font-body text-sm bg-transparent p-0 border-0">
+                        <pre className="whitespace-pre-wrap font-sans text-sm bg-transparent p-0 border-0">
                           {item.content}
                         </pre>
                         
