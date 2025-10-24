@@ -42,7 +42,7 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
-    command: npm run dev
+    command: sh -c "npm install && npm run dev"
     networks:
       - lingualeap-dev-network
 
@@ -62,7 +62,7 @@ services:
       - .:/app
       - /app/node_modules
       - /app/server
-    command: npm run dev
+    command: sh -c "npm install && npm run dev"
     networks:
       - lingualeap-dev-network
 
