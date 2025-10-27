@@ -50,6 +50,7 @@
       "registrationSuccessful": "Registration Successful!",
       "checkEmail": "Please check your email to verify your account.",
       "registrationFailed": "Registration failed",
+      "emailInUse": "This email is already in use. Please try another.",
       "nameRequired": "Name is required for signup.",
       "teacher": "Teacher",
       "student": "Student"

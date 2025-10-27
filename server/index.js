@@ -15,7 +15,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://localhost:9002'],
+  origin: ['http://localhost:3000', 'http://localhost:9002', 'https://kapeplus.de:9002'],
   optionsSuccessStatus: 200
 };
 

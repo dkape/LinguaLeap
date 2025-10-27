@@ -83,6 +83,8 @@ export function AuthForm({ mode, role }: AuthFormProps) {
         const axiosError = error as { response: { status: number; data: { message?: string; emailVerificationRequired?: boolean } } };
         if (axiosError.response?.status === 401) {
           errorMessage = t('auth.login.invalidCredentials');
+        } else if (axiosError.response?.status === 409) {
+          errorMessage = t('auth.signup.emailInUse');
         } else if (axiosError.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
         }

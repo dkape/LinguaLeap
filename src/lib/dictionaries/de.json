@@ -50,6 +50,7 @@
       "registrationSuccessful": "Registrierung erfolgreich!",
       "checkEmail": "Bitte überprüfen Sie Ihre E-Mail, um Ihr Konto zu verifizieren.",
       "registrationFailed": "Registrierung fehlgeschlagen",
+      "emailInUse": "Diese E-Mail wird bereits verwendet. Bitte versuchen Sie es mit einer anderen.",
       "nameRequired": "Name ist erforderlich für die Registrierung.",
       "teacher": "Lehrer",
       "student": "Schüler"

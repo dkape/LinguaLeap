@@ -35,7 +35,7 @@ services:
       MONGODB_URI: mongodb://lingualeap:lingualeap123@mongodb:27017/lingualeap?authSource=lingualeap
       JWT_SECRET: dev_jwt_secret_at_least_32_characters_long_for_development
       EMAIL_FROM: noreply@lingualeap.local
-      CLIENT_URL: http://localhost:9002
+      CLIENT_URL: https://kapeplus.de:9002
       SMTP_HOST: mailhog
       SMTP_PORT: 1025
       SMTP_SECURE: false
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      NEXT_PUBLIC_API_URL: http://localhost:3001/api
+      NEXT_PUBLIC_API_URL: https://kapeplus.de:3001/api
     ports:
       - "9002:9002"
     depends_on:

@@ -1,5 +1,6 @@
 'use client';
 
+import axios from 'axios';
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -29,20 +30,20 @@ function VerifyEmailContent() {
 
     const verifyEmail = async (verificationToken: string) => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-        const response = await fetch(`${apiUrl}/auth/verify-email?token=${verificationToken}`);
-        const data = await response.json();
+        const response = await axios.get(`/auth/verify-email?token=${verificationToken}`);
+        const data = response.data;
 
-        if (response.ok) {
+        if (response.status === 200) {
           setStatus('success');
           setMessage(data.message || t('auth.verification.successMessage'));
         } else {
           setStatus('error');
           setMessage(data.message || t('auth.verification.invalidToken'));
         }
-      } catch {
+      } catch (error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
         setStatus('error');
-        setMessage(t('auth.verification.networkError'));
+        setMessage(axiosError.response?.data?.message || t('auth.verification.networkError'));
       }
     };
 
@@ -57,18 +58,10 @@ function VerifyEmailContent() {
 
     setIsResending(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-      const response = await fetch(`${apiUrl}/auth/resend-verification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
+      const response = await axios.post('/auth/resend-verification', { email });
+      const data = response.data;
       
-      if (response.ok) {
+      if (response.status === 200) {
         alert(data.message || t('auth.verification.resendSuccess'));
       } else {
         alert(data.message || t('errors.general'));
