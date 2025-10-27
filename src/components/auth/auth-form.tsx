@@ -80,8 +80,10 @@ export function AuthForm({ mode, role }: AuthFormProps) {
       let errorMessage = "An unexpected error occurred. Please try again.";
       
       if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response: { data: { message?: string; emailVerificationRequired?: boolean } } };
-        if (axiosError.response?.data?.message) {
+        const axiosError = error as { response: { status: number; data: { message?: string; emailVerificationRequired?: boolean } } };
+        if (axiosError.response?.status === 401) {
+          errorMessage = t('auth.login.invalidCredentials');
+        } else if (axiosError.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
         }
         

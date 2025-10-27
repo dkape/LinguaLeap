@@ -31,5 +31,3 @@ db.challengeattempts.createIndex({ "challengeId": 1 });
 
 db.leaderboardentries.createIndex({ "classId": 1, "points": -1 });
 db.leaderboardentries.createIndex({ "studentId": 1 });
-
-console.log('MongoDB initialized successfully for LinguaLeap');

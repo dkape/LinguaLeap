@@ -6,8 +6,9 @@ WORKDIR /app
 
 # Install app dependencies
 COPY server/package*.json ./
+RUN npm install -g nodemon
 RUN if [ -f package-lock.json ]; then \
-      npm ci --omit=dev; \
+      npm install; \
     else \
       npm install --omit=dev && npm install --package-lock-only; \
     fi
@@ -15,13 +16,11 @@ RUN if [ -f package-lock.json ]; then \
 # Bundle app source
 COPY server/ .
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodejs -u 1001
+# Change ownership of the app directory to the node user
+RUN chown -R node:node /app
 
-# Change ownership of the app directory
-RUN chown -R nodejs:nodejs /app
-USER nodejs
+# Switch to non-root user
+USER node
 
 # Expose port
 EXPOSE 3001

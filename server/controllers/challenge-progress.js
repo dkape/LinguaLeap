@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../config/database');
 
 // Get challenge attempt details for student
 const getChallengeAttempt = async (req, res) => {

@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../config/database');
 
 // Create a new student class
 const createClass = async (req, res) => {

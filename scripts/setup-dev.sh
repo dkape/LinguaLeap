@@ -30,7 +30,7 @@ chmod 755 data/mongodb
 echo "🐳 Starting Docker containers..."
 
 # Stop any existing containers
-docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml down -v
 
 # Build and start containers
 docker compose -f docker-compose.dev.yml up -d --build

@@ -71,12 +71,7 @@ export function getLocalizedPath(pathname: string, locale: Locale): string {
     // Remove existing locale from path
     const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '');
 
-    // Add new locale (except for default locale)
-    if (locale === defaultLocale) {
-        return pathWithoutLocale || '/';
-    }
-
-    return `/${locale}${pathWithoutLocale}`;
+    return `/${locale}${pathWithoutLocale === '/' ? '' : pathWithoutLocale || ''}`;
 }
 
 export function getPathnameWithoutLocale(pathname: string): string {

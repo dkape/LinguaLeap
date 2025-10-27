@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../config/database');
 
 // Create a new challenge
 const createChallenge = async (req, res) => {

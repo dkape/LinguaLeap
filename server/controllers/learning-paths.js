@@ -1,5 +1,5 @@
 
-const pool = require('../config/db');
+const pool = require('../config/database');
 
 const createLearningPath = async (req, res) => {
   const { title, description, levels } = req.body;
