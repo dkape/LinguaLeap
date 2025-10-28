@@ -24,7 +24,9 @@ export function middleware(request: NextRequest) {
     const locale = getLocale(request);
     const localizedPath = getLocalizedPath(pathname, locale);
     
-    const response = NextResponse.redirect(new URL(localizedPath, request.url));
+    const newUrl = new URL(localizedPath, request.url);
+    newUrl.search = request.nextUrl.search;
+    const response = NextResponse.redirect(newUrl);
     
     // Set locale cookie
     response.cookies.set('locale', locale, {

@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +20,7 @@ function VerifyEmailContent() {
   const { locale } = useLocale();
   const { t } = useTranslation();
   const token = searchParams.get('token');
+  const verificationSent = useRef(false);
 
   useEffect(() => {
     if (!token) {
@@ -47,7 +48,10 @@ function VerifyEmailContent() {
       }
     };
 
-    verifyEmail(token);
+    if (!verificationSent.current) {
+      verificationSent.current = true;
+      verifyEmail(token);
+    }
   }, [token, t]);
 
 

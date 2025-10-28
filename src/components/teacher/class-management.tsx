@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
 interface StudentClass {
-  id: number;
+  _id: string;
   name: string;
   description: string;
   language: 'de' | 'en';
@@ -24,7 +24,7 @@ interface StudentClass {
 }
 
 interface Student {
-  id: number;
+  _id: string;
   name: string;
   email: string;
   avatarUrl: string;
@@ -54,6 +54,7 @@ export function ClassManagement() {
   const fetchClasses = useCallback(async () => {
     try {
       const response = await axios.get('/classes/teacher');
+      console.log('API response for classes:', response.data.classes);
       setClasses(response.data.classes);
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -69,7 +70,7 @@ export function ClassManagement() {
     fetchClasses();
   }, [fetchClasses]);
 
-  const fetchClassDetails = async (classId: number) => {
+  const fetchClassDetails = async (classId: string) => {
     try {
       const response = await axios.get(`/classes/${classId}`);
       setSelectedClass(response.data.class);
@@ -121,7 +122,7 @@ export function ClassManagement() {
 
     setIsLoading(true);
     try {
-      await axios.post(`/classes/${selectedClass.id}/students`, {
+      await axios.post(`/classes/${selectedClass._id}/students`, {
         studentEmail: newStudentEmail
       });
       toast({
@@ -130,7 +131,7 @@ export function ClassManagement() {
       });
       setIsAddStudentDialogOpen(false);
       setNewStudentEmail('');
-      fetchClassDetails(selectedClass.id);
+      fetchClassDetails(selectedClass._id);
     } catch (error: unknown) {
       console.error('Error adding student:', error);
       toast({
@@ -143,16 +144,16 @@ export function ClassManagement() {
     }
   };
 
-  const removeStudentFromClass = async (studentId: number) => {
+  const removeStudentFromClass = async (studentId: string) => {
     if (!selectedClass) return;
 
     try {
-      await axios.delete(`/classes/${selectedClass.id}/students/${studentId}`);
+      await axios.delete(`/classes/${selectedClass._id}/students/${studentId}`);
       toast({
         title: 'Erfolg',
         description: 'Schüler wurde aus der Klasse entfernt.'
       });
-      fetchClassDetails(selectedClass.id);
+      fetchClassDetails(selectedClass._id);
     } catch (error) {
       console.error('Error removing student:', error);
       toast({
@@ -243,7 +244,7 @@ export function ClassManagement() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {classes.map((cls) => (
-          <Card key={cls.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => fetchClassDetails(cls.id)}>
+          <Card key={cls._id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => fetchClassDetails(cls._id)}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>{cls.name}</span>
@@ -314,7 +315,7 @@ export function ClassManagement() {
               ) : (
                 <div className="space-y-2">
                   {students.map((student) => (
-                    <div key={student.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div key={student._id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center space-x-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -335,7 +336,7 @@ export function ClassManagement() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeStudentFromClass(student.id)}
+                          onClick={() => removeStudentFromClass(student._id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

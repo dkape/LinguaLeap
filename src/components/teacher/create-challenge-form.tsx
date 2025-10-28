@@ -27,7 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
 
 interface StudentClass {
-  id: number;
+  _id: string;
   name: string;
   language: 'de' | 'en';
   age_range: string;
@@ -109,16 +109,26 @@ export function CreateChallengeForm() {
         language: formValues.language,
         age_range: formValues.age_range,
         reading_level: formValues.reading_level,
-        class_id: formValues.class_id ? parseInt(formValues.class_id) : null,
+        class_id: formValues.class_id || null,
         total_points: challenge.total_points,
         time_limit_minutes: challenge.estimated_time_minutes,
-        items: challenge.items.map((item) => ({
+        items: challenge.items.map((item, index) => ({
           type: item.type,
           title: item.title,
           content: item.content,
-          points_value: item.points_value,
-          time_estimate_seconds: item.estimated_reading_time || 60,
-          questions: item.questions || []
+          pointsValue: item.points_value,
+          orderIndex: index,
+          estimatedReadingTime: item.estimated_reading_time || 60,
+          questions: (item.questions || []).map((q, qIndex) => ({
+            question: q.question,
+            pointsValue: q.points_value,
+            orderIndex: qIndex,
+            correctAnswer: q.correct_answer,
+            optionA: q.option_a,
+            optionB: q.option_b,
+            optionC: q.option_c,
+            optionD: q.option_d
+          }))
         })),
       });
       
@@ -265,9 +275,8 @@ export function CreateChallengeForm() {
                             <SelectTrigger><SelectValue placeholder="Klasse wählen" /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Keine Klasse</SelectItem>
                             {classes.map((cls) => (
-                              <SelectItem key={cls.id} value={cls.id.toString()}>
+                              <SelectItem key={cls._id} value={cls._id}>
                                 {cls.name} ({cls.student_count} Schüler)
                               </SelectItem>
                             ))}

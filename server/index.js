@@ -12,6 +12,7 @@ const challengeRoutes = require('./routes/challenges');
 const learningPathRoutes = require('./routes/learning-paths');
 
 const app = express();
+app.set('trust proxy', 1); // Trust reverse proxy
 const port = process.env.PORT || 3001;
 
 const corsOptions = {

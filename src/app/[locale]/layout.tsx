@@ -29,26 +29,18 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const dict = await getDictionary(locale);
 
   return (
-    <html lang={locale}>
-      <head>
-        <title>{dict.app.title}</title>
-        <meta name="description" content={dict.app.description} />
-      </head>
-      <body>
-        <LocaleProvider locale={locale} dict={dict}>
-          <AuthProvider>
-            <div className="min-h-screen bg-background">
-              {/* Language switcher in top right */}
-              <div className="absolute top-4 right-4 z-50">
-                <LanguageSwitcher currentLocale={locale} />
-              </div>
-              
-              {children}
-            </div>
-            <Toaster />
-          </AuthProvider>
-        </LocaleProvider>
-      </body>
-    </html>
+    <LocaleProvider locale={locale} dict={dict}>
+      <AuthProvider>
+        <div className="min-h-screen bg-background">
+          {/* Language switcher in top right */}
+          <div className="absolute top-4 right-4 z-50">
+            <LanguageSwitcher currentLocale={locale} />
+          </div>
+          
+          {children}
+        </div>
+        <Toaster />
+      </AuthProvider>
+    </LocaleProvider>
   );
 }

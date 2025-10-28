@@ -1,4 +1,7 @@
-const pool = require('../config/database');
+const mongoose = require('mongoose');
+const Challenge = require('../models/Challenge');
+const ChallengeAttempt = require('../models/ChallengeAttempt');
+const StudentClass = require('../models/StudentClass');
 
 // Create a new challenge
 const createChallenge = async (req, res) => {
@@ -23,60 +26,34 @@ const createChallenge = async (req, res) => {
 
     // Verify class belongs to teacher if class_id is provided
     if (class_id) {
-      const [classCheck] = await pool.query(
-        'SELECT id FROM student_classes WHERE id = ? AND teacher_id = ?',
-        [class_id, teacher_id]
-      );
-
-      if (classCheck.length === 0) {
-        return res.status(404).json({ message: 'Class not found' });
+      if (typeof class_id !== 'string' || !mongoose.Types.ObjectId.isValid(class_id)) {
+        return res.status(400).json({ message: 'Invalid class ID format' });
+      }
+      const studentClass = await StudentClass.findOne({ _id: class_id, teacherId: teacher_id });
+      if (!studentClass) {
+        return res.status(404).json({ message: 'Class not found or you do not have permission' });
       }
     }
 
-    // Create challenge
-    const [challengeResult] = await pool.query(`
-      INSERT INTO challenges 
-      (title, description, topic, language, age_range, reading_level, teacher_id, class_id, total_points, time_limit_minutes) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [title, description, topic, language, age_range, reading_level, teacher_id, class_id, total_points, time_limit_minutes]);
+    const newChallenge = new Challenge({
+      title,
+      description,
+      topic,
+      language,
+      ageRange: age_range,
+      readingLevel: reading_level,
+      teacherId: teacher_id,
+      classId: class_id || null,
+      totalPoints: total_points,
+      timeLimitMinutes: time_limit_minutes,
+      items
+    });
 
-    const challengeId = challengeResult.insertId;
-
-    // Create challenge items
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const [itemResult] = await pool.query(`
-        INSERT INTO challenge_items 
-        (challenge_id, type, title, content, order_index, points_value, time_estimate_seconds) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `, [challengeId, item.type, item.title, item.content, i + 1, item.points_value || 10, item.time_estimate_seconds || 60]);
-
-      // If it's a quiz, create quiz questions
-      if (item.type === 'quiz' && item.questions) {
-        for (let j = 0; j < item.questions.length; j++) {
-          const question = item.questions[j];
-          await pool.query(`
-            INSERT INTO quiz_questions 
-            (challenge_item_id, question, option_a, option_b, option_c, option_d, correct_answer, points_value, order_index) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `, [
-            itemResult.insertId, 
-            question.question, 
-            question.option_a, 
-            question.option_b, 
-            question.option_c, 
-            question.option_d, 
-            question.correct_answer, 
-            question.points_value || 5, 
-            j + 1
-          ]);
-        }
-      }
-    }
+    const savedChallenge = await newChallenge.save();
 
     res.status(201).json({ 
       message: 'Challenge created successfully',
-      challengeId 
+      challengeId: savedChallenge._id
     });
   } catch (error) {
     console.error('Create challenge error:', error);
@@ -89,21 +66,42 @@ const getTeacherChallenges = async (req, res) => {
   const teacher_id = req.user.userId;
 
   try {
-    const [challenges] = await pool.query(`
-      SELECT 
-        c.*,
-        sc.name as class_name,
-        COUNT(DISTINCT ci.id) as item_count,
-        COUNT(DISTINCT sca.student_id) as attempt_count,
-        AVG(sca.total_points_earned) as avg_score
-      FROM challenges c
-      LEFT JOIN student_classes sc ON c.class_id = sc.id
-      LEFT JOIN challenge_items ci ON c.id = ci.challenge_id
-      LEFT JOIN student_challenge_attempts sca ON c.id = sca.challenge_id AND sca.status = 'completed'
-      WHERE c.teacher_id = ?
-      GROUP BY c.id
-      ORDER BY c.createdAt DESC
-    `, [teacher_id]);
+    const challenges = await Challenge.aggregate([
+      { $match: { teacherId: new mongoose.Types.ObjectId(teacher_id) } },
+      {
+        $lookup: {
+          from: 'studentclasses',
+          localField: 'classId',
+          foreignField: '_id',
+          as: 'classInfo'
+        }
+      },
+      {
+        $lookup: {
+          from: 'challengeattempts',
+          localField: '_id',
+          foreignField: 'challengeId',
+          as: 'attempts'
+        }
+      },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          topic: 1,
+          language: 1,
+          ageRange: 1,
+          readingLevel: 1,
+          isActive: 1,
+          createdAt: 1,
+          class_name: { $arrayElemAt: ['$classInfo.name', 0] },
+          item_count: { $size: '$items' },
+          attempt_count: { $size: '$attempts' },
+          avg_score: { $avg: '$attempts.totalPointsEarned' }
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
 
     res.status(200).json({ challenges });
   } catch (error) {
@@ -118,40 +116,22 @@ const getChallengeDetails = async (req, res) => {
   const teacher_id = req.user.userId;
 
   try {
-    // Get challenge info
-    const [challenge] = await pool.query(`
-      SELECT c.*, sc.name as class_name
-      FROM challenges c
-      LEFT JOIN student_classes sc ON c.class_id = sc.id
-      WHERE c.id = ? AND c.teacher_id = ?
-    `, [challengeId, teacher_id]);
+    const challenge = await Challenge.findOne({ _id: challengeId, teacherId: teacher_id })
+      .populate('classId', 'name')
+      .lean();
 
-    if (challenge.length === 0) {
+    if (!challenge) {
       return res.status(404).json({ message: 'Challenge not found' });
     }
 
-    // Get challenge items
-    const [items] = await pool.query(`
-      SELECT * FROM challenge_items 
-      WHERE challenge_id = ? 
-      ORDER BY order_index
-    `, [challengeId]);
-
-    // Get quiz questions for quiz items
-    for (let item of items) {
-      if (item.type === 'quiz') {
-        const [questions] = await pool.query(`
-          SELECT * FROM quiz_questions 
-          WHERE challenge_item_id = ? 
-          ORDER BY order_index
-        `, [item.id]);
-        item.questions = questions;
-      }
+    // Attach class_name for consistency with getTeacherChallenges
+    if (challenge.classId) {
+      challenge.class_name = challenge.classId.name;
     }
 
     res.status(200).json({ 
-      challenge: challenge[0],
-      items 
+      challenge,
+      items: challenge.items
     });
   } catch (error) {
     console.error('Get challenge details error:', error);
@@ -164,31 +144,37 @@ const getStudentChallenges = async (req, res) => {
   const student_id = req.user.userId;
 
   try {
-    const [challenges] = await pool.query(`
-      SELECT 
-        c.*,
-        sc.name as class_name,
-        u.name as teacher_name,
-        sca.status as attempt_status,
-        sca.total_points_earned,
-        sca.total_time_spent_seconds,
-        sca.started_at,
-        sca.completed_at,
-        COUNT(DISTINCT ci.id) as total_items,
-        COUNT(DISTINCT sip.id) as completed_items
-      FROM challenges c
-      JOIN student_classes sc ON c.class_id = sc.id
-      JOIN class_memberships cm ON sc.id = cm.class_id
-      JOIN users u ON c.teacher_id = u.id
-      LEFT JOIN student_challenge_attempts sca ON c.id = sca.challenge_id AND sca.student_id = ?
-      LEFT JOIN challenge_items ci ON c.id = ci.challenge_id
-      LEFT JOIN student_item_progress sip ON sca.id = sip.attempt_id AND sip.status = 'completed'
-      WHERE cm.student_id = ? AND c.isActive = TRUE
-      GROUP BY c.id
-      ORDER BY c.createdAt DESC
-    `, [student_id, student_id]);
+    const studentClasses = await StudentClass.find({ students: student_id }).select('_id');
+    const classIds = studentClasses.map(c => c._id);
 
-    res.status(200).json({ challenges });
+    const challenges = await Challenge.find({
+      classId: { $in: classIds },
+      isActive: true
+    })
+    .populate('teacherId', 'name')
+    .populate('classId', 'name')
+    .lean();
+
+    const attempts = await ChallengeAttempt.find({ studentId: student_id }).lean();
+    const attemptsMap = new Map(attempts.map(a => [a.challengeId.toString(), a]));
+
+    const result = challenges.map(challenge => {
+      const attempt = attemptsMap.get(challenge._id.toString());
+      return {
+        ...challenge,
+        teacher_name: challenge.teacherId.name,
+        class_name: challenge.classId.name,
+        attempt_status: attempt ? attempt.status : 'not_started',
+        total_points_earned: attempt ? attempt.totalPointsEarned : null,
+        total_time_spent_seconds: attempt ? attempt.totalTimeSpentSeconds : null,
+        started_at: attempt ? attempt.startedAt : null,
+        completed_at: attempt ? attempt.completedAt : null,
+        total_items: challenge.items.length,
+        completed_items: attempt ? attempt.itemProgress.filter(p => p.status === 'completed').length : 0
+      };
+    });
+
+    res.status(200).json({ challenges: result });
   } catch (error) {
     console.error('Get student challenges error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -201,52 +187,40 @@ const startChallengeAttempt = async (req, res) => {
   const student_id = req.user.userId;
 
   try {
-    // Check if student has access to this challenge
-    const [accessCheck] = await pool.query(`
-      SELECT c.id
-      FROM challenges c
-      JOIN student_classes sc ON c.class_id = sc.id
-      JOIN class_memberships cm ON sc.id = cm.class_id
-      WHERE c.id = ? AND cm.student_id = ? AND c.isActive = TRUE
-    `, [challengeId, student_id]);
+    const challenge = await Challenge.findById(challengeId);
+    if (!challenge || !challenge.isActive) {
+      return res.status(404).json({ message: 'Challenge not found or is not active' });
+    }
 
-    if (accessCheck.length === 0) {
+    const isStudentInClass = await StudentClass.exists({ _id: challenge.classId, students: student_id });
+    if (!isStudentInClass) {
       return res.status(403).json({ message: 'Access denied to this challenge' });
     }
 
-    // Check if attempt already exists
-    const [existingAttempt] = await pool.query(
-      'SELECT id, status FROM student_challenge_attempts WHERE student_id = ? AND challenge_id = ?',
-      [student_id, challengeId]
-    );
+    let attempt = await ChallengeAttempt.findOne({ studentId: student_id, challengeId: challengeId });
 
-    let attemptId;
-    if (existingAttempt.length > 0) {
-      if (existingAttempt[0].status === 'completed') {
+    if (attempt) {
+      if (attempt.status === 'completed') {
         return res.status(400).json({ message: 'Challenge already completed' });
       }
-      attemptId = existingAttempt[0].id;
-      
-      // Update to in_progress if not started
-      if (existingAttempt[0].status === 'not_started') {
-        await pool.query(
-          'UPDATE student_challenge_attempts SET status = "in_progress", started_at = NOW() WHERE id = ?',
-          [attemptId]
-        );
+      if (attempt.status === 'not_started') {
+        attempt.status = 'in_progress';
+        attempt.startedAt = new Date();
+        await attempt.save();
       }
     } else {
-      // Create new attempt
-      const [result] = await pool.query(`
-        INSERT INTO student_challenge_attempts 
-        (student_id, challenge_id, status, started_at) 
-        VALUES (?, ?, 'in_progress', NOW())
-      `, [student_id, challengeId]);
-      attemptId = result.insertId;
+      attempt = new ChallengeAttempt({
+        studentId: student_id,
+        challengeId: challengeId,
+        status: 'in_progress',
+        startedAt: new Date()
+      });
+      await attempt.save();
     }
 
     res.status(200).json({ 
       message: 'Challenge attempt started',
-      attemptId 
+      attemptId: attempt._id
     });
   } catch (error) {
     console.error('Start challenge attempt error:', error);
@@ -260,33 +234,62 @@ const getClassLeaderboard = async (req, res) => {
   const teacher_id = req.user.userId;
 
   try {
-    // Verify class belongs to teacher
-    const [classCheck] = await pool.query(
-      'SELECT id FROM student_classes WHERE id = ? AND teacher_id = ?',
-      [classId, teacher_id]
-    );
-
-    if (classCheck.length === 0) {
-      return res.status(404).json({ message: 'Class not found' });
+    const studentClass = await StudentClass.findOne({ _id: classId, teacherId: teacher_id });
+    if (!studentClass) {
+      return res.status(404).json({ message: 'Class not found or you do not have permission' });
     }
 
-    const [leaderboard] = await pool.query(`
-      SELECT 
-        u.id,
-        u.name,
-        u.avatarUrl,
-        COALESCE(SUM(sca.total_points_earned), 0) as total_points,
-        COUNT(CASE WHEN sca.status = 'completed' THEN 1 END) as completed_challenges,
-        AVG(CASE WHEN sca.status = 'completed' THEN sca.total_time_spent_seconds END) as avg_completion_time,
-        ROW_NUMBER() OVER (ORDER BY COALESCE(SUM(sca.total_points_earned), 0) DESC) as rank_position
-      FROM class_memberships cm
-      JOIN users u ON cm.student_id = u.id
-      LEFT JOIN student_challenge_attempts sca ON u.id = sca.student_id
-      LEFT JOIN challenges c ON sca.challenge_id = c.id AND c.class_id = ?
-      WHERE cm.class_id = ?
-      GROUP BY u.id
-      ORDER BY total_points DESC, completed_challenges DESC
-    `, [classId, classId]);
+    const leaderboard = await ChallengeAttempt.aggregate([
+      { $match: { challengeId: { $in: await Challenge.find({ classId: classId }).distinct('_id') } } },
+      {
+        $group: {
+          _id: '$studentId',
+          total_points: { $sum: '$totalPointsEarned' },
+          completed_challenges: { $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] } },
+          avg_completion_time: { $avg: '$totalTimeSpentSeconds' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'studentInfo'
+        }
+      },
+      {
+        $unwind: '$studentInfo'
+      },
+      {
+        $project: {
+          id: '$_id',
+          name: '$studentInfo.name',
+          avatarUrl: '$studentInfo.avatarUrl',
+          total_points: 1,
+          completed_challenges: 1,
+          avg_completion_time: 1,
+          _id: 0
+        }
+      },
+      { $sort: { total_points: -1, completed_challenges: -1 } },
+      { 
+        $group: { 
+          _id: null, 
+          leaderboard: { $push: '$$ROOT' } 
+        } 
+      },
+      {
+        $unwind: { 
+          path: '$leaderboard', 
+          includeArrayIndex: 'rank_position' 
+        }
+      },
+      {
+        $replaceRoot: { 
+          newRoot: { $mergeObjects: [ '$leaderboard', { rank_position: { $add: ['$rank_position', 1] } } ] } 
+        }
+      }
+    ]);
 
     res.status(200).json({ leaderboard });
   } catch (error) {
