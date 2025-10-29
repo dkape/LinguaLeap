@@ -3,7 +3,12 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Medal, Award, Clock, Target } from 'lucide-react';
+import { Trophy, Medal, Award, Clock, Target, Flame, Star, Crown } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip } from '@/components/ui/tooltip';
+import { useTranslation } from '@/contexts/locale-context';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 
@@ -15,6 +20,19 @@ interface LeaderboardEntry {
   completed_challenges: number;
   avg_completion_time: number;
   rank_position: number;
+  rank_change: number;
+  badges: Array<{
+    id: string;
+    name: string;
+    icon: string;
+    rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  }>;
+  streak_days: number;
+  best_subjects: string[];
+  recent_achievements: Array<{
+    name: string;
+    earned_at: string;
+  }>;
 }
 
 interface StudentClass {
@@ -28,6 +46,9 @@ export function Leaderboard() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'allTime'>('weekly');
+  const [statFilter, setStatFilter] = useState<'points' | 'challenges' | 'streak'>('points');
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -128,8 +149,45 @@ export function Leaderboard() {
       </div>
 
       {/* Class Selection */}
-      <div className="flex flex-wrap gap-2">
-        {classes.map((cls) => (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div className="flex gap-2">
+            <Button
+              variant={timeframe === 'weekly' ? 'default' : 'outline'}
+              onClick={() => setTimeframe('weekly')}
+            >
+              {t('leaderboard.weekly')}
+            </Button>
+            <Button
+              variant={timeframe === 'monthly' ? 'default' : 'outline'}
+              onClick={() => setTimeframe('monthly')}
+            >
+              {t('leaderboard.monthly')}
+            </Button>
+            <Button
+              variant={timeframe === 'allTime' ? 'default' : 'outline'}
+              onClick={() => setTimeframe('allTime')}
+            >
+              {t('leaderboard.allTime')}
+            </Button>
+          </div>
+          <Select
+            value={statFilter}
+            onValueChange={(value) => setStatFilter(value as 'points' | 'challenges' | 'streak')}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={t('leaderboard.selectStat')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="points">{t('leaderboard.totalPoints')}</SelectItem>
+              <SelectItem value="challenges">{t('leaderboard.completedChallenges')}</SelectItem>
+              <SelectItem value="streak">{t('leaderboard.currentStreak')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          {classes.map((cls) => (
           <button
             key={cls.id}
             onClick={() => setSelectedClassId(cls.id)}

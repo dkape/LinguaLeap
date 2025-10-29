@@ -22,8 +22,20 @@ interface Challenge {
 interface StudentStats {
   totalPoints: number;
   completedChallenges: number;
+  activeChallenges: number;
   averageTime: number;
   currentRank: number;
+  weeklyProgress: number;
+  nextAchievement: {
+    name: string;
+    progress: number;
+    pointsNeeded: number;
+  };
+  recentActivity: Array<{
+    type: 'challenge_complete' | 'achievement_earned' | 'level_up';
+    title: string;
+    timestamp: string;
+  }>;
 }
 
 export default function StudentDashboard() {
@@ -46,15 +58,25 @@ export default function StudentDashboard() {
       const challenges = response.data.challenges;
       
       const completed = challenges.filter((c: Challenge) => c.attempt_status === 'completed');
+      const active = challenges.filter((c: Challenge) => c.attempt_status === 'in_progress');
       const totalPoints = completed.reduce((sum: number, c: Challenge) => sum + (c.total_points_earned || 0), 0);
       const totalTime = completed.reduce((sum: number, c: Challenge) => sum + (c.total_time_spent_seconds || 0), 0);
       const averageTime = completed.length > 0 ? totalTime / completed.length : 0;
 
+      // Get weekly progress and next achievement
+      const weeklyResponse = await axios.get('/student/weekly-progress');
+      const achievementResponse = await axios.get('/student/next-achievement');
+      const activityResponse = await axios.get('/student/recent-activity');
+
       setStats({
         totalPoints,
         completedChallenges: completed.length,
+        activeChallenges: active.length,
         averageTime,
-        currentRank: 0 // Will be updated from leaderboard
+        currentRank: 0, // Will be updated from leaderboard
+        weeklyProgress: weeklyResponse.data.progress,
+        nextAchievement: achievementResponse.data,
+        recentActivity: activityResponse.data.activities
       });
     } catch (error) {
       console.error('Error fetching student stats:', error);
@@ -138,6 +160,65 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Progress & Achievements */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('dashboard.student.weeklyProgress')}</CardTitle>
+            <CardDescription>{t('dashboard.student.weeklyProgressDesc')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('dashboard.student.progress')}</span>
+                <span className="text-sm text-muted-foreground">{stats.weeklyProgress}%</span>
+              </div>
+              <Progress value={stats.weeklyProgress} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('dashboard.student.nextAchievement')}</CardTitle>
+            <CardDescription>{stats.nextAchievement.name}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('dashboard.student.pointsNeeded')}</span>
+                <span className="text-sm text-muted-foreground">
+                  {stats.nextAchievement.pointsNeeded - totalPoints} {t('dashboard.student.pointsToGo')}
+                </span>
+              </div>
+              <Progress value={stats.nextAchievement.progress} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Activity */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('dashboard.student.recentActivity')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {stats.recentActivity.map((activity, index) => (
+              <div key={index} className="flex items-start space-x-4">
+                {activity.type === 'challenge_complete' && <Target className="h-5 w-5 text-green-500 mt-0.5" />}
+                {activity.type === 'achievement_earned' && <Trophy className="h-5 w-5 text-yellow-500 mt-0.5" />}
+                {activity.type === 'level_up' && <Star className="h-5 w-5 text-purple-500 mt-0.5" />}
+                <div>
+                  <p className="text-sm font-medium">{activity.title}</p>
+                  <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="challenges" className="space-y-6">

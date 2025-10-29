@@ -5,7 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Clock, Trophy, BookText, Play, CheckCircle, Users } from 'lucide-react';
+import { Clock, Trophy, BookText, Play, CheckCircle, Users, Sparkles, Star } from 'lucide-react';
+import { useTranslation } from '@/contexts/locale-context';
+import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useLocale } from '@/contexts/locale-context';
 import axios from 'axios';
@@ -30,11 +32,41 @@ interface Challenge {
   started_at: string | null;
   completed_at: string | null;
   createdAt: string;
+  difficulty_level: 1 | 2 | 3;
+  tags: string[];
+  estimated_completion_time: number;
+  recommended: boolean;
+  next_milestone: {
+    type: string;
+    points_needed: number;
+  };
 }
 
 export function ChallengeList() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'in_progress' | 'recommended'>('all');
+  const { t } = useTranslation();
+
+  const filteredChallenges = challenges.filter(challenge => {
+    if (filter === 'all') return true;
+    if (filter === 'in_progress') return challenge.attempt_status === 'in_progress';
+    if (filter === 'recommended') return challenge.recommended;
+    return true;
+  });
+
+  const getDifficultyBadge = (level: number) => {
+    const colors = {
+      1: 'bg-green-100 text-green-800',
+      2: 'bg-yellow-100 text-yellow-800',
+      3: 'bg-red-100 text-red-800'
+    };
+    return (
+      <Badge className={colors[level as 1 | 2 | 3]}>
+        {t(`challenges.difficulty.${level}`)}
+      </Badge>
+    );
+  };
   const router = useRouter();
   const { locale } = useLocale();
 
@@ -139,13 +171,40 @@ export function ChallengeList() {
         </Card>
       ) : (
         <div className="grid gap-6">
-          {challenges.map((challenge) => {
+          <div className="flex gap-4 mb-6">
+            <Button
+              variant={filter === 'all' ? 'default' : 'outline'}
+              onClick={() => setFilter('all')}
+            >
+              {t('challenges.allChallenges')}
+            </Button>
+            <Button
+              variant={filter === 'in_progress' ? 'default' : 'outline'}
+              onClick={() => setFilter('in_progress')}
+            >
+              {t('challenges.inProgress')}
+            </Button>
+            <Button
+              variant={filter === 'recommended' ? 'default' : 'outline'}
+              onClick={() => setFilter('recommended')}
+            >
+              {t('challenges.recommended')}
+            </Button>
+          </div>
+
+          {filteredChallenges.map((challenge) => {
             const progress = challenge.total_items > 0 
               ? (challenge.completed_items / challenge.total_items) * 100 
               : 0;
 
             return (
-              <Card key={challenge.id} className="hover:shadow-md transition-shadow">
+              <Card 
+                key={challenge.id} 
+                className={cn(
+                  "hover:shadow-md transition-shadow",
+                  challenge.recommended && "border-2 border-primary"
+                )}
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="space-y-2">
@@ -173,8 +232,20 @@ export function ChallengeList() {
                     </Badge>
                     <Badge variant="outline">
                       <Clock className="mr-1 h-3 w-3" />
-                      ~{challenge.time_limit_minutes} Min
+                      ~{challenge.estimated_completion_time} Min
                     </Badge>
+                    {getDifficultyBadge(challenge.difficulty_level)}
+                    {challenge.tags.map(tag => (
+                      <Badge key={tag} variant="outline" className="bg-blue-50 text-blue-800">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {challenge.recommended && (
+                      <Badge variant="outline" className="bg-purple-100 text-purple-800">
+                        <Sparkles className="mr-1 h-3 w-3" />
+                        {t('challenges.recommended')}
+                      </Badge>
+                    )}
                     <Badge variant="outline">
                       <BookText className="mr-1 h-3 w-3" />
                       {challenge.total_items} Aufgaben

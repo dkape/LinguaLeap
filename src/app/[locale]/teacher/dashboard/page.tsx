@@ -27,6 +27,12 @@ interface DashboardStats {
   totalClasses: number;
   totalChallenges: number;
   activeChallenges: number;
+  totalLearningPaths: number;
+  activeLearningPaths: number;
+  studentPerformance: {
+    avgCompletionRate: number;
+    avgScore: number;
+  };
 }
 
 export default function TeacherDashboard() {
@@ -45,9 +51,11 @@ export default function TeacherDashboard() {
 
   const fetchDashboardStats = async () => {
     try {
-      const [classesResponse, challengesResponse] = await Promise.all([
+      const [classesResponse, challengesResponse, learningPathsResponse, performanceResponse] = await Promise.all([
         axios.get('/classes/teacher'),
-        axios.get('/challenges/teacher')
+        axios.get('/challenges/teacher'),
+        axios.get('/learning-paths/teacher'),
+        axios.get('/analytics/teacher/performance')
       ]);
 
       const classes = classesResponse.data.classes;
@@ -56,11 +64,21 @@ export default function TeacherDashboard() {
       const totalStudents = classes.reduce((sum: number, cls: ClassData) => sum + cls.student_count, 0);
       const activeChallenges = challenges.filter((c: ChallengeData) => c.isActive).length;
 
+      const learningPaths = learningPathsResponse.data.learningPaths;
+      const activeLearningPaths = learningPaths.filter((p: any) => p.isActive).length;
+      const performance = performanceResponse.data;
+
       setStats({
         totalStudents,
         totalClasses: classes.length,
         totalChallenges: challenges.length,
-        activeChallenges
+        activeChallenges,
+        totalLearningPaths: learningPaths.length,
+        activeLearningPaths,
+        studentPerformance: {
+          avgCompletionRate: performance.averageCompletionRate,
+          avgScore: performance.averageScore
+        }
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -118,11 +136,41 @@ export default function TeacherDashboard() {
             <BookCopy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">{t('dashboard.teacher.created')}</p>
+            <div className="text-2xl font-bold">{stats.totalLearningPaths}</div>
+            <p className="text-xs text-muted-foreground">{stats.activeLearningPaths} {t('dashboard.teacher.activePaths')}</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Performance Analytics */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('dashboard.teacher.performanceAnalytics')}</CardTitle>
+          <CardDescription>{t('dashboard.teacher.performanceDescription')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('dashboard.teacher.avgCompletionRate')}</span>
+                <span className="text-sm text-muted-foreground">
+                  {Math.round(stats.studentPerformance.avgCompletionRate * 100)}%
+                </span>
+              </div>
+              <Progress value={stats.studentPerformance.avgCompletionRate * 100} className="h-2" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('dashboard.teacher.avgScore')}</span>
+                <span className="text-sm text-muted-foreground">
+                  {Math.round(stats.studentPerformance.avgScore * 100)}%
+                </span>
+              </div>
+              <Progress value={stats.studentPerformance.avgScore * 100} className="h-2" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="challenges" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
