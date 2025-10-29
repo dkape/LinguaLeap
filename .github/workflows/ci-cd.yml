@@ -37,39 +37,58 @@ jobs:
         # Note: cache disabled because we generate lock files dynamically
 
     # 1. Secrets Detection with TruffleHog
-    - name: TruffleHog OSS - Secrets Detection
+    - name: TruffleHog OSS - Secrets Detection (stable install)
       run: |
-        echo "🔍 Running TruffleHog secrets detection..."
-        
-        # Install TruffleHog
-        curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
-        
+        echo "🔍 Running TruffleHog secrets detection (pip install)..."
+
+        set -euo pipefail
+
+        # Ensure Python and pip are available
+        if ! command -v python3 >/dev/null 2>&1; then
+          echo "Installing python3..."
+          sudo apt-get update -y && sudo apt-get install -y python3 python3-venv python3-pip git
+        fi
+
+        # Use pip to install a known stable TruffleHog release
+        PIP_TRUFFLEHOG_VERSION="3.18.0" || true
+        python3 -m pip install --upgrade pip
+        python3 -m pip install "trufflehog==${PIP_TRUFFLEHOG_VERSION}" || python3 -m pip install trufflehog
+
+        # helper to run trufflehog safely
+        run_trufflehog() {
+          echo "Running: trufflehog $*"
+          if ! trufflehog "$@"; then
+            echo "TruffleHog completed with findings or errors (non-fatal)"
+            return 0
+          fi
+        }
+
         # Determine scan strategy based on event type
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           echo "📋 Pull request detected - scanning diff from base to head"
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-          
+
           if [ "$BASE_SHA" != "$HEAD_SHA" ]; then
             echo "🔄 Scanning commits from $BASE_SHA to $HEAD_SHA"
-            trufflehog git file://. --since-commit="$BASE_SHA" --branch="$HEAD_SHA" --only-verified --no-update || echo "TruffleHog completed with findings"
+            run_trufflehog git file://. --since-commit="$BASE_SHA" --branch="$HEAD_SHA" --only-verified --no-update || true
           else
             echo "⚠️ Base and head commits are identical, scanning entire repository"
-            trufflehog filesystem . --only-verified --no-update || echo "TruffleHog completed with findings"
+            run_trufflehog filesystem . --only-verified --no-update || true
           fi
         else
           # For push events, scan the last few commits or entire repo if it's the first commit
-          COMMIT_COUNT=$(git rev-list --count HEAD)
-          if [ "$COMMIT_COUNT" -gt 1 ]; then
+          COMMIT_COUNT=$(git rev-list --count HEAD || true)
+          if [ -n "$COMMIT_COUNT" ] && [ "$COMMIT_COUNT" -gt 1 ]; then
             echo "📋 Push event detected - scanning recent commits"
-            trufflehog git file://. --since-commit="HEAD~5" --branch="HEAD" --only-verified --no-update || echo "TruffleHog completed with findings"
+            run_trufflehog git file://. --since-commit="HEAD~5" --branch="HEAD" --only-verified --no-update || true
           else
             echo "📋 Initial commit detected - scanning entire repository"
-            trufflehog filesystem . --only-verified --no-update || echo "TruffleHog completed with findings"
+            run_trufflehog filesystem . --only-verified --no-update || true
           fi
         fi
-        
-        echo "✅ TruffleHog secrets detection completed"
+
+        echo "✅ TruffleHog secrets detection completed (non-fatal)"
       continue-on-error: true
 
     # 2. Generate package-lock.json files for dependency scanning
@@ -182,7 +201,7 @@ jobs:
           p/typescript
           p/react
           p/nodejs
-        generateSarif: "1"
+        sarif: true
       env:
         SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN || '' }}
       continue-on-error: true
