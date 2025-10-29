@@ -23,12 +23,6 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocale, useTranslation } from "@/contexts/locale-context";
 
-const formSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-});
-
 type AuthFormProps = {
   mode: 'login' | 'signup';
   role: UserRole;
@@ -42,11 +36,15 @@ export function AuthForm({ mode, role }: AuthFormProps) {
   const { locale } = useLocale();
   const { t } = useTranslation();
 
+  const formSchema = z.object({
+    name: z.string().optional(),
+    email: z.string().email({ message: t('validation.email') }),
+    password: z.string().min(6, { message: t('validation.passwordTooShort') }),
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema.extend({
       name: mode === 'signup' ? z.string().min(2, t('validation.minLength', { min: '2' })) : z.string().optional(),
-      email: z.string().email(t('validation.email')),
-      password: z.string().min(6, t('validation.passwordTooShort')),
     })),
     defaultValues: {
       name: "",
@@ -77,7 +75,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
       }
     } catch (error: unknown) {
       console.error(error);
-      let errorMessage = "An unexpected error occurred. Please try again.";
+      let errorMessage = t('errors.general');
       
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response: { status: number; data: { message?: string; emailVerificationRequired?: boolean } } };
@@ -140,7 +138,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
                   <FormItem>
                     <FormLabel>{t('auth.signup.name')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('auth.signup.name')} {...field} />
+                      <Input placeholder={t('auth.signup.namePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +152,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
                 <FormItem>
                   <FormLabel>{t('auth.login.email')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder={t('auth.login.emailPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -167,7 +165,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
                 <FormItem>
                   <FormLabel>{t('auth.login.password')}</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder={t('auth.login.passwordPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -75,9 +75,7 @@ export default function TeacherDashboard() {
     <div className="space-y-6 p-6">
       <div>
         <h1 className="text-3xl font-bold font-headline">{t('dashboard.welcome')}, {user.name}!</h1>
-        <p className="text-muted-foreground">
-          Verwalten Sie Ihre Klassen, erstellen Sie spannende Herausforderungen und verfolgen Sie den Fortschritt Ihrer Schüler.
-        </p>
+        <p className="text-muted-foreground">{t('dashboard.teacher.description')}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -88,49 +86,49 @@ export default function TeacherDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalStudents}</div>
-            <p className="text-xs text-muted-foreground">in {stats.totalClasses} Klassen</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard.teacher.inClasses', { count: stats.totalClasses })}</p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Klassen</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.teacher.classes')}</CardTitle>
             <UsersIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalClasses}</div>
-            <p className="text-xs text-muted-foreground">aktive Klassen</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard.teacher.activeClasses')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Herausforderungen</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.teacher.challenges')}</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalChallenges}</div>
-            <p className="text-xs text-muted-foreground">{stats.activeChallenges} aktiv</p>
+            <p className="text-xs text-muted-foreground">{stats.activeChallenges} {t('dashboard.teacher.active')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Lernpfade</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.teacher.learningPaths')}</CardTitle>
             <BookCopy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">erstellt</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard.teacher.created')}</p>
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="challenges" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="challenges">Herausforderungen</TabsTrigger>
-          <TabsTrigger value="classes">Klassen</TabsTrigger>
-          <TabsTrigger value="learning-paths">Lernpfade</TabsTrigger>
+          <TabsTrigger value="challenges">{t('dashboard.teacher.challenges')}</TabsTrigger>
+          <TabsTrigger value="classes">{t('dashboard.teacher.classes')}</TabsTrigger>
+          <TabsTrigger value="learning-paths">{t('dashboard.teacher.learningPaths')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="challenges" className="space-y-6">

@@ -77,42 +77,40 @@ export default function StudentDashboard() {
         <h1 className="text-3xl font-bold font-headline mb-2">
           {t('dashboard.welcome')}, {user.name}!
         </h1>
-        <p className="text-muted-foreground">
-          Löse spannende Herausforderungen, sammle Punkte und klettere die Bestenliste hinauf!
-        </p>
+        <p className="text-muted-foreground">{t('dashboard.student.description')}</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Gesamtpunkte</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.student.totalPoints')}</CardTitle>
             <Trophy className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalPoints}</div>
             <p className="text-xs text-muted-foreground">
-              {user.points || 0} Gesamtpunkte
+              {t('dashboard.student.totalPointsSubtitle', { count: user.points || 0 })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Gelöste Herausforderungen</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.student.solvedChallenges')}</CardTitle>
             <Target className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.completedChallenges}</div>
             <p className="text-xs text-muted-foreground">
-              erfolgreich abgeschlossen
+              {t('dashboard.student.successfullyCompleted')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Durchschnittszeit</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.student.averageTime')}</CardTitle>
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -120,14 +118,14 @@ export default function StudentDashboard() {
               {stats.averageTime > 0 ? formatTime(stats.averageTime) : 'N/A'}
             </div>
             <p className="text-xs text-muted-foreground">
-              pro Herausforderung
+              {t('dashboard.student.perChallenge')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Aktueller Rang</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.student.currentRank')}</CardTitle>
             <BookText className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
@@ -135,7 +133,7 @@ export default function StudentDashboard() {
               {stats.currentRank > 0 ? `#${stats.currentRank}` : 'N/A'}
             </div>
             <p className="text-xs text-muted-foreground">
-              in deiner Klasse
+              {t('dashboard.student.inYourClass')}
             </p>
           </CardContent>
         </Card>
@@ -144,8 +142,8 @@ export default function StudentDashboard() {
       {/* Main Content Tabs */}
       <Tabs defaultValue="challenges" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="challenges">Meine Herausforderungen</TabsTrigger>
-          <TabsTrigger value="leaderboard">Bestenliste</TabsTrigger>
+          <TabsTrigger value="challenges">{t('dashboard.student.myChallenges')}</TabsTrigger>
+          <TabsTrigger value="leaderboard">{t('dashboard.student.leaderboard')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="challenges" className="space-y-6">

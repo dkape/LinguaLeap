@@ -1,12 +1,11 @@
 'use client';
 
-import axios from 'axios';
-import { useEffect, useState, Suspense, useRef } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
-import { useLocale, useTranslation } from '@/contexts/locale-context';
+import { useLocale } from '@/contexts/locale-context';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -17,68 +16,70 @@ function VerifyEmailContent() {
   const [isResending, setIsResending] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { locale } = useLocale();
-  const { t } = useTranslation();
   const token = searchParams.get('token');
-  const verificationSent = useRef(false);
+  const { dict, locale } = useLocale();
+  const t = dict.auth.verification;
 
   useEffect(() => {
     if (!token) {
       setStatus('error');
-      setMessage(t('auth.verification.invalidToken'));
+      setMessage(t.noToken);
       return;
     }
 
-    const verifyEmail = async (verificationToken: string) => {
-      try {
-        const response = await axios.get(`/auth/verify-email?token=${verificationToken}`);
-        const data = response.data;
-
-        if (response.status === 200) {
-          setStatus('success');
-          setMessage(data.message || t('auth.verification.successMessage'));
-        } else {
-          setStatus('error');
-          setMessage(data.message || t('auth.verification.invalidToken'));
-        }
-      } catch (error) {
-        const axiosError = error as { response?: { data?: { message?: string } } };
-        setStatus('error');
-        setMessage(axiosError.response?.data?.message || t('auth.verification.networkError'));
-      }
-    };
-
-    if (!verificationSent.current) {
-      verificationSent.current = true;
-      verifyEmail(token);
-    }
+    verifyEmail(token);
   }, [token, t]);
 
+  const verifyEmail = async (verificationToken: string) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${apiUrl}/auth/verify-email?token=${verificationToken}`);
+      const data = await response.json();
 
+      if (response.ok) {
+        setStatus('success');
+        setMessage(data.message);
+      } else {
+        setStatus('error');
+        setMessage(data.message || t.failed);
+      }
+    } catch {
+      setStatus('error');
+      setMessage(t.networkError);
+    }
+  };
 
   const handleResendVerification = async () => {
-    const email = prompt(t('auth.verification.enterEmail'));
+    const email = prompt(t.enterEmail);
     if (!email) return;
 
     setIsResending(true);
     try {
-      const response = await axios.post('/auth/resend-verification', { email });
-      const data = response.data;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${apiUrl}/auth/resend-verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
       
-      if (response.status === 200) {
-        alert(data.message || t('auth.verification.resendSuccess'));
+      if (response.ok) {
+        alert(t.resendSuccess);
       } else {
-        alert(data.message || t('errors.general'));
+        alert(data.message || t.resendFailed);
       }
     } catch {
-      alert(t('auth.verification.networkError'));
+      alert(t.networkError);
     } finally {
       setIsResending(false);
     }
   };
 
   const handleGoToLogin = () => {
-    router.push(`/${locale}/login/student`);
+    router.push(`/${locale}/login`);
   };
 
   return (
@@ -91,9 +92,9 @@ function VerifyEmailContent() {
             {status === 'error' && <XCircle className="h-12 w-12 text-red-600" />}
           </div>
           <CardTitle className="text-2xl font-bold">
-            {status === 'loading' && t('auth.verification.verifying')}
-            {status === 'success' && t('auth.verification.success')}
-            {status === 'error' && t('auth.verification.failed')}
+            {status === 'loading' && t.verifying}
+            {status === 'success' && t.success}
+            {status === 'error' && t.failed}
           </CardTitle>
           <CardDescription>
             {message}
@@ -102,7 +103,7 @@ function VerifyEmailContent() {
         <CardContent className="space-y-4">
           {status === 'success' && (
             <Button onClick={handleGoToLogin} className="w-full">
-              {t('auth.verification.goToLogin')}
+              {t.goToLogin}
             </Button>
           )}
           
@@ -117,17 +118,17 @@ function VerifyEmailContent() {
                 {isResending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('auth.verification.sending')}
+                    {t.sending}
                   </>
                 ) : (
                   <>
                     <Mail className="mr-2 h-4 w-4" />
-                    {t('auth.verification.resendVerification')}
+                    {t.resendVerification}
                   </>
                 )}
               </Button>
               <Button onClick={handleGoToLogin} variant="ghost" className="w-full">
-                {t('auth.verification.goToLogin')}
+                {t.backToLogin}
               </Button>
             </div>
           )}
@@ -137,21 +138,28 @@ function VerifyEmailContent() {
   );
 }
 
+function VerifyEmailLoading() {
+  const { dict } = useLocale();
+  const t = dict.auth.verification;
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4">
+            <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
+          </div>
+          <CardTitle className="text-2xl font-bold">{t.loading}</CardTitle>
+          <CardDescription>{t.waitMessage}</CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
+  )
+}
+
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4">
-              <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Loading...</CardTitle>
-            <CardDescription>Please wait while we verify your email.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    }>
+    <Suspense fallback={<VerifyEmailLoading />}>
       <VerifyEmailContent />
     </Suspense>
   );

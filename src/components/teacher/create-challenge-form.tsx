@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { generateChallenge, GenerateChallengeOutput } from "@/ai/flows/generate-challenge";
 import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
+import { useDictionary } from '@/contexts/locale-context';
 
 import axios from 'axios';
 
@@ -48,6 +49,7 @@ export function CreateChallengeForm() {
   const [challenge, setChallenge] = useState<GenerateChallengeOutput | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const dict = useDictionary();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -83,15 +85,15 @@ export function CreateChallengeForm() {
       });
       setChallenge(result);
       toast({
-        title: "Erfolg!",
-        description: "Ihre neue Herausforderung wurde generiert.",
+        title: dict.createChallengeForm.successToastTitle,
+        description: dict.createChallengeForm.successToastDescription,
       });
     } catch (error) {
       console.error("Error generating challenge:", error);
       toast({
         variant: "destructive",
-        title: "Fehler!",
-        description: "Es gab ein Problem beim Generieren der Herausforderung. Bitte versuchen Sie es erneut.",
+        title: dict.createChallengeForm.errorToastTitle,
+        description: dict.createChallengeForm.errorToastDescription,
       });
     }
   }
@@ -133,8 +135,8 @@ export function CreateChallengeForm() {
       });
       
       toast({
-        title: "Herausforderung gespeichert!",
-        description: "Die neue Herausforderung ist jetzt für Ihre Schüler verfügbar.",
+        title: dict.createChallengeForm.saveSuccessToastTitle,
+        description: dict.createChallengeForm.saveSuccessToastDescription,
       });
       setChallenge(null);
       form.reset();
@@ -142,8 +144,8 @@ export function CreateChallengeForm() {
       console.error("Error saving challenge:", error);
       toast({
         variant: "destructive",
-        title: "Speichern fehlgeschlagen",
-        description: "Die Herausforderung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+        title: dict.createChallengeForm.saveErrorToastTitle,
+        description: dict.createChallengeForm.saveErrorToastDescription,
       });
     } finally {
       setIsSaving(false);
@@ -158,11 +160,10 @@ export function CreateChallengeForm() {
         <CardHeader>
           <div className='flex items-center gap-2'>
             <Wand2 className='h-6 w-6 text-primary' />
-            <CardTitle className="text-2xl font-headline">Herausforderung erstellen</CardTitle>
+            <CardTitle className="text-2xl font-headline">{dict.createChallengeForm.title}</CardTitle>
           </div>
           <CardDescription>
-            Verwenden Sie KI, um sofort eine maßgeschneiderte Lese-Herausforderung für Ihre Schüler zu generieren. 
-            Geben Sie einfach das Thema und die Schülerdetails an.
+            {dict.createChallengeForm.description}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -175,11 +176,11 @@ export function CreateChallengeForm() {
                     name="topic"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Thema</FormLabel>
+                        <FormLabel>{dict.createChallengeForm.topicLabel}</FormLabel>
                         <FormControl>
-                          <Input placeholder="z.B. Das Sonnensystem, Dinosaurier, Märchen" {...field} />
+                          <Input placeholder={dict.createChallengeForm.topicPlaceholder} {...field} />
                         </FormControl>
-                        <FormDescription>Welches Thema möchten Sie unterrichten?</FormDescription>
+                        <FormDescription>{dict.createChallengeForm.topicDescription}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -189,15 +190,15 @@ export function CreateChallengeForm() {
                     name="class_description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Klassenbeschreibung</FormLabel>
+                        <FormLabel>{dict.createChallengeForm.classDescriptionLabel}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="z.B. Eine Klasse von 2. Klässlern, die gerne Geschichten über Tiere und Abenteuer hören."
+                            placeholder={dict.createChallengeForm.classDescriptionPlaceholder}
                             className="resize-none"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>Beschreiben Sie Ihre Schüler, um den Inhalt anzupassen.</FormDescription>
+                        <FormDescription>{dict.createChallengeForm.classDescriptionDescription}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -209,16 +210,16 @@ export function CreateChallengeForm() {
                     name="age_range"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Altersbereich</FormLabel>
+                        <FormLabel>{dict.createChallengeForm.ageRangeLabel}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder="Altersbereich wählen" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.ageRangePlaceholder} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="5-6">5-6 Jahre</SelectItem>
-                            <SelectItem value="7-8">7-8 Jahre</SelectItem>
-                            <SelectItem value="9-10">9-10 Jahre</SelectItem>
-                            <SelectItem value="11-12">11-12 Jahre</SelectItem>
+                            <SelectItem value="5-6">{dict.createChallengeForm.ageRange5_6}</SelectItem>
+                            <SelectItem value="7-8">{dict.createChallengeForm.ageRange7_8}</SelectItem>
+                            <SelectItem value="9-10">{dict.createChallengeForm.ageRange9_10}</SelectItem>
+                            <SelectItem value="11-12">{dict.createChallengeForm.ageRange11_12}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -230,15 +231,15 @@ export function CreateChallengeForm() {
                     name="reading_level"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Leseniveau</FormLabel>
+                        <FormLabel>{dict.createChallengeForm.readingLevelLabel}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder="Leseniveau wählen" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.readingLevelPlaceholder} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="beginner">Anfänger</SelectItem>
-                            <SelectItem value="intermediate">Fortgeschritten</SelectItem>
-                            <SelectItem value="advanced">Experte</SelectItem>
+                            <SelectItem value="beginner">{dict.createChallengeForm.readingLevelBeginner}</SelectItem>
+                            <SelectItem value="intermediate">{dict.createChallengeForm.readingLevelIntermediate}</SelectItem>
+                            <SelectItem value="advanced">{dict.createChallengeForm.readingLevelAdvanced}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -250,14 +251,14 @@ export function CreateChallengeForm() {
                     name="language"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Sprache</FormLabel>
+                        <FormLabel>{dict.createChallengeForm.languageLabel}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder="Sprache wählen" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.languagePlaceholder} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="de">Deutsch</SelectItem>
-                            <SelectItem value="en">Englisch</SelectItem>
+                            <SelectItem value="de">{dict.createChallengeForm.languageGerman}</SelectItem>
+                            <SelectItem value="en">{dict.createChallengeForm.languageEnglish}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -269,20 +270,20 @@ export function CreateChallengeForm() {
                     name="class_id"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Klasse zuweisen (optional)</FormLabel>
+                        <FormLabel>{dict.createChallengeForm.assignToClassLabel}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder="Klasse wählen" /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.assignToClassPlaceholder} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {classes.map((cls) => (
                               <SelectItem key={cls._id} value={cls._id}>
-                                {cls.name} ({cls.student_count} Schüler)
+                                {cls.name} ({cls.student_count} {dict.createChallengeForm.studentsLabel})
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormDescription>Wählen Sie eine Klasse, um die Herausforderung zuzuweisen.</FormDescription>
+                        <FormDescription>{dict.createChallengeForm.assignToClassDescription}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -294,12 +295,12 @@ export function CreateChallengeForm() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generiere...
+                    {dict.createChallengeForm.generatingButton}
                   </>
                 ) : (
                   <>
                     <Wand2 className="mr-2 h-4 w-4" />
-                    Herausforderung generieren
+                    {dict.createChallengeForm.generateButton}
                   </>
                 )}
               </Button>
@@ -311,7 +312,7 @@ export function CreateChallengeForm() {
       {isSubmitting && (
         <div className="text-center p-8">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary mb-4" />
-          <p className="text-muted-foreground">Unsere KI erstellt die perfekte Herausforderung... Bitte warten.</p>
+          <p className="text-muted-foreground">{dict.createChallengeForm.generatingMessage}</p>
         </div>
       )}
 
@@ -323,22 +324,22 @@ export function CreateChallengeForm() {
             <div className="flex gap-4 mt-4">
               <Badge variant="secondary">
                 <Trophy className="mr-1 h-3 w-3" />
-                {challenge.total_points} Punkte
+                {challenge.total_points} {dict.createChallengeForm.pointsLabel}
               </Badge>
               <Badge variant="secondary">
                 <Clock className="mr-1 h-3 w-3" />
-                ~{challenge.estimated_time_minutes} Min
+                ~{challenge.estimated_time_minutes} {dict.createChallengeForm.minutesLabel}
               </Badge>
               <Badge variant="secondary">
                 <BookText className="mr-1 h-3 w-3" />
-                {challenge.items.length} Aufgaben
+                {challenge.items.length} {dict.createChallengeForm.tasksLabel}
               </Badge>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">Quellen:</h4>
+                <h4 className="font-semibold mb-2">{dict.createChallengeForm.sourcesLabel}</h4>
                 <div className="flex flex-wrap gap-2">
                   {challenge.source_references.map((source, index) => (
                     <Badge key={index} variant="outline">{source}</Badge>
@@ -358,7 +359,7 @@ export function CreateChallengeForm() {
                         )}
                         <span>{item.title}</span>
                         <Badge variant="outline" className="ml-2">
-                          {item.points_value} Punkte
+                          {item.points_value} {dict.createChallengeForm.pointsLabel}
                         </Badge>
                       </div>
                     </AccordionTrigger>
@@ -370,19 +371,19 @@ export function CreateChallengeForm() {
                         
                         {item.source_reference && (
                           <p className="text-xs text-muted-foreground italic">
-                            Quelle: {item.source_reference}
+                            {dict.createChallengeForm.sourceLabel}: {item.source_reference}
                           </p>
                         )}
                         
                         {item.word_count && (
                           <p className="text-xs text-muted-foreground">
-                            Wörter: {item.word_count} | Geschätzte Lesezeit: {Math.ceil((item.estimated_reading_time || 0) / 60)} Min
+                            {dict.createChallengeForm.wordsLabel}: {item.word_count} | {dict.createChallengeForm.estimatedReadingTimeLabel}: {Math.ceil((item.estimated_reading_time || 0) / 60)} {dict.createChallengeForm.minutesLabel}
                           </p>
                         )}
                         
                         {item.questions && item.questions.length > 0 && (
                           <div className="mt-4">
-                            <h5 className="font-semibold mb-2">Quiz-Fragen:</h5>
+                            <h5 className="font-semibold mb-2">{dict.createChallengeForm.quizQuestionsLabel}</h5>
                             {item.questions.map((question, qIndex) => (
                               <div key={qIndex} className="mb-4 p-3 border rounded">
                                 <p className="font-medium mb-2">{question.question}</p>
@@ -401,7 +402,7 @@ export function CreateChallengeForm() {
                                   </div>
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                  Punkte: {question.points_value}
+                                  {dict.createChallengeForm.pointsLabel}: {question.points_value}
                                 </p>
                               </div>
                             ))}
@@ -419,10 +420,10 @@ export function CreateChallengeForm() {
               {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Speichere...
+                  {dict.createChallengeForm.savingButton}
                 </>
               ) : (
-                "Herausforderung speichern"
+                dict.createChallengeForm.saveButton
               )}
             </Button>
           </CardFooter>
