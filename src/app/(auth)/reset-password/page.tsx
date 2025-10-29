@@ -19,6 +19,8 @@ import { useState, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from 'next/navigation';
+import { useLocale } from "@/contexts/locale-context";
+import { t } from "@/lib/dictionaries";
 
 const formSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
@@ -37,6 +39,7 @@ function ResetPasswordContent() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const { dict } = useLocale();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,22 +51,22 @@ function ResetPasswordContent() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!token) {
-      toast({ variant: 'destructive', title: "Error", description: "Invalid or missing reset token." });
+      toast({ variant: 'destructive', title: t(dict, 'auth.resetPassword.errorTitle'), description: t(dict, 'auth.resetPassword.invalidToken') });
       return;
     }
     setIsLoading(true);
     try {
       await resetPassword(token, values.password);
-      toast({ title: "Success", description: "Password reset successfully!" });
+      toast({ title: t(dict, 'auth.resetPassword.successTitle'), description: t(dict, 'auth.resetPassword.successDescription') });
     } catch (error: unknown) {
       console.error(error);
-      let errorMessage = "An unexpected error occurred. Please try again.";
+      let errorMessage = t(dict, 'auth.resetPassword.genericError');
       if (error instanceof Error) {
         errorMessage = error.message;
       }
       toast({
         variant: 'destructive',
-        title: "Error",
+        title: t(dict, 'auth.resetPassword.errorTitle'),
         description: errorMessage,
       });
     } finally {
@@ -74,8 +77,8 @@ function ResetPasswordContent() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-headline">Reset Password</CardTitle>
-        <CardDescription>Enter your new password.</CardDescription>
+        <CardTitle className="font-headline">{t(dict, 'auth.resetPassword.title')}</CardTitle>
+        <CardDescription>{t(dict, 'auth.resetPassword.description')}</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -85,7 +88,7 @@ function ResetPasswordContent() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>{t(dict, 'auth.resetPassword.passwordLabel')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -98,7 +101,7 @@ function ResetPasswordContent() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel>{t(dict, 'auth.resetPassword.confirmPasswordLabel')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -110,7 +113,7 @@ function ResetPasswordContent() {
           <CardFooter>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Reset Password
+              {t(dict, 'auth.resetPassword.button')}
             </Button>
           </CardFooter>
         </form>
@@ -120,12 +123,13 @@ function ResetPasswordContent() {
 }
 
 export default function ResetPasswordPage() {
+  const { dict } = useLocale();
   return (
     <Suspense fallback={
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">Reset Password</CardTitle>
-          <CardDescription>Loading...</CardDescription>
+          <CardTitle className="font-headline">{t(dict, 'auth.resetPassword.title')}</CardTitle>
+          <CardDescription>{t(dict, 'auth.resetPassword.loading')}</CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center py-8">
           <Loader2 className="h-8 w-8 animate-spin" />

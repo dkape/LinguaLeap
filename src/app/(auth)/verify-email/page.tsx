@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
+import { useLocale } from '@/contexts/locale-context';
+import { t } from '@/lib/dictionaries';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -16,16 +18,17 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get('token');
+  const { dict } = useLocale();
 
   useEffect(() => {
     if (!token) {
       setStatus('error');
-      setMessage('No verification token provided');
+      setMessage(t(dict, 'auth.verification.noToken'));
       return;
     }
 
     verifyEmail(token);
-  }, [token]);
+  }, [token, dict]);
 
   const verifyEmail = async (verificationToken: string) => {
     try {
@@ -38,16 +41,16 @@ function VerifyEmailContent() {
         setMessage(data.message);
       } else {
         setStatus('error');
-        setMessage(data.message || 'Verification failed');
+        setMessage(data.message || t(dict, 'auth.verification.failed'));
       }
     } catch {
       setStatus('error');
-      setMessage('Network error. Please try again.');
+      setMessage(t(dict, 'auth.verification.networkError'));
     }
   };
 
   const handleResendVerification = async () => {
-    const email = prompt('Please enter your email address to resend verification:');
+    const email = prompt(t(dict, 'auth.verification.enterEmail'));
     if (!email) return;
 
     setIsResending(true);
@@ -64,12 +67,12 @@ function VerifyEmailContent() {
       const data = await response.json();
       
       if (response.ok) {
-        alert('Verification email sent! Please check your inbox.');
+        alert(t(dict, 'auth.verification.resendSuccess'));
       } else {
-        alert(data.message || 'Failed to resend verification email');
+        alert(data.message || t(dict, 'auth.verification.resendFailed'));
       }
     } catch {
-      alert('Network error. Please try again.');
+      alert(t(dict, 'auth.verification.networkError'));
     } finally {
       setIsResending(false);
     }
@@ -89,9 +92,9 @@ function VerifyEmailContent() {
             {status === 'error' && <XCircle className="h-12 w-12 text-red-600" />}
           </div>
           <CardTitle className="text-2xl font-bold">
-            {status === 'loading' && 'Verifying Email...'}
-            {status === 'success' && 'Email Verified!'}
-            {status === 'error' && 'Verification Failed'}
+            {status === 'loading' && t(dict, 'auth.verification.verifying')}
+            {status === 'success' && t(dict, 'auth.verification.success')}
+            {status === 'error' && t(dict, 'auth.verification.failed')}
           </CardTitle>
           <CardDescription>
             {message}
@@ -100,7 +103,7 @@ function VerifyEmailContent() {
         <CardContent className="space-y-4">
           {status === 'success' && (
             <Button onClick={handleGoToLogin} className="w-full">
-              Go to Login
+              {t(dict, 'auth.verification.goToLogin')}
             </Button>
           )}
           
@@ -115,17 +118,17 @@ function VerifyEmailContent() {
                 {isResending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
+                    {t(dict, 'auth.verification.sending')}
                   </>
                 ) : (
                   <>
                     <Mail className="mr-2 h-4 w-4" />
-                    Resend Verification Email
+                    {t(dict, 'auth.verification.resendVerification')}
                   </>
                 )}
               </Button>
               <Button onClick={handleGoToLogin} variant="ghost" className="w-full">
-                Back to Login
+                {t(dict, 'auth.verification.backToLogin')}
               </Button>
             </div>
           )}
@@ -136,6 +139,7 @@ function VerifyEmailContent() {
 }
 
 export default function VerifyEmailPage() {
+  const { dict } = useLocale();
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -144,8 +148,8 @@ export default function VerifyEmailPage() {
             <div className="mx-auto mb-4">
               <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
             </div>
-            <CardTitle className="text-2xl font-bold">Loading...</CardTitle>
-            <CardDescription>Please wait while we verify your email.</CardDescription>
+            <CardTitle className="text-2xl font-bold">{t(dict, 'auth.verification.loading')}</CardTitle>
+            <CardDescription>{t(dict, 'auth.verification.waitMessage')}</CardDescription>
           </CardHeader>
         </Card>
       </div>

@@ -1,14 +1,20 @@
 import { AuthForm } from "@/components/auth/auth-form";
-import type { UserRole } from "@/lib/types";
+import { getDictionary, t } from "@/lib/dictionaries";
+import type { Locale, UserRole } from "@/lib/types";
 
 type SignupPageProps = {
-  params: Promise<{ role: UserRole }>;
+  params: {
+    role: UserRole;
+    locale: Locale;
+  };
 };
 
 export default async function SignupPage({ params }: SignupPageProps) {
-  const { role } = await params;
+  const { role, locale } = params;
+  const dict = await getDictionary(locale);
+
   if (role !== 'student' && role !== 'teacher') {
-    return <div>Invalid role specified.</div>
+    return <div>{t(dict, 'errors.invalidRole')}</div>
   }
   
   return <AuthForm mode="signup" role={role} />;

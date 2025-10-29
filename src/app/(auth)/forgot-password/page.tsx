@@ -19,6 +19,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLocale } from "@/contexts/locale-context";
+import { t } from "@/lib/dictionaries";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -31,6 +33,7 @@ export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { dict } = useLocale();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,16 +46,16 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
     try {
       await forgotPassword(values.email);
-      toast({ title: "Success", description: "Password reset email sent!" });
+      toast({ title: t(dict, 'auth.forgotPassword.successTitle'), description: t(dict, 'auth.forgotPassword.successDescription') });
     } catch (error: unknown) {
       console.error(error);
-      let errorMessage = "An unexpected error occurred. Please try again.";
+      let errorMessage = t(dict, 'auth.forgotPassword.genericError');
       if (error instanceof Error) {
         errorMessage = error.message;
       }
       toast({
         variant: 'destructive',
-        title: "Error",
+        title: t(dict, 'auth.forgotPassword.errorTitle'),
         description: errorMessage,
       });
     } finally {
@@ -63,8 +66,8 @@ export default function ForgotPasswordPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-headline">Forgot Password</CardTitle>
-        <CardDescription>Enter your email to reset your password.</CardDescription>
+        <CardTitle className="font-headline">{t(dict, 'auth.forgotPassword.title')}</CardTitle>
+        <CardDescription>{t(dict, 'auth.forgotPassword.description')}</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -74,9 +77,9 @@ export default function ForgotPasswordPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t(dict, 'auth.forgotPassword.emailLabel')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder={t(dict, 'auth.forgotPassword.emailPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -86,12 +89,12 @@ export default function ForgotPasswordPage() {
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Send Reset Email
+              {t(dict, 'auth.forgotPassword.button')}
             </Button>
             <div className="text-sm text-muted-foreground">
-              Remember your password?{" "}
+              {t(dict, 'auth.forgotPassword.rememberPassword')}{" "}
               <Link href="/login/student" className="text-primary hover:underline">
-                Login
+                {t(dict, 'auth.forgotPassword.loginLink')}
               </Link>
             </div>
           </CardFooter>

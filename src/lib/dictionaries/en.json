@@ -14,7 +14,9 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "toggleNavigation": "Toggle navigation menu"
+    "toggleNavigation": "Toggle navigation menu",
+    "thisMonth": "this month",
+    "newThisWeek": "{count} new this week"
   },
   "navigation": {
     "home": "Home",

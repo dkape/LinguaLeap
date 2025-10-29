@@ -14,7 +14,9 @@
     "confirm": "Bestätigen",
     "yes": "Ja",
     "no": "Nein",
-    "toggleNavigation": "Navigationsmenü umschalten"
+    "toggleNavigation": "Navigationsmenü umschalten",
+    "thisMonth": "diesen Monat",
+    "newThisWeek": "{count} neu diese Woche"
   },
   "navigation": {
     "home": "Startseite",
@@ -208,6 +210,14 @@
     "generatingButton": "Generiere...",
     "generateButton": "Herausforderung generieren",
     "generatingMessage": "Unsere KI erstellt die perfekte Herausforderung... Bitte warten.",
+    "pointsLabel": "Punkte",
+    "minutesLabel": "min",
+    "tasksLabel": "Aufgaben",
+    "sourcesLabel": "Quellen:",
+    "sourceLabel": "Quelle",
+    "wordsLabel": "Wörter",
+    "estimatedReadingTimeLabel": "Geschätzte Lesezeit",
+    "quizQuestionsLabel": "Quizfragen:",
     "savingButton": "Speichere...",
     "saveButton": "Herausforderung speichern",
     "successToastTitle": "Erfolg!",
