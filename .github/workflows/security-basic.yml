@@ -227,7 +227,7 @@ jobs:
 
     # 7. Upload security results as artifacts (for private repositories)
     - name: Upload Security Results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: basic-security-results
         path: |
