@@ -74,7 +74,7 @@ export function CreateLearningPathForm() {
     if (!learningPath || !user) return;
     setIsSaving(true);
     try {
-        await axios.post("/api/learning-paths", {
+        await axios.post("/learning-paths", {
             title: form.getValues('topic'),
             description: form.getValues('studentGroupDescription'),
             levels: learningPath.learningPath.map((item, index) => ({

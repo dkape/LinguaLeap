@@ -9,11 +9,10 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
 RUN npm config set registry https://registry.yarnpkg.com && \
-    npm config set network-timeout 600000 && \
     if [ -f package-lock.json ]; then \
-      npm ci; \
+      npm ci --network-timeout=600000; \
     else \
-      npm install && npm install --package-lock-only; \
+      npm install --network-timeout=600000 && npm install --package-lock-only --network-timeout=600000; \
     fi
 
 # Rebuild the source code only when needed
@@ -35,11 +34,10 @@ FROM base AS prod-deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm config set registry https://registry.yarnpkg.com && \
-    npm config set network-timeout 600000 && \
     if [ -f package-lock.json ]; then \
-      npm ci --omit=dev; \
+      npm ci --omit=dev --network-timeout=600000; \
     else \
-      npm install --omit=dev; \
+      npm install --omit=dev --network-timeout=600000; \
     fi
 
 # Production image, copy all the files and run next
