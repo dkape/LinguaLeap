@@ -24,7 +24,7 @@ import { generateChallenge, GenerateChallengeOutput } from "@/ai/flows/generate-
 import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/contexts/locale-context';
-import { EditChallengeDialog } from './edit-challenge-dialog';
+
 
 import axios from 'axios';
 
@@ -84,6 +84,21 @@ export function CreateChallengeForm() {
     fetchClasses();
     fetchChallenges();
   }, []);
+
+  useEffect(() => {
+    if (editingChallenge) {
+      form.reset({
+        topic: editingChallenge.topic,
+        class_description: editingChallenge.classDescription,
+        age_range: editingChallenge.ageRange,
+        reading_level: editingChallenge.readingLevel,
+        language: editingChallenge.language,
+        class_id: editingChallenge.classId,
+      });
+    } else {
+      form.reset();
+    }
+  }, [editingChallenge]);
 
   const fetchClasses = async () => {
     try {
@@ -191,7 +206,9 @@ export function CreateChallengeForm() {
       );
       toast({
         title: dict.createChallengeForm.statusUpdateSuccessTitle,
-        description: response.data.message,
+        description: response.data.isActive 
+          ? dict.createChallengeForm.statusUpdateSuccessDescriptionActive 
+          : dict.createChallengeForm.statusUpdateSuccessDescriptionInactive,
       });
     } catch (error) {
       console.error('Error toggling challenge status:', error);
@@ -241,7 +258,7 @@ export function CreateChallengeForm() {
                       challenge.isActive ? dict.createChallengeForm.deactivate : dict.createChallengeForm.activate
                     )}
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => setEditingChallenge(challenge)}>
                       {dict.common.edit}
                   </Button>
                 </CardFooter>
@@ -250,6 +267,8 @@ export function CreateChallengeForm() {
           </CardContent>
         </Card>
       )}
+
+
 
       <Card>
         <CardHeader>
@@ -387,18 +406,13 @@ export function CreateChallengeForm() {
               </div>
               
               <Button type="submit" size="lg" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {dict.createChallengeForm.generatingButton}
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    {dict.createChallengeForm.generateButton}
-                  </>
-                )}
+                {editingChallenge ? 'Update Challenge' : dict.createChallengeForm.generateButton}
               </Button>
+              {editingChallenge && (
+                <Button variant="ghost" onClick={() => setEditingChallenge(null)}>
+                  {dict.common.cancel}
+                </Button>
+              )}
             </form>
           </Form>
         </CardContent>

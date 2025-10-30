@@ -15,7 +15,8 @@ const createChallenge = async (req, res) => {
     class_id,
     items,
     total_points,
-    time_limit_minutes
+    time_limit_minutes,
+    class_description
   } = req.body;
   const teacher_id = req.user.userId;
 
@@ -46,7 +47,8 @@ const createChallenge = async (req, res) => {
       classId: class_id || null,
       totalPoints: total_points,
       timeLimitMinutes: time_limit_minutes,
-      items
+      items,
+      classDescription: class_description
     });
 
     const savedChallenge = await newChallenge.save();
@@ -97,7 +99,8 @@ const getTeacherChallenges = async (req, res) => {
           class_name: { $arrayElemAt: ['$classInfo.name', 0] },
           item_count: { $size: '$items' },
           attempt_count: { $size: '$attempts' },
-          avg_score: { $avg: '$attempts.totalPointsEarned' }
+          avg_score: { $avg: '$attempts.totalPointsEarned' },
+          classDescription: 1,
         }
       },
       { $sort: { createdAt: -1 } }

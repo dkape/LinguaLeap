@@ -8,6 +8,10 @@ const createLearningPath = async (req, res) => {
     const newLearningPath = new LearningPath({
       title,
       description,
+      studentGroupDescription,
+      ageRange,
+      readingLevel,
+      language,
       teacherId: teacher_id,
       levels
     });
@@ -23,7 +27,7 @@ const createLearningPath = async (req, res) => {
 
 const getTeacherLearningPaths = async (req, res) => {
   try {
-    const learningPaths = await LearningPath.find({ teacherId: req.user.userId });
+    const learningPaths = await LearningPath.find({ teacherId: req.user.userId }).select('-levels');
     res.json({ learningPaths });
   } catch (error) {
     console.error('Error fetching teacher learning paths:', error);
@@ -70,7 +74,11 @@ const updateLearningPath = async (req, res) => {
     // Update fields
     learningPath.title = title || learningPath.title;
     learningPath.description = description || learningPath.description;
-    // ... update other fields ...
+    learningPath.studentGroupDescription = req.body.studentGroupDescription || learningPath.studentGroupDescription;
+    learningPath.ageRange = req.body.ageRange || learningPath.ageRange;
+    learningPath.readingLevel = req.body.readingLevel || learningPath.readingLevel;
+    learningPath.language = req.body.language || learningPath.language;
+    learningPath.levels = levels || learningPath.levels;
 
     await learningPath.save();
 

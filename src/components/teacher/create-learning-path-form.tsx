@@ -25,7 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 import { useTranslation } from '@/contexts/locale-context';
-import { EditLearningPathDialog } from './edit-learning-path-dialog';
+
 
 interface ExistingLearningPath {
   _id: string;
@@ -146,7 +146,9 @@ export function CreateLearningPathForm() {
       );
       toast({
         title: t('createLearningPathForm.statusUpdateSuccessTitle'),
-        description: response.data.message,
+        description: response.data.isActive
+          ? t('createLearningPathForm.statusUpdateSuccessDescriptionActive')
+          : t('createLearningPathForm.statusUpdateSuccessDescriptionInactive'),
       });
     } catch (error) {
       console.error('Error toggling learning path status:', error);
@@ -193,7 +195,7 @@ export function CreateLearningPathForm() {
                       path.isActive ? t('createLearningPathForm.deactivate') : t('createLearningPathForm.activate')
                     )}
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setIsEditingPathId(path._id)}>
+                  <Button variant="outline" size="sm" onClick={() => setEditingPath(path)}>
                       {t('common.edit')}
                   </Button>
                 </CardFooter>
@@ -202,6 +204,8 @@ export function CreateLearningPathForm() {
           </CardContent>
         </Card>
       )}
+
+
 
       <Card>
         <CardHeader>
@@ -316,18 +320,13 @@ export function CreateLearningPathForm() {
               </div>
               
               <Button type="submit" size="lg" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('createLearningPathForm.generatingButton')}
-                  </>
-                ) : (
-                    <>
-                        <Wand2 className="mr-2 h-4 w-4" />
-                        {t('createLearningPathForm.generateButton')}
-                    </>
-                )}
+                {editingPath ? 'Update Learning Path' : t('createLearningPathForm.generateButton')}
               </Button>
+              {editingPath && (
+                <Button variant="ghost" onClick={() => setEditingPath(null)}>
+                  {t('common.cancel')}
+                </Button>
+              )}
             </form>
           </Form>
         </CardContent>

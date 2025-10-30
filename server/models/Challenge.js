@@ -123,7 +123,10 @@ const challengeSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  items: [challengeItemSchema]
+  items: [challengeItemSchema],
+  classDescription: {
+    type: String
+  }
 }, {
   timestamps: true
 });

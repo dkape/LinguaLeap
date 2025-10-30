@@ -28,7 +28,24 @@ const learningPathSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  levels: [learningPathItemSchema]
+  levels: [learningPathItemSchema],
+  studentGroupDescription: {
+    type: String
+  },
+  ageRange: {
+    type: String
+  },
+  readingLevel: {
+    type: String
+  },
+  language: {
+    type: String,
+    enum: ['en', 'de']
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
 }, {
   timestamps: true
 });
