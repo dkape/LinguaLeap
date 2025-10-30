@@ -32,7 +32,7 @@ export function CreateLearningPathForm() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const dict = t.createLearningPathForm;
+
 
   const formSchema = z.object({
     topic: z.string().min(3, { message: t('validation.minLength', { min: 3 }) }),
@@ -59,15 +59,15 @@ export function CreateLearningPathForm() {
       const result = await generateSuggestedLearningPath(values);
       setLearningPath(result);
       toast({
-        title: dict.successToastTitle,
-        description: dict.successToastDescription,
+        title: t('createLearningPathForm.successToastTitle'),
+        description: t('createLearningPathForm.successToastDescription'),
       });
     } catch (error) {
       console.error("Error generating learning path:", error);
       toast({
         variant: "destructive",
-        title: dict.errorToastTitle,
-        description: dict.errorToastDescription,
+        title: t('createLearningPathForm.errorToastTitle'),
+        description: t('createLearningPathForm.errorToastDescription'),
       });
     }
   }
@@ -86,8 +86,8 @@ export function CreateLearningPathForm() {
             })),
         });
         toast({
-            title: dict.saveSuccessToastTitle,
-            description: dict.saveSuccessToastDescription,
+            title: t('createLearningPathForm.saveSuccessToastTitle'),
+            description: t('createLearningPathForm.saveSuccessToastDescription'),
         });
         setLearningPath(null);
         form.reset();
@@ -96,8 +96,8 @@ export function CreateLearningPathForm() {
         console.error("Error saving learning path:", error);
         toast({
             variant: "destructive",
-            title: dict.saveErrorToastTitle,
-            description: dict.saveErrorToastDescription,
+            title: t('createLearningPathForm.saveErrorToastTitle'),
+            description: t('createLearningPathForm.saveErrorToastDescription'),
         });
     } finally {
         setIsSaving(false);
@@ -110,10 +110,10 @@ export function CreateLearningPathForm() {
         <CardHeader>
           <div className='flex items-center gap-2'>
             <Wand2 className='h-6 w-6 text-primary' />
-            <CardTitle className="text-2xl font-headline">{dict.title}</CardTitle>
+            <CardTitle className="text-2xl font-headline">{t('createLearningPathForm.title')}</CardTitle>
           </div>
           <CardDescription>
-            {dict.description}
+            {t('createLearningPathForm.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -126,11 +126,11 @@ export function CreateLearningPathForm() {
                     name="topic"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.topicLabel}</FormLabel>
+                        <FormLabel>{t('createLearningPathForm.topicLabel')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={dict.topicPlaceholder} {...field} />
+                          <Input placeholder={t('createLearningPathForm.topicPlaceholder')} {...field} />
                         </FormControl>
-                        <FormDescription>{dict.topicDescription}</FormDescription>
+                        <FormDescription>{t('createLearningPathForm.topicDescription')}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -140,15 +140,15 @@ export function CreateLearningPathForm() {
                     name="studentGroupDescription"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.studentGroupDescriptionLabel}</FormLabel>
+                        <FormLabel>{t('createLearningPathForm.studentGroupDescriptionLabel')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder={dict.studentGroupDescriptionPlaceholder}
+                            placeholder={t('createLearningPathForm.studentGroupDescriptionPlaceholder')}
                             className="resize-none"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>{dict.studentGroupDescriptionDescription}</FormDescription>
+                        <FormDescription>{t('createLearningPathForm.studentGroupDescriptionDescription')}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -160,16 +160,16 @@ export function CreateLearningPathForm() {
                         name="ageRange"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{dict.ageRangeLabel}</FormLabel>
+                            <FormLabel>{t('createLearningPathForm.ageRangeLabel')}</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                                <SelectTrigger><SelectValue placeholder={dict.ageRangePlaceholder} /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('createLearningPathForm.ageRangePlaceholder')} /></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="5-6">{dict.ageRange5_6}</SelectItem>
-                                <SelectItem value="7-8">{dict.ageRange7_8}</SelectItem>
-                                <SelectItem value="9-10">{dict.ageRange9_10}</SelectItem>
-                                <SelectItem value="11-12">{dict.ageRange11_12}</SelectItem>
+                                <SelectItem value="5-6">{t('createLearningPathForm.ageRange5_6')}</SelectItem>
+                                <SelectItem value="7-8">{t('createLearningPathForm.ageRange7_8')}</SelectItem>
+                                <SelectItem value="9-10">{t('createLearningPathForm.ageRange9_10')}</SelectItem>
+                                <SelectItem value="11-12">{t('createLearningPathForm.ageRange11_12')}</SelectItem>
                             </SelectContent>
                             </Select>
                             <FormMessage />
@@ -181,15 +181,15 @@ export function CreateLearningPathForm() {
                         name="readingLevel"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{dict.readingLevelLabel}</FormLabel>
+                            <FormLabel>{t('createLearningPathForm.readingLevelLabel')}</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                                <SelectTrigger><SelectValue placeholder={dict.readingLevelPlaceholder} /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('createLearningPathForm.readingLevelPlaceholder')} /></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="beginner">{dict.readingLevelBeginner}</SelectItem>
-                                <SelectItem value="intermediate">{dict.readingLevelIntermediate}</SelectItem>
-                                <SelectItem value="advanced">{dict.readingLevelAdvanced}</SelectItem>
+                                <SelectItem value="beginner">{t('createLearningPathForm.readingLevelBeginner')}</SelectItem>
+                                <SelectItem value="intermediate">{t('createLearningPathForm.readingLevelIntermediate')}</SelectItem>
+                                <SelectItem value="advanced">{t('createLearningPathForm.readingLevelAdvanced')}</SelectItem>
                             </SelectContent>
                             </Select>
                             <FormMessage />
@@ -201,14 +201,14 @@ export function CreateLearningPathForm() {
                         name="language"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>{dict.languageLabel}</FormLabel>
+                            <FormLabel>{t('createLearningPathForm.languageLabel')}</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                                <SelectTrigger><SelectValue placeholder={dict.languagePlaceholder} /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder={t('createLearningPathForm.languagePlaceholder')} /></SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="en">{dict.languageEnglish}</SelectItem>
-                                <SelectItem value="de">{dict.languageGerman}</SelectItem>
+                                <SelectItem value="en">{t('createLearningPathForm.languageEnglish')}</SelectItem>
+                                <SelectItem value="de">{t('createLearningPathForm.languageGerman')}</SelectItem>
                             </SelectContent>
                             </Select>
                             <FormMessage />
@@ -222,12 +222,12 @@ export function CreateLearningPathForm() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {dict.generatingButton}
+                    {t('createLearningPathForm.generatingButton')}
                   </>
                 ) : (
                     <>
                         <Wand2 className="mr-2 h-4 w-4" />
-                        {dict.generateButton}
+                        {t('createLearningPathForm.generateButton')}
                     </>
                 )}
               </Button>
@@ -239,15 +239,15 @@ export function CreateLearningPathForm() {
       {isSubmitting && (
         <div className="text-center p-8">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">{dict.generatingMessage}</p>
+            <p className="text-muted-foreground">{t('createLearningPathForm.generatingMessage')}</p>
         </div>
       )}
 
       {learningPath && (
         <Card className="mt-8">
             <CardHeader>
-                <CardTitle className="text-2xl font-headline">{dict.generatedTitle}</CardTitle>
-                <CardDescription>{dict.generatedDescription}</CardDescription>
+                <CardTitle className="text-2xl font-headline">{t('createLearningPathForm.generatedTitle')}</CardTitle>
+                <CardDescription>{t('createLearningPathForm.generatedDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <Accordion type="single" collapsible className="w-full">
@@ -268,7 +268,7 @@ export function CreateLearningPathForm() {
             </CardContent>
             <CardFooter>
                 <Button onClick={onSavePath} disabled={isSaving}>
-                    {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {dict.savingButton}</> : dict.saveButton}
+                    {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('createLearningPathForm.savingButton')}</> : t('createLearningPathForm.saveButton')}
                 </Button>
             </CardFooter>
         </Card>

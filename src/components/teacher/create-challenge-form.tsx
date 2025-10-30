@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { generateChallenge, GenerateChallengeOutput } from "@/ai/flows/generate-challenge";
 import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
-import { useDictionary } from '@/contexts/locale-context';
+import { useTranslation } from '@/contexts/locale-context';
 
 import axios from 'axios';
 
@@ -49,7 +49,7 @@ export function CreateChallengeForm() {
   const [challenge, setChallenge] = useState<GenerateChallengeOutput | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
-  const dict = useDictionary();
+  const { t, dict } = useTranslation();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

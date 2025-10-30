@@ -43,7 +43,13 @@ export default function TeacherDashboard() {
     totalStudents: 0,
     totalClasses: 0,
     totalChallenges: 0,
-    activeChallenges: 0
+    activeChallenges: 0,
+    totalLearningPaths: 0,
+    activeLearningPaths: 0,
+    studentPerformance: {
+      avgCompletionRate: 0,
+      avgScore: 0
+    }
   });
 
   useEffect(() => {
@@ -77,8 +83,8 @@ export default function TeacherDashboard() {
         totalLearningPaths: learningPaths.length,
         activeLearningPaths,
         studentPerformance: {
-          avgCompletionRate: performance.averageCompletionRate,
-          avgScore: performance.averageScore
+          avgCompletionRate: performance?.averageCompletionRate || 0,
+          avgScore: performance?.averageScore || 0
         }
       });
     } catch (error) {
