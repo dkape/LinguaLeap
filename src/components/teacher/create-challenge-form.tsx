@@ -35,6 +35,15 @@ interface StudentClass {
   student_count: number;
 }
 
+interface ExistingChallenge {
+  _id: string;
+  title: string;
+  description: string;
+  total_points: number;
+  time_limit_minutes: number;
+  isActive: boolean;
+}
+
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Thema muss mindestens 3 Zeichen lang sein." }),
   class_description: z.string().min(10, { message: "Beschreibung muss mindestens 10 Zeichen lang sein." }),
@@ -46,6 +55,7 @@ const formSchema = z.object({
 
 export function CreateChallengeForm() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
+  const [existingChallenges, setExistingChallenges] = useState<ExistingChallenge[]>([]);
   const [challenge, setChallenge] = useState<GenerateChallengeOutput | null>(null);
   const generatedCardRef = useRef<HTMLDivElement | null>(null);
     // Scroll to the generated card when it appears
@@ -69,6 +79,7 @@ export function CreateChallengeForm() {
 
   useEffect(() => {
     fetchClasses();
+    fetchChallenges();
   }, []);
 
   const fetchClasses = async () => {
@@ -77,6 +88,15 @@ export function CreateChallengeForm() {
       setClasses(response.data.classes);
     } catch (error) {
       console.error('Error fetching classes:', error);
+    }
+  };
+
+  const fetchChallenges = async () => {
+    try {
+      const response = await axios.get('/challenges/teacher');
+      setExistingChallenges(response.data.challenges);
+    } catch (error) {
+      console.error('Error fetching challenges:', error);
     }
   };
 
@@ -162,7 +182,37 @@ export function CreateChallengeForm() {
   const { isSubmitting } = form.formState;
 
   return (
-    <>
+    <div className="space-y-6">
+      {existingChallenges.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{dict.createChallengeForm.existingChallengesTitle}</CardTitle>
+            <CardDescription>{dict.createChallengeForm.existingChallengesDescription}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {existingChallenges.map((challenge) => (
+              <Card key={challenge._id}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{challenge.title}</CardTitle>
+                  <CardDescription>{challenge.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span><Trophy className="inline-block w-4 h-4 mr-1" /> {challenge.total_points} {dict.createChallengeForm.pointsLabel}</span>
+                    <span><Clock className="inline-block w-4 h-4 mr-1" /> {challenge.time_limit_minutes} {dict.createChallengeForm.minutesLabel}</span>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                    <Badge variant={challenge.isActive ? "default" : "secondary"}>
+                        {challenge.isActive ? dict.createChallengeForm.statusActive : dict.createChallengeForm.statusInactive}
+                    </Badge>
+                </CardFooter>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <div className='flex items-center gap-2'>
@@ -436,6 +486,6 @@ export function CreateChallengeForm() {
           </CardFooter>
         </Card>
       )}
-    </>
+    </div>
   );
 }

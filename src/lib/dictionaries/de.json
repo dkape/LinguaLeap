@@ -185,6 +185,10 @@
     "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein"
   },
   "createChallengeForm": {
+    "existingChallengesTitle": "Ihre Herausforderungen",
+    "existingChallengesDescription": "Hier sind die Herausforderungen, die Sie bereits erstellt haben.",
+    "statusActive": "Aktiv",
+    "statusInactive": "Inaktiv",
     "title": "Herausforderung erstellen",
     "description": "Verwenden Sie KI, um sofort eine maßgeschneiderte Lese-Herausforderung für Ihre Schüler zu generieren. Geben Sie einfach das Thema und die Schülerdetails an.",
     "topicLabel": "Thema",
@@ -235,6 +239,10 @@
     "saveErrorToastDescription": "Die Herausforderung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
   },
   "createLearningPathForm": {
+    "existingPathsTitle": "Ihre Lernpfade",
+    "existingPathsDescription": "Hier sind die Lernpfade, die Sie bereits erstellt haben.",
+    "statusActive": "Aktiv",
+    "statusInactive": "Inaktiv",
     "title": "Lernpfad erstellen",
     "description": "Nutzen Sie KI, um sofort einen maßgeschneiderten Lesekurs für Ihre Schüler zu erstellen. Geben Sie einfach das Thema und die Schülerdetails an.",
     "topicLabel": "Thema",

@@ -185,6 +185,10 @@
     "passwordTooShort": "Password must be at least 6 characters long"
   },
   "createChallengeForm": {
+    "existingChallengesTitle": "Your Challenges",
+    "existingChallengesDescription": "Here are the challenges you have already created.",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
     "title": "Create Challenge",
     "description": "Use AI to instantly generate a custom reading challenge for your students. Just provide the topic and student details.",
     "topicLabel": "Topic",
@@ -235,6 +239,10 @@
     "saveErrorToastDescription": "Could not save the challenge. Please try again."
   },
   "createLearningPathForm": {
+    "existingPathsTitle": "Your Learning Paths",
+    "existingPathsDescription": "Here are the learning paths you have already created.",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
     "title": "Create a Learning Path",
     "description": "Use AI to instantly generate a tailored reading course for your students. Just provide the topic and student details.",
     "topicLabel": "Topic",

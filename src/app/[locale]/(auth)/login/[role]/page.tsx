@@ -8,12 +8,11 @@ type LoginPageProps = {
 };
 
 export default async function LoginPage({ params }: LoginPageProps) {
-  const { role, locale } = params;
-  const dict = await getDictionary(locale);
+  const dict = await getDictionary(params.locale);
   
-  if (role !== 'student' && role !== 'teacher') {
+  if (params.role !== 'student' && params.role !== 'teacher') {
     return <div>{dict.errors.invalidRole}</div>;
   }
   
-  return <AuthForm mode="login" role={role} />;
+  return <AuthForm mode="login" role={params.role} />;
 }

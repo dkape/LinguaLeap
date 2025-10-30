@@ -38,7 +38,7 @@ function AuthGuard({ children }: { children: ReactNode }) {
         const isAuthPage = pathname.includes('/login') || pathname.includes('/signup');
         const isProtectedRoute = pathname.includes('/dashboard');
 
-        if (!user && isProtectedRoute) {
+        if (!user && isProtectedRoute && !isAuthPage) {
             router.push(`/${locale}`);
         }
     }, [user, loading, pathname, router]);
@@ -117,10 +117,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
     // Redirect to home to avoid being stuck on a protected page
-    // We can't use router here directly, so we use window.location
-    if (typeof window !== 'undefined' && window.location.pathname.includes('dashboard')) {
+    if (typeof window !== 'undefined') {
         const locale = window.location.pathname.split('/')[1] || 'de';
-        window.location.href = `/${locale}`;
+        if (window.location.pathname.includes('dashboard')) {
+            window.location.href = `/${locale}`;
+        }
     }
   };
 

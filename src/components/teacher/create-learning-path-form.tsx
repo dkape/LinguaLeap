@@ -26,10 +26,23 @@ import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 import { useTranslation } from '@/contexts/locale-context';
 
+interface ExistingLearningPath {
+  _id: string;
+  title: string;
+  description: string;
+  levelCount: number;
+  isActive: boolean;
+}
+
 export function CreateLearningPathForm() {
+  const [existingLearningPaths, setExistingLearningPaths] = useState<ExistingLearningPath[]>([]);
   const [learningPath, setLearningPath] = useState<GenerateSuggestedLearningPathOutput | null>(null);
   const generatedCardRef = useRef<HTMLDivElement | null>(null);
     // Scroll to the generated card when it appears
+    useEffect(() => {
+      fetchLearningPaths();
+    }, []);
+
     useEffect(() => {
       if (learningPath && generatedCardRef.current) {
         generatedCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -111,8 +124,46 @@ export function CreateLearningPathForm() {
     }
   }
 
+  const fetchLearningPaths = async () => {
+    try {
+      const response = await axios.get('/learning-paths/teacher');
+      setExistingLearningPaths(response.data.learningPaths);
+    } catch (error) {
+      console.error('Error fetching learning paths:', error);
+    }
+  };
+
   return (
-    <>
+    <div className="space-y-6">
+      {existingLearningPaths.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('createLearningPathForm.existingPathsTitle')}</CardTitle>
+            <CardDescription>{t('createLearningPathForm.existingPathsDescription')}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {existingLearningPaths.map((path) => (
+              <Card key={path._id}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{path.title}</CardTitle>
+                  <CardDescription>{path.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span><BookText className="inline-block w-4 h-4 mr-1" /> {path.levelCount} Levels</span>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                    <Badge variant={path.isActive ? "default" : "secondary"}>
+                        {path.isActive ? t('createLearningPathForm.statusActive') : t('createLearningPathForm.statusInactive')}
+                    </Badge>
+                </CardFooter>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <div className='flex items-center gap-2'>
@@ -280,6 +331,6 @@ export function CreateLearningPathForm() {
             </CardFooter>
         </Card>
       )}
-    </>
+    </div>
   );
 }
