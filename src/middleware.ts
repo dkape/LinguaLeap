@@ -15,6 +15,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Redirect /[locale]/login to /[locale]
+  const loginPattern = /^\/[a-z]{2}\/login$/;
+  if (loginPattern.test(pathname)) {
+    const locale = pathname.split('/')[1];
+    const newUrl = new URL(`/${locale}`, request.url);
+    return NextResponse.redirect(newUrl);
+  }
+
   // Check if pathname already has a locale
   const currentLocale = getLocaleFromPathname(pathname);
   const hasLocaleInPath = locales.some(locale => pathname.startsWith(`/${locale}`));

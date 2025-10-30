@@ -4,8 +4,9 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { CreateLearningPathForm } from "@/components/teacher/create-learning-path-form";
 import { CreateChallengeForm } from "@/components/teacher/create-challenge-form";
 import { ClassManagement } from "@/components/teacher/class-management";
