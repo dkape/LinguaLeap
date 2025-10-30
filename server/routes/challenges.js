@@ -21,4 +21,10 @@ router.post('/attempts/:attemptId/items/:itemId/complete-reading', auth, progres
 router.post('/attempts/:attemptId/items/:itemId/submit-quiz', auth, progressController.submitQuizAnswers);
 router.post('/attempts/:attemptId/complete', auth, progressController.completeChallenge);
 
+// Toggle status route
+router.patch('/:challengeId/toggle-status', auth, challengeController.toggleChallengeStatus);
+
+// Update route
+router.put('/:challengeId', auth, challengeController.updateChallenge);
+
 module.exports = router;

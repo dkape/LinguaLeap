@@ -25,6 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 import { useTranslation } from '@/contexts/locale-context';
+import { EditLearningPathDialog } from './edit-learning-path-dialog';
 
 interface ExistingLearningPath {
   _id: string;
@@ -36,7 +37,10 @@ interface ExistingLearningPath {
 
 export function CreateLearningPathForm() {
   const [existingLearningPaths, setExistingLearningPaths] = useState<ExistingLearningPath[]>([]);
+  const [editingPath, setEditingPath] = useState<ExistingLearningPath | null>(null);
   const [learningPath, setLearningPath] = useState<GenerateSuggestedLearningPathOutput | null>(null);
+  const [isTogglingStatus, setIsTogglingStatus] = useState<string | null>(null);
+  const [isEditingPathId, setIsEditingPathId] = useState<string | null>(null);
   const generatedCardRef = useRef<HTMLDivElement | null>(null);
     // Scroll to the generated card when it appears
     useEffect(() => {
@@ -133,6 +137,29 @@ export function CreateLearningPathForm() {
     }
   };
 
+  const toggleLearningPathStatus = async (pathId: string) => {
+    setIsTogglingStatus(pathId);
+    try {
+      const response = await axios.patch(`/learning-paths/${pathId}/toggle-status`);
+      setExistingLearningPaths(prev => 
+        prev.map(p => p._id === pathId ? { ...p, isActive: response.data.isActive } : p)
+      );
+      toast({
+        title: t('createLearningPathForm.statusUpdateSuccessTitle'),
+        description: response.data.message,
+      });
+    } catch (error) {
+      console.error('Error toggling learning path status:', error);
+      toast({
+        variant: "destructive",
+        title: t('createLearningPathForm.statusUpdateErrorTitle'),
+        description: t('createLearningPathForm.statusUpdateErrorDescription'),
+      });
+    } finally {
+      setIsTogglingStatus(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {existingLearningPaths.length > 0 && (
@@ -153,10 +180,22 @@ export function CreateLearningPathForm() {
                     <span><BookText className="inline-block w-4 h-4 mr-1" /> {path.levelCount} Levels</span>
                   </div>
                 </CardContent>
-                <CardFooter>
-                    <Badge variant={path.isActive ? "default" : "secondary"}>
-                        {path.isActive ? t('createLearningPathForm.statusActive') : t('createLearningPathForm.statusInactive')}
-                    </Badge>
+                <CardFooter className="flex justify-between">
+                  <Button 
+                    variant={path.isActive ? "secondary" : "default"} 
+                    size="sm" 
+                    onClick={() => toggleLearningPathStatus(path._id)}
+                    disabled={isTogglingStatus === path._id}
+                  >
+                    {isTogglingStatus === path._id ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      path.isActive ? t('createLearningPathForm.deactivate') : t('createLearningPathForm.activate')
+                    )}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setIsEditingPathId(path._id)}>
+                      {t('common.edit')}
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
@@ -330,6 +369,14 @@ export function CreateLearningPathForm() {
                 </Button>
             </CardFooter>
         </Card>
+      )}
+
+      {isEditingPathId && (
+        <EditLearningPathDialog 
+          pathId={isEditingPathId} 
+          onClose={() => setIsEditingPathId(null)} 
+          onPathUpdated={fetchLearningPaths}
+        />
       )}
     </div>
   );

@@ -24,6 +24,7 @@ import { generateChallenge, GenerateChallengeOutput } from "@/ai/flows/generate-
 import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/contexts/locale-context';
+import { EditChallengeDialog } from './edit-challenge-dialog';
 
 import axios from 'axios';
 
@@ -56,7 +57,9 @@ const formSchema = z.object({
 export function CreateChallengeForm() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [existingChallenges, setExistingChallenges] = useState<ExistingChallenge[]>([]);
+  const [editingChallenge, setEditingChallenge] = useState<ExistingChallenge | null>(null);
   const [challenge, setChallenge] = useState<GenerateChallengeOutput | null>(null);
+  const [isTogglingStatus, setIsTogglingStatus] = useState<string | null>(null);
   const generatedCardRef = useRef<HTMLDivElement | null>(null);
     // Scroll to the generated card when it appears
     useEffect(() => {
@@ -179,6 +182,29 @@ export function CreateChallengeForm() {
     }
   }
 
+  const toggleChallengeStatus = async (challengeId: string) => {
+    setIsTogglingStatus(challengeId);
+    try {
+      const response = await axios.patch(`/challenges/${challengeId}/toggle-status`);
+      setExistingChallenges(prev => 
+        prev.map(c => c._id === challengeId ? { ...c, isActive: response.data.isActive } : c)
+      );
+      toast({
+        title: dict.createChallengeForm.statusUpdateSuccessTitle,
+        description: response.data.message,
+      });
+    } catch (error) {
+      console.error('Error toggling challenge status:', error);
+      toast({
+        variant: "destructive",
+        title: dict.createChallengeForm.statusUpdateErrorTitle,
+        description: dict.createChallengeForm.statusUpdateErrorDescription,
+      });
+    } finally {
+      setIsTogglingStatus(null);
+    }
+  };
+
   const { isSubmitting } = form.formState;
 
   return (
@@ -202,10 +228,22 @@ export function CreateChallengeForm() {
                     <span><Clock className="inline-block w-4 h-4 mr-1" /> {challenge.time_limit_minutes} {dict.createChallengeForm.minutesLabel}</span>
                   </div>
                 </CardContent>
-                <CardFooter>
-                    <Badge variant={challenge.isActive ? "default" : "secondary"}>
-                        {challenge.isActive ? dict.createChallengeForm.statusActive : dict.createChallengeForm.statusInactive}
-                    </Badge>
+                <CardFooter className="flex justify-between">
+                  <Button 
+                    variant={challenge.isActive ? "secondary" : "default"} 
+                    size="sm" 
+                    onClick={() => toggleChallengeStatus(challenge._id)}
+                    disabled={isTogglingStatus === challenge._id}
+                  >
+                    {isTogglingStatus === challenge._id ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      challenge.isActive ? dict.createChallengeForm.deactivate : dict.createChallengeForm.activate
+                    )}
+                  </Button>
+                  <Button variant="outline" size="sm">
+                      {dict.common.edit}
+                  </Button>
                 </CardFooter>
               </Card>
             ))}

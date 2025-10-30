@@ -298,11 +298,72 @@ const getClassLeaderboard = async (req, res) => {
   }
 };
 
+// Toggle challenge status (active/inactive)
+const toggleChallengeStatus = async (req, res) => {
+  const { challengeId } = req.params;
+  const teacher_id = req.user.userId;
+
+  try {
+    const challenge = await Challenge.findOne({ _id: challengeId, teacherId: teacher_id });
+
+    if (!challenge) {
+      return res.status(404).json({ message: 'Challenge not found or you do not have permission' });
+    }
+
+    challenge.isActive = !challenge.isActive;
+    await challenge.save();
+
+    res.status(200).json({ 
+      message: `Challenge status updated to ${challenge.isActive ? 'active' : 'inactive'}`,
+      isActive: challenge.isActive
+    });
+  } catch (error) {
+    console.error('Toggle challenge status error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Update an existing challenge
+const updateChallenge = async (req, res) => {
+  const { challengeId } = req.params;
+  const teacher_id = req.user.userId;
+  const { title, description, topic, language, age_range, reading_level, class_id, items, total_points, time_limit_minutes } = req.body;
+
+  try {
+    const challenge = await Challenge.findOne({ _id: challengeId, teacherId: teacher_id });
+
+    if (!challenge) {
+      return res.status(404).json({ message: 'Challenge not found or you do not have permission' });
+    }
+
+    // Update fields
+    challenge.title = title || challenge.title;
+    challenge.description = description || challenge.description;
+    challenge.topic = topic || challenge.topic;
+    challenge.language = language || challenge.language;
+    challenge.ageRange = age_range !== undefined ? age_range : challenge.ageRange;
+    challenge.readingLevel = reading_level !== undefined ? reading_level : challenge.readingLevel;
+    challenge.classId = class_id || challenge.classId;
+    challenge.totalPoints = total_points !== undefined ? total_points : challenge.totalPoints;
+    challenge.timeLimitMinutes = time_limit_minutes !== undefined ? time_limit_minutes : challenge.timeLimitMinutes;
+    challenge.items = items || challenge.items;
+
+    await challenge.save();
+
+    res.status(200).json({ message: 'Challenge updated successfully' });
+  } catch (error) {
+    console.error('Update challenge error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createChallenge,
   getTeacherChallenges,
   getChallengeDetails,
   getStudentChallenges,
   startChallengeAttempt,
-  getClassLeaderboard
+  getClassLeaderboard,
+  toggleChallengeStatus,
+  updateChallenge
 };

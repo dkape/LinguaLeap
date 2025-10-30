@@ -31,4 +31,54 @@ const getTeacherLearningPaths = async (req, res) => {
   }
 };
 
-module.exports = { createLearningPath, getTeacherLearningPaths };
+const toggleLearningPathStatus = async (req, res) => {
+  const { pathId } = req.params;
+  const teacher_id = req.user.userId;
+
+  try {
+    const learningPath = await LearningPath.findOne({ _id: pathId, teacherId: teacher_id });
+
+    if (!learningPath) {
+      return res.status(404).json({ message: 'Learning path not found or you do not have permission' });
+    }
+
+    learningPath.isActive = !learningPath.isActive;
+    await learningPath.save();
+
+    res.status(200).json({ 
+      message: `Learning path status updated to ${learningPath.isActive ? 'active' : 'inactive'}`,
+      isActive: learningPath.isActive
+    });
+  } catch (error) {
+    console.error('Toggle learning path status error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const updateLearningPath = async (req, res) => {
+  const { pathId } = req.params;
+  const teacher_id = req.user.userId;
+  const { title, description, levels } = req.body;
+
+  try {
+    const learningPath = await LearningPath.findOne({ _id: pathId, teacherId: teacher_id });
+
+    if (!learningPath) {
+      return res.status(404).json({ message: 'Learning path not found or you do not have permission' });
+    }
+
+    // Update fields
+    learningPath.title = title || learningPath.title;
+    learningPath.description = description || learningPath.description;
+    // ... update other fields ...
+
+    await learningPath.save();
+
+    res.status(200).json({ message: 'Learning path updated successfully' });
+  } catch (error) {
+    console.error('Update learning path error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { createLearningPath, getTeacherLearningPaths, toggleLearningPathStatus, updateLearningPath };
