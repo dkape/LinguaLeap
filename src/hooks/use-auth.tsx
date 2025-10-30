@@ -69,24 +69,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const userData = response.data.user;
           setUser(userData);
           
-          // Set user's preferred language as cookie if available
           if (userData.preferredLanguage) {
             document.cookie = `locale=${userData.preferredLanguage}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
           }
         } catch (error) {
-          console.error(error);
-          localStorage.removeItem('token');
-          delete axios.defaults.headers.common['Authorization'];
-          setUser(null);
+          console.error("Failed to fetch user:", error);
+          logOut(); // Clear invalid token
         }
-      } else {
-        delete axios.defaults.headers.common['Authorization'];
-        setUser(null);
       }
       setLoading(false);
     };
 
     fetchUser();
+
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response && error.response.status === 401) {
+          logOut();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, []);
 
   const logIn = async (email: string, pass: string) => {
@@ -108,6 +116,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    // Redirect to home to avoid being stuck on a protected page
+    // We can't use router here directly, so we use window.location
+    if (typeof window !== 'undefined' && window.location.pathname.includes('dashboard')) {
+        const locale = window.location.pathname.split('/')[1] || 'de';
+        window.location.href = `/${locale}`;
+    }
   };
 
   const forgotPassword = async (email: string) => {

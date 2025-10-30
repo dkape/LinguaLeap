@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFormState } from "react-hook-form";
 import * as z from "zod";
@@ -28,6 +28,13 @@ import { useTranslation } from '@/contexts/locale-context';
 
 export function CreateLearningPathForm() {
   const [learningPath, setLearningPath] = useState<GenerateSuggestedLearningPathOutput | null>(null);
+  const generatedCardRef = useRef<HTMLDivElement | null>(null);
+    // Scroll to the generated card when it appears
+    useEffect(() => {
+      if (learningPath && generatedCardRef.current) {
+        generatedCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, [learningPath]);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -244,7 +251,7 @@ export function CreateLearningPathForm() {
       )}
 
       {learningPath && (
-        <Card className="mt-8">
+        <Card className="mt-8" ref={generatedCardRef}>
             <CardHeader>
                 <CardTitle className="text-2xl font-headline">{t('createLearningPathForm.generatedTitle')}</CardTitle>
                 <CardDescription>{t('createLearningPathForm.generatedDescription')}</CardDescription>

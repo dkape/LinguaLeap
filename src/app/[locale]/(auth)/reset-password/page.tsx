@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { useState, Suspense } from "react";
+import { useState, Suspense, useRef, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from 'next/navigation';
@@ -24,10 +24,18 @@ import { useLocale } from "@/contexts/locale-context";
 function ResetPasswordContent() {
   const { resetPassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [submissionMessage, setSubmissionMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const messageRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const { dict } = useLocale();
+
+  useEffect(() => {
+    if (submissionMessage && messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [submissionMessage]);
 
   const formSchema = z.object({
     password: z.string().min(6, { message: dict.auth.resetPassword.passwordTooShort }),
@@ -47,24 +55,21 @@ function ResetPasswordContent() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!token) {
-      toast({ variant: 'destructive', title: dict.auth.resetPassword.errorTitle, description: dict.auth.resetPassword.invalidToken });
+      setSubmissionMessage({ type: 'error', message: dict.auth.resetPassword.invalidToken });
       return;
     }
     setIsLoading(true);
+    setSubmissionMessage(null);
     try {
       await resetPassword(token, values.password);
-      toast({ title: dict.auth.resetPassword.successTitle, description: dict.auth.resetPassword.successDescription });
+      setSubmissionMessage({ type: 'success', message: dict.auth.resetPassword.successDescription });
     } catch (error: unknown) {
       console.error(error);
       let errorMessage = dict.auth.resetPassword.genericError;
       if (error instanceof Error) {
         errorMessage = error.message;
       }
-      toast({
-        variant: 'destructive',
-        title: dict.auth.resetPassword.errorTitle,
-        description: errorMessage,
-      });
+      setSubmissionMessage({ type: 'error', message: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +84,23 @@ function ResetPasswordContent() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+            {submissionMessage && (
+              <div
+                ref={messageRef}
+                className={`p-4 mb-4 rounded-md text-sm ${
+                  submissionMessage.type === 'success'
+                    ? 'bg-green-100 border border-green-200 text-green-800'
+                    : 'bg-destructive/10 text-destructive border border-destructive/20'
+                }`}
+              >
+                <p className="font-semibold mb-1">
+                  {submissionMessage.type === 'success'
+                    ? dict.auth.resetPassword.successTitle
+                    : dict.auth.resetPassword.errorTitle}
+                </p>
+                <p>{submissionMessage.message}</p>
+              </div>
+            )}
             <FormField
               control={form.control}
               name="password"

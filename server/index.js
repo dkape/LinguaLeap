@@ -1,4 +1,3 @@
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -9,6 +8,7 @@ const userRoutes = require('./routes/user');
 const classRoutes = require('./routes/classes');
 const challengeRoutes = require('./routes/challenges');
 const learningPathRoutes = require('./routes/learning-paths');
+const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 app.set('trust proxy', 1); // Trust reverse proxy
@@ -28,6 +28,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/challenges', challengeRoutes);
 app.use('/api/learning-paths', learningPathRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello from the LinguaLeap server!');

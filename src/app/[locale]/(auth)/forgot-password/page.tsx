@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocale } from "@/contexts/locale-context";
@@ -31,8 +31,15 @@ export const dynamic = 'force-dynamic';
 export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [submissionMessage, setSubmissionMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const messageRef = useRef<HTMLDivElement | null>(null);
   const { dict, locale } = useLocale();
+
+  useEffect(() => {
+    if (submissionMessage && messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [submissionMessage]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,20 +50,17 @@ export default function ForgotPasswordPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    setSubmissionMessage(null);
     try {
       await forgotPassword(values.email);
-      toast({ title: dict.auth.forgotPassword.successTitle, description: dict.auth.forgotPassword.successDescription });
+      setSubmissionMessage({ type: 'success', message: dict.auth.forgotPassword.successDescription });
     } catch (error: unknown) {
       console.error(error);
       let errorMessage = dict.auth.forgotPassword.genericError;
       if (error instanceof Error) {
         errorMessage = error.message;
       }
-      toast({
-        variant: 'destructive',
-        title: dict.auth.forgotPassword.errorTitle,
-        description: errorMessage,
-      });
+      setSubmissionMessage({ type: 'error', message: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +75,23 @@ export default function ForgotPasswordPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
+            {submissionMessage && (
+              <div
+                ref={messageRef}
+                className={`p-4 mb-4 rounded-md text-sm ${
+                  submissionMessage.type === 'success'
+                    ? 'bg-green-100 border border-green-200 text-green-800'
+                    : 'bg-destructive/10 text-destructive border border-destructive/20'
+                }`}
+              >
+                <p className="font-semibold mb-1">
+                  {submissionMessage.type === 'success'
+                    ? dict.auth.forgotPassword.successTitle
+                    : dict.auth.forgotPassword.errorTitle}
+                </p>
+                <p>{submissionMessage.message}</p>
+              </div>
+            )}
             <FormField
               control={form.control}
               name="email"

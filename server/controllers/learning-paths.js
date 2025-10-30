@@ -21,4 +21,14 @@ const createLearningPath = async (req, res) => {
   }
 };
 
-module.exports = { createLearningPath };
+const getTeacherLearningPaths = async (req, res) => {
+  try {
+    const learningPaths = await LearningPath.find({ teacherId: req.user.userId });
+    res.json({ learningPaths });
+  } catch (error) {
+    console.error('Error fetching teacher learning paths:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { createLearningPath, getTeacherLearningPaths };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -47,6 +47,13 @@ const formSchema = z.object({
 export function CreateChallengeForm() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [challenge, setChallenge] = useState<GenerateChallengeOutput | null>(null);
+  const generatedCardRef = useRef<HTMLDivElement | null>(null);
+    // Scroll to the generated card when it appears
+    useEffect(() => {
+      if (challenge && generatedCardRef.current) {
+        generatedCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, [challenge]);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
   const { t, dict } = useTranslation();
@@ -317,7 +324,7 @@ export function CreateChallengeForm() {
       )}
 
       {challenge && (
-        <Card className="mt-8">
+        <Card className="mt-8" ref={generatedCardRef}>
           <CardHeader>
             <CardTitle className="text-2xl font-headline">{challenge.title}</CardTitle>
             <CardDescription>{challenge.description}</CardDescription>

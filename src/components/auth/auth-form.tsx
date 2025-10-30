@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { UserRole } from "@/lib/types";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocale, useTranslation } from "@/contexts/locale-context";
@@ -32,9 +32,17 @@ export function AuthForm({ mode, role }: AuthFormProps) {
   const router = useRouter();
   const { signUp, logIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
   const { locale } = useLocale();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (submissionError && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [submissionError]);
 
   const formSchema = z.object({
     name: z.string().optional(),
@@ -55,10 +63,11 @@ export function AuthForm({ mode, role }: AuthFormProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    setSubmissionError(null);
     try {
       if (mode === 'signup') {
         if (!values.name) {
-          toast({ variant: 'destructive', title: t('common.error'), description: t('auth.signup.nameRequired') });
+          setSubmissionError(t('auth.signup.nameRequired'));
           setIsLoading(false);
           return;
         }
@@ -89,11 +98,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
         
         // Handle email verification required for login
         if (axiosError.response?.data?.emailVerificationRequired) {
-          toast({
-            variant: 'destructive',
-            title: t('auth.login.emailVerificationRequired'),
-            description: errorMessage,
-          });
+          setSubmissionError(t('auth.login.emailVerificationRequiredDescription'));
           setIsLoading(false);
           return;
         }
@@ -101,11 +106,7 @@ export function AuthForm({ mode, role }: AuthFormProps) {
         errorMessage = error.message;
       }
       
-      toast({
-        variant: 'destructive',
-        title: mode === 'signup' ? t('auth.signup.registrationFailed') : t('auth.login.loginFailed'),
-        description: errorMessage,
-      });
+      setSubmissionError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -130,6 +131,12 @@ export function AuthForm({ mode, role }: AuthFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
+            {submissionError && (
+              <div ref={errorRef} className="p-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-md text-sm">
+                <p className="font-semibold mb-1">{mode === 'signup' ? t('auth.signup.registrationFailed') : t('auth.login.loginFailed')}</p>
+                <p>{submissionError}</p>
+              </div>
+            )}
             {mode === 'signup' && (
               <FormField
                 control={form.control}

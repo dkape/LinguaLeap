@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -36,6 +36,13 @@ interface Student {
 export function ClassManagement() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<StudentClass | null>(null);
+  const selectedClassCardRef = useRef<HTMLDivElement | null>(null);
+    // Scroll to the selected class card when it appears
+    useEffect(() => {
+      if (selectedClass && selectedClassCardRef.current) {
+        selectedClassCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, [selectedClass]);
   const [students, setStudents] = useState<Student[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isAddStudentDialogOpen, setIsAddStudentDialogOpen] = useState(false);
@@ -266,7 +273,7 @@ export function ClassManagement() {
       </div>
 
       {selectedClass && (
-        <Card>
+        <Card ref={selectedClassCardRef}>
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
