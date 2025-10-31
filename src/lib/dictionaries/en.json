@@ -21,11 +21,20 @@
   "navigation": {
     "home": "Home",
     "dashboard": "Dashboard",
+    "leaderboard": "Leaderboard",
+    "studentGroups": "Student Groups",
+    "createPath": "Create Path",
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
     "login": "Login",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "challenges": "Challenges",
+    "progress": "Progress",
+    "achievements": "Achievements",
+    "classes": "Classes",
+    "learningPaths": "Learning Paths",
+    "analytics": "Analytics"
   },
   "auth": {
     "login": {
@@ -295,5 +304,14 @@
     "saveSuccessToastDescription": "The new course is now available for your students.",
     "saveErrorToastTitle": "Save Failed",
     "saveErrorToastDescription": "Could not save the learning path. Please try again."
+  },
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "name": "Name",
+    "new_password": "New Password",
+    "confirm_new_password": "Confirm New Password",
+    "save_changes": "Save Changes",
+    "language": "Language"
   }
 }

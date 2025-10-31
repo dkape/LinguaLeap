@@ -43,6 +43,12 @@ interface ExistingChallenge {
   total_points: number;
   time_limit_minutes: number;
   isActive: boolean;
+  topic: string;
+  class_description: string;
+  age_range: string;
+  reading_level: 'beginner' | 'intermediate' | 'advanced';
+  language: 'en' | 'de';
+  class_id?: string;
 }
 
 const formSchema = z.object({
@@ -68,6 +74,8 @@ export function CreateChallengeForm() {
       }
     }, [challenge]);
   const [isSaving, setIsSaving] = useState(false);
+  const [fullEditingChallengeDetails, setFullEditingChallengeDetails] = useState<any | null>(null);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const { toast } = useToast();
   const { t, dict } = useTranslation();
   
@@ -89,16 +97,41 @@ export function CreateChallengeForm() {
     if (editingChallenge) {
       form.reset({
         topic: editingChallenge.topic,
-        class_description: editingChallenge.classDescription,
-        age_range: editingChallenge.ageRange,
-        reading_level: editingChallenge.readingLevel,
+        class_description: editingChallenge.class_description,
+        age_range: editingChallenge.age_range,
+        reading_level: editingChallenge.reading_level,
         language: editingChallenge.language,
-        class_id: editingChallenge.classId,
+        class_id: editingChallenge.class_id,
       });
     } else {
       form.reset();
     }
-  }, [editingChallenge]);
+  }, [editingChallenge, form]);
+
+  useEffect(() => {
+    if (editingChallenge) {
+      const fetchChallengeDetails = async () => {
+        setIsLoadingDetails(true);
+        setFullEditingChallengeDetails(null);
+        try {
+          const response = await axios.get(`/challenges/${editingChallenge._id}`);
+          setFullEditingChallengeDetails(response.data);
+        } catch (error) {
+          console.error('Error fetching challenge details:', error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not load challenge details.",
+          });
+        } finally {
+          setIsLoadingDetails(false);
+        }
+      };
+      fetchChallengeDetails();
+    } else {
+      setFullEditingChallengeDetails(null);
+    }
+  }, [editingChallenge, toast]);
 
   const fetchClasses = async () => {
     try {
@@ -159,14 +192,14 @@ export function CreateChallengeForm() {
         class_id: formValues.class_id || null,
         total_points: challenge.total_points,
         time_limit_minutes: challenge.estimated_time_minutes,
-        items: challenge.items.map((item, index) => ({
+        items: challenge.items.map((item: any, index: number) => ({
           type: item.type,
           title: item.title,
           content: item.content,
           pointsValue: item.points_value,
           orderIndex: index,
           estimatedReadingTime: item.estimated_reading_time || 60,
-          questions: (item.questions || []).map((q, qIndex) => ({
+          questions: (item.questions || []).map((q: any, qIndex: number) => ({
             question: q.question,
             pointsValue: q.points_value,
             orderIndex: qIndex,
@@ -201,8 +234,8 @@ export function CreateChallengeForm() {
     setIsTogglingStatus(challengeId);
     try {
       const response = await axios.patch(`/challenges/${challengeId}/toggle-status`);
-      setExistingChallenges(prev => 
-        prev.map(c => c._id === challengeId ? { ...c, isActive: response.data.isActive } : c)
+      setExistingChallenges((prev: ExistingChallenge[]) => 
+        prev.map((c: ExistingChallenge) => c._id === challengeId ? { ...c, isActive: response.data.isActive } : c)
       );
       toast({
         title: dict.createChallengeForm.statusUpdateSuccessTitle,
@@ -233,7 +266,7 @@ export function CreateChallengeForm() {
             <CardDescription>{dict.createChallengeForm.existingChallengesDescription}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {existingChallenges.map((challenge) => (
+            {existingChallenges.map((challenge: ExistingChallenge) => (
               <Card key={challenge._id}>
                 <CardHeader>
                   <CardTitle className="text-lg">{challenge.title}</CardTitle>
@@ -390,7 +423,7 @@ export function CreateChallengeForm() {
                             <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.assignToClassPlaceholder} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {classes.map((cls) => (
+                            {classes.map((cls: StudentClass) => (
                               <SelectItem key={cls._id} value={cls._id}>
                                 {cls.name} ({cls.student_count} {dict.createChallengeForm.studentsLabel})
                               </SelectItem>
@@ -425,119 +458,138 @@ export function CreateChallengeForm() {
         </div>
       )}
 
-      {challenge && (
-        <Card className="mt-8" ref={generatedCardRef}>
-          <CardHeader>
-            <CardTitle className="text-2xl font-headline">{challenge.title}</CardTitle>
-            <CardDescription>{challenge.description}</CardDescription>
-            <div className="flex gap-4 mt-4">
-              <Badge variant="secondary">
-                <Trophy className="mr-1 h-3 w-3" />
-                {challenge.total_points} {dict.createChallengeForm.pointsLabel}
-              </Badge>
-              <Badge variant="secondary">
-                <Clock className="mr-1 h-3 w-3" />
-                ~{challenge.estimated_time_minutes} {dict.createChallengeForm.minutesLabel}
-              </Badge>
-              <Badge variant="secondary">
-                <BookText className="mr-1 h-3 w-3" />
-                {challenge.items.length} {dict.createChallengeForm.tasksLabel}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold mb-2">{dict.createChallengeForm.sourcesLabel}</h4>
-                <div className="flex flex-wrap gap-2">
-                  {challenge.source_references.map((source, index) => (
-                    <Badge key={index} variant="outline">{source}</Badge>
-                  ))}
-                </div>
-              </div>
-              
-              <Accordion type="single" collapsible className="w-full">
-                {challenge.items.map((item, index) => (
-                  <AccordionItem value={`item-${index}`} key={index}>
-                    <AccordionTrigger className="text-lg">
-                      <div className="flex items-center gap-2">
-                        {item.type === 'text' ? (
-                          <BookText className="h-5 w-5 text-primary" />
-                        ) : (
-                          <FileQuestion className="h-5 w-5 text-accent" />
-                        )}
-                        <span>{item.title}</span>
-                        <Badge variant="outline" className="ml-2">
-                          {item.points_value} {dict.createChallengeForm.pointsLabel}
-                        </Badge>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="prose max-w-none text-foreground/90 p-4 bg-muted/50 rounded-md">
-                      <div className="space-y-4">
-                        <pre className="whitespace-pre-wrap font-sans text-sm bg-transparent p-0 border-0">
-                          {item.content}
-                        </pre>
-                        
-                        {item.source_reference && (
-                          <p className="text-xs text-muted-foreground italic">
-                            {dict.createChallengeForm.sourceLabel}: {item.source_reference}
-                          </p>
-                        )}
-                        
-                        {item.word_count && (
-                          <p className="text-xs text-muted-foreground">
-                            {dict.createChallengeForm.wordsLabel}: {item.word_count} | {dict.createChallengeForm.estimatedReadingTimeLabel}: {Math.ceil((item.estimated_reading_time || 0) / 60)} {dict.createChallengeForm.minutesLabel}
-                          </p>
-                        )}
-                        
-                        {item.questions && item.questions.length > 0 && (
-                          <div className="mt-4">
-                            <h5 className="font-semibold mb-2">{dict.createChallengeForm.quizQuestionsLabel}</h5>
-                            {item.questions.map((question, qIndex) => (
-                              <div key={qIndex} className="mb-4 p-3 border rounded">
-                                <p className="font-medium mb-2">{question.question}</p>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                  <div className={question.correct_answer === 'a' ? 'font-bold text-green-600' : ''}>
-                                    A) {question.option_a}
-                                  </div>
-                                  <div className={question.correct_answer === 'b' ? 'font-bold text-green-600' : ''}>
-                                    B) {question.option_b}
-                                  </div>
-                                  <div className={question.correct_answer === 'c' ? 'font-bold text-green-600' : ''}>
-                                    C) {question.option_c}
-                                  </div>
-                                  <div className={question.correct_answer === 'd' ? 'font-bold text-green-600' : ''}>
-                                    D) {question.option_d}
-                                  </div>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {dict.createChallengeForm.pointsLabel}: {question.points_value}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button onClick={onSaveChallenge} disabled={isSaving}>
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {dict.createChallengeForm.savingButton}
-                </>
-              ) : (
-                dict.createChallengeForm.saveButton
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
+      {isLoadingDetails && (
+        <div className="text-center p-8">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading challenge details...</p>
+        </div>
       )}
+
+      {(challenge || fullEditingChallengeDetails) && (() => {
+        const challengeToDisplay = challenge || fullEditingChallengeDetails;
+        if (!challengeToDisplay) return null;
+        return (
+          <Card className="mt-8" ref={generatedCardRef}>
+            <CardHeader>
+              <CardTitle className="text-2xl font-headline">{challengeToDisplay.title}</CardTitle>
+              <CardDescription>{challengeToDisplay.description}</CardDescription>
+              <div className="flex gap-4 mt-4">
+                <Badge variant="secondary">
+                  <Trophy className="mr-1 h-3 w-3" />
+                  {challengeToDisplay.total_points} {dict.createChallengeForm.pointsLabel}
+                </Badge>
+                <Badge variant="secondary">
+                  <Clock className="mr-1 h-3 w-3" />
+                  ~{challengeToDisplay.estimated_time_minutes || challengeToDisplay.time_limit_minutes} {dict.createChallengeForm.minutesLabel}
+                </Badge>
+                {challengeToDisplay.items &&
+                  <Badge variant="secondary">
+                    <BookText className="mr-1 h-3 w-3" />
+                    {challengeToDisplay.items.length} {dict.createChallengeForm.tasksLabel}
+                  </Badge>
+                }
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {challengeToDisplay.source_references && challengeToDisplay.source_references.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-2">{dict.createChallengeForm.sourcesLabel}</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {challengeToDisplay.source_references.map((source: any, index: number) => (
+                        <Badge key={index} variant="outline">{source}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {challengeToDisplay.items &&
+                  <Accordion type="single" collapsible className="w-full">
+                    {challengeToDisplay.items.map((item: any, index: number) => (
+                      <AccordionItem value={`item-${index}`} key={index}>
+                        <AccordionTrigger className="text-lg">
+                          <div className="flex items-center gap-2">
+                            {item.type === 'text' ? (
+                              <BookText className="h-5 w-5 text-primary" />
+                            ) : (
+                              <FileQuestion className="h-5 w-5 text-accent" />
+                            )}
+                            <span>{item.title}</span>
+                            <Badge variant="outline" className="ml-2">
+                              {item.pointsValue || item.points_value} {dict.createChallengeForm.pointsLabel}
+                            </Badge>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="prose max-w-none text-foreground/90 p-4 bg-muted/50 rounded-md">
+                          <div className="space-y-4">
+                            <pre className="whitespace-pre-wrap font-sans text-sm bg-transparent p-0 border-0">
+                              {item.content}
+                            </pre>
+
+                            {item.source_reference && (
+                              <p className="text-xs text-muted-foreground italic">
+                                {dict.createChallengeForm.sourceLabel}: {item.source_reference}
+                              </p>
+                            )}
+
+                            {item.word_count && (
+                              <p className="text-xs text-muted-foreground">
+                                {dict.createChallengeForm.wordsLabel}: {item.word_count} | {dict.createChallengeForm.estimatedReadingTimeLabel}: {Math.ceil((item.estimated_reading_time || item.estimatedReadingTime || 0) / 60)} {dict.createChallengeForm.minutesLabel}
+                              </p>
+                            )}
+
+                            {item.questions && item.questions.length > 0 && (
+                              <div className="mt-4">
+                                <h5 className="font-semibold mb-2">{dict.createChallengeForm.quizQuestionsLabel}</h5>
+                                {item.questions.map((question: any, qIndex: number) => (
+                                  <div key={qIndex} className="mb-4 p-3 border rounded">
+                                    <p className="font-medium mb-2">{question.question}</p>
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                      <div className={(question.correct_answer || question.correctAnswer) === 'a' ? 'font-bold text-green-600' : ''}>
+                                        A) {question.option_a || question.optionA}
+                                      </div>
+                                      <div className={(question.correct_answer || question.correctAnswer) === 'b' ? 'font-bold text-green-600' : ''}>
+                                        B) {question.option_b || question.optionB}
+                                      </div>
+                                      <div className={(question.correct_answer || question.correctAnswer) === 'c' ? 'font-bold text-green-600' : ''}>
+                                        C) {question.option_c || question.optionC}
+                                      </div>
+                                      <div className={(question.correct_answer || question.correctAnswer) === 'd' ? 'font-bold text-green-600' : ''}>
+                                        D) {question.option_d || question.optionD}
+                                      </div>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      {dict.createChallengeForm.pointsLabel}: {question.points_value || question.pointsValue}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                }
+              </div>
+            </CardContent>
+            {challenge && (
+              <CardFooter>
+                <Button onClick={onSaveChallenge} disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {dict.createChallengeForm.savingButton}
+                    </>
+                  ) : (
+                    dict.createChallengeForm.saveButton
+                  )}
+                </Button>
+              </CardFooter>
+            )}
+          </Card>
+        )
+      })()}
     </div>
   );
 }

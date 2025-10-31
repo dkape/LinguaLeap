@@ -12,14 +12,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
 import { LogOut, Settings, User as UserIcon } from "lucide-react";
+import Link from "next/link";
 
 export function UserNav() {
   const { user, logOut } = useAuth();
+  const { t, locale } = useTranslation();
 
   if (!user) {
     return null;
   }
+
+  const profileHref = `/${locale}/${user.role}/profile`;
+  const settingsHref = `/${locale}/${user.role}/settings`;
 
   return (
     <DropdownMenu>
@@ -42,19 +48,23 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <UserIcon className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
+          <Link href={profileHref} passHref>
+            <DropdownMenuItem>
+              <UserIcon className="mr-2 h-4 w-4" />
+              <span>{t("user.profile")}</span>
+            </DropdownMenuItem>
+          </Link>
+          <Link href={settingsHref} passHref>
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>{t("user.settings")}</span>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t("navigation.logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

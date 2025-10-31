@@ -13,12 +13,12 @@ export default function TeacherLayout({
   const { t } = useTranslation();
   
   const teacherNavItems = [
-    { href: "/teacher/dashboard", label: t('nav.dashboard'), icon: LayoutDashboard },
-    { href: "/teacher/classes", label: t('nav.classes'), icon: Users },
-    { href: "/teacher/challenges", label: t('nav.challenges'), icon: Target },
-    { href: "/teacher/learning-paths", label: t('nav.learningPaths'), icon: BookPlus },
-    { href: "/teacher/analytics", label: t('nav.analytics'), icon: BarChart },
-    { href: "/teacher/settings", label: t('nav.settings'), icon: Settings }
+    { href: "/teacher/dashboard", label: t('navigation.dashboard'), icon: LayoutDashboard },
+    { href: "/teacher/classes", label: t('navigation.classes'), icon: Users },
+    { href: "/teacher/challenges", label: t('navigation.challenges'), icon: Target },
+    { href: "/teacher/learning-paths", label: t('navigation.learningPaths'), icon: BookPlus },
+    { href: "/teacher/analytics", label: t('navigation.analytics'), icon: BarChart },
+    { href: "/teacher/settings", label: t('navigation.settings'), icon: Settings }
   ];
   
   return (

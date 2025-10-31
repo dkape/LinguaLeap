@@ -1,4 +1,5 @@
 const ChallengeAttempt = require('../models/ChallengeAttempt');
+const User = require('../models/User');
 
 const getTeacherPerformance = async (req, res) => {
   try {
@@ -31,4 +32,18 @@ const getTeacherPerformance = async (req, res) => {
   }
 };
 
-module.exports = { getTeacherPerformance };
+const getGlobalLeaderboard = async (req, res) => {
+  try {
+    const leaderboard = await User.find({ role: 'student' })
+      .sort({ points: -1 })
+      .select('name points avatarUrl')
+      .limit(100);
+
+    res.json(leaderboard);
+  } catch (error) {
+    console.error('Error fetching global leaderboard:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { getTeacherPerformance, getGlobalLeaderboard };

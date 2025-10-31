@@ -1,0 +1,49 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "challenges": "Challenges",
+    "progress": "Progress",
+    "achievements": "Achievements",
+    "leaderboard": "Leaderboard",
+    "settings": "Settings",
+    "classes": "Classes",
+    "learningPaths": "Learning Paths",
+    "analytics": "Analytics"
+  },
+  "dashboard": {
+    "welcome": "Welcome back!",
+    "description": "Here is an overview of your recent activity."
+  },
+  "challenges": {
+    "title": "Challenges",
+    "description": "Choose a challenge to test your skills."
+  },
+  "progress": {
+    "title": "My Progress",
+    "description": "Track your learning curve and see your results."
+  },
+  "achievements": {
+    "title": "My Achievements",
+    "description": "Collect badges and celebrate your milestones."
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "description": "Compete with others and climb to the top."
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account information and preferences."
+  },
+  "classes": {
+    "title": "My Classes",
+    "description": "Manage your classes and students."
+  },
+  "learningPaths": {
+    "title": "Learning Paths",
+    "description": "Create and manage learning paths for your students."
+  },
+  "analytics": {
+    "title": "Analytics",
+    "description": "Analyze the performance of your students and classes."
+  }
+}

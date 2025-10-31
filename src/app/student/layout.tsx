@@ -1,20 +1,22 @@
 'use client';
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { LayoutDashboard } from "lucide-react";
-import React from "react";
+import { useTranslation } from "@/contexts/locale-context";
+import { LayoutDashboard, Trophy } from "lucide-react";
 
 // Disable static generation for this layout
 export const dynamic = 'force-dynamic';
 
-export default function StudentLayout({ 
+export default function StudentLayout({
   children,
-}: { 
+}: {
   children: React.ReactNode,
 }) {
+  const { t } = useTranslation();
+
   const studentNavItems = [
-    { href: "/student/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    // { href: "/student/leaderboard", label: "Leaderboard", icon: Trophy }, // TODO: Create this page
+    { href: "/student/dashboard", label: t('navigation.dashboard'), icon: LayoutDashboard },
+    { href: "/student/leaderboard", label: t('navigation.leaderboard'), icon: Trophy },
   ];
 
   return (

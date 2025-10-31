@@ -21,11 +21,20 @@
   "navigation": {
     "home": "Startseite",
     "dashboard": "Dashboard",
+    "leaderboard": "Bestenliste",
+    "studentGroups": "Lerngruppen",
+    "createPath": "Lernpfad erstellen",
     "profile": "Profil",
     "settings": "Einstellungen",
     "logout": "Abmelden",
     "login": "Anmelden",
-    "signup": "Registrieren"
+    "signup": "Registrieren",
+    "challenges": "Herausforderungen",
+    "progress": "Fortschritt",
+    "achievements": "Erfolge",
+    "classes": "Klassen",
+    "learningPaths": "Lernpfade",
+    "analytics": "Analysen"
   },
   "auth": {
     "login": {
@@ -295,5 +304,14 @@
     "saveSuccessToastDescription": "Der neue Kurs ist jetzt für Ihre Schüler verfügbar.",
     "saveErrorToastTitle": "Speichern fehlgeschlagen",
     "saveErrorToastDescription": "Der Lernpfad konnte nicht gespeichert werden. Bitte versuchen Sie es erneut."
+  },
+  "user": {
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "name": "Name",
+    "new_password": "Neues Passwort",
+    "confirm_new_password": "Neues Passwort bestätigen",
+    "save_changes": "Änderungen speichern",
+    "language": "Sprache"
   }
 }

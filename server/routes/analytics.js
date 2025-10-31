@@ -4,5 +4,6 @@ const analyticsController = require('../controllers/analytics');
 const auth = require('../middleware/auth');
 
 router.get('/teacher/performance', auth, analyticsController.getTeacherPerformance);
+router.get('/leaderboard', auth, analyticsController.getGlobalLeaderboard);
 
 module.exports = router;

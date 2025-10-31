@@ -1,0 +1,49 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "challenges": "Herausforderungen",
+    "progress": "Fortschritt",
+    "achievements": "Erfolge",
+    "leaderboard": "Bestenliste",
+    "settings": "Einstellungen",
+    "classes": "Klassen",
+    "learningPaths": "Lernpfade",
+    "analytics": "Analysen"
+  },
+  "dashboard": {
+    "welcome": "Willkommen zurück!",
+    "description": "Hier ist eine Übersicht über deine aktuellen Aktivitäten."
+  },
+  "challenges": {
+    "title": "Herausforderungen",
+    "description": "Wähle eine Herausforderung, um deine Fähigkeiten zu testen."
+  },
+  "progress": {
+    "title": "Mein Fortschritt",
+    "description": "Verfolge deine Lernkurve und sieh dir deine Ergebnisse an."
+  },
+  "achievements": {
+    "title": "Meine Erfolge",
+    "description": "Sammle Abzeichen und feiere deine Meilensteine."
+  },
+  "leaderboard": {
+    "title": "Bestenliste",
+    "description": "Messe dich mit anderen und erklimme die Spitze."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Verwalte deine Kontoinformationen und Präferenzen."
+  },
+  "classes": {
+    "title": "Meine Klassen",
+    "description": "Verwalte deine Klassen und Schüler."
+  },
+  "learningPaths": {
+    "title": "Lernpfade",
+    "description": "Erstelle und verwalte Lernpfade für deine Schüler."
+  },
+  "analytics": {
+    "title": "Analysen",
+    "description": "Analysiere die Leistung deiner Schüler und Klassen."
+  }
+}

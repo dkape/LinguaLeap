@@ -1,4 +1,5 @@
 const LearningPath = require('../models/LearningPath');
+const { generateLearningPathWithAI } = require('../../src/ai/dev'); // Mock AI function
 
 const createLearningPath = async (req, res) => {
   const { title, description, levels } = req.body;
@@ -89,4 +90,25 @@ const updateLearningPath = async (req, res) => {
   }
 };
 
-module.exports = { createLearningPath, getTeacherLearningPaths, toggleLearningPathStatus, updateLearningPath };
+const generateLearningPath = async (req, res) => {
+  try {
+    const { topic, studentGroupDescription, ageRange, readingLevel, language } = req.body;
+
+    // In a real application, you would call the Genkit flow here.
+    // For now, we'll use a mock function.
+    const generatedPath = await generateLearningPathWithAI({
+      topic,
+      studentGroupDescription,
+      ageRange,
+      readingLevel,
+      language,
+    });
+
+    res.json(generatedPath);
+  } catch (error) {
+    console.error("Error generating learning path:", error);
+    res.status(500).json({ message: "Failed to generate learning path." });
+  }
+};
+
+module.exports = { createLearningPath, getTeacherLearningPaths, toggleLearningPathStatus, updateLearningPath, generateLearningPath };

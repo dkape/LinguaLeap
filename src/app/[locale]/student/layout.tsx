@@ -13,12 +13,12 @@ export default function StudentLayout({
   const { t } = useTranslation();
   
   const studentNavItems = [
-    { href: "/student/dashboard", label: t('nav.dashboard'), icon: LayoutDashboard },
-    { href: "/student/challenges", label: t('nav.challenges'), icon: Target },
-    { href: "/student/progress", label: t('nav.progress'), icon: BookOpen },
-    { href: "/student/achievements", label: t('nav.achievements'), icon: Trophy },
-    { href: "/student/leaderboard", label: t('nav.leaderboard'), icon: Star },
-    { href: "/student/settings", label: t('nav.settings'), icon: Settings }
+    { href: "/student/dashboard", label: t('navigation.dashboard'), icon: LayoutDashboard },
+    { href: "/student/challenges", label: t('navigation.challenges'), icon: Target },
+    { href: "/student/progress", label: t('navigation.progress'), icon: BookOpen },
+    { href: "/student/achievements", label: t('navigation.achievements'), icon: Trophy },
+    { href: "/student/leaderboard", label: t('navigation.leaderboard'), icon: Star },
+    { href: "/student/settings", label: t('navigation.settings'), icon: Settings }
   ];
   
   return (
