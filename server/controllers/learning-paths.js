@@ -1,5 +1,5 @@
 const LearningPath = require('../models/LearningPath');
-const { generateLearningPathWithAI } = require('../../src/ai/dev'); // Mock AI function
+const { generateLearningPathWithAI } = require('../ai/mock'); // Using local mock AI function
 
 const createLearningPath = async (req, res) => {
   const { title, description, levels } = req.body;
