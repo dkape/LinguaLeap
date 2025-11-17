@@ -15,30 +15,49 @@ type DashboardHeaderProps = {
 
 export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
+      <div className="container flex h-16 items-center gap-4 px-4 md:px-6">
+        {/* Mobile Menu */}
         <div className="lg:hidden">
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                        <Menu className="h-5 w-5" />
-                        <span className="sr-only">Toggle navigation menu</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0">
-                    <div className="flex h-full flex-col">{sidebarContent}</div>
-                </SheetContent>
-            </Sheet>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="transition-all duration-200 hover:bg-muted"
+              >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0">
+              <div className="flex h-full flex-col">{sidebarContent}</div>
+            </SheetContent>
+          </Sheet>
         </div>
-        <Link href="/" className="items-center gap-2 hidden lg:flex">
-          <Logo className="h-7 w-7 text-primary" />
-          <span className="text-xl font-bold text-primary">LinguaLeap</span>
-        </Link>
-      </div>
 
-      <div className="flex w-full items-center justify-end gap-4">
-        <UserNav />
-        <ThemeToggle />
+        {/* Logo & Brand */}
+        <Link 
+          href="/" 
+          className="items-center gap-2 hidden lg:flex group"
+        >
+          <div className="relative">
+            <Logo className="h-8 w-8 text-primary transition-all duration-300 group-hover:scale-110" />
+          </div>
+          <span className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent transition-all duration-300 group-hover:from-accent group-hover:to-primary">
+            LinguaLeap
+          </span>
+        </Link>
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Right Actions */}
+        <div className="flex items-center gap-2 md:gap-4">
+          <UserNav />
+          <div className="h-6 w-px bg-border hidden md:block" />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

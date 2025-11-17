@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.svg",
     shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    apple: "/apple-touch-icon.svg",
   },
   appleWebApp: {
     capable: true,
@@ -23,8 +24,8 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1419" },
   ],
   viewport: "width=device-width, initial-scale=1.0, viewport-fit=cover",
 };
@@ -36,7 +37,32 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning>
-      <body className="font-sans antialiased">
+      <head>
+        {/* Theme initialization script - prevents flash of wrong theme */}
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const theme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = theme === 'dark' || (theme !== 'light' && prefersDark);
+                
+                if (isDark) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+                
+                // Ensure color-scheme is set
+                document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="font-body antialiased overflow-x-hidden">
         <AuthProvider>
           {children}
           <Toaster />
