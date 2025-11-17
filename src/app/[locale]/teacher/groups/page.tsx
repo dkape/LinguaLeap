@@ -2,9 +2,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, PlusCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -19,7 +19,6 @@ interface StudentClass {
 }
 
 export default function StudentGroupsPage() {
-  const { api } = useAuth();
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,17 +26,17 @@ export default function StudentGroupsPage() {
 
   const fetchClasses = useCallback(async () => {
     try {
-      const response = await api.get("/classes/teacher");
+      const response = await axios.get("/classes/teacher");
       setClasses(response.data);
     } catch {
       setError("Failed to load classes. Please try again later.");
     }
     setLoading(false);
-  }, [api]);
+  }, []);
 
   useEffect(() => {
     fetchClasses();
-  }, [api, fetchClasses]);
+  }, [fetchClasses]);
 
   const handleClassCreated = () => {
     setCreateDialogOpen(false);

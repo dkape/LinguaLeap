@@ -6,6 +6,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "LinguaLeap",
   description: "An app that helps children learn to read.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({

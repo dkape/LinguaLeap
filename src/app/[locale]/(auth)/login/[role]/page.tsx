@@ -4,15 +4,16 @@ import { getDictionary } from "@/lib/dictionaries";
 import { Locale } from "@/lib/i18n";
 
 type LoginPageProps = {
-  params: { role: UserRole; locale: Locale };
+  params: Promise<{ role: UserRole; locale: Locale }>;
 };
 
 export default async function LoginPage({ params }: LoginPageProps) {
-  const dict = await getDictionary(params.locale);
+  const { role, locale } = await params;
+  const dict = await getDictionary(locale);
   
-  if (params.role !== 'student' && params.role !== 'teacher') {
+  if (role !== 'student' && role !== 'teacher') {
     return <div>{dict.errors.invalidRole}</div>;
   }
   
-  return <AuthForm mode="login" role={params.role} />;
+  return <AuthForm mode="login" role={role} />;
 }

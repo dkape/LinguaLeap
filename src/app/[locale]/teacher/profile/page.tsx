@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/contexts/locale-context';
 
 export default function TeacherProfilePage() {
   const { user } = useAuth();

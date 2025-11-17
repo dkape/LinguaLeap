@@ -43,6 +43,7 @@ const GenerateChallengeOutputSchema = z.object({
     description: z.string().describe('The challenge description.'),
     total_points: z.number().describe('Total points available.'),
     estimated_time_minutes: z.number().describe('Estimated completion time in minutes.'),
+    time_limit_minutes: z.number().optional().describe('Optional time limit for the challenge.'),
     source_references: z.array(z.string()).describe('List of source books/authors used.'),
     items: z.array(ChallengeItemSchema).describe('The challenge items.'),
 });

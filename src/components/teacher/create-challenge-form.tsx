@@ -24,9 +24,36 @@ import { generateChallenge, GenerateChallengeOutput } from "@/ai/flows/generate-
 import { Loader2, Wand2, BookText, FileQuestion, Clock, Trophy } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/contexts/locale-context';
-
-
 import axios from 'axios';
+
+interface ChallengeItem {
+  type: 'text' | 'quiz';
+  title: string;
+  content: string;
+  points_value: number;
+  estimated_reading_time?: number;
+  questions?: ChallengeQuestion[];
+  source_reference?: string;
+  word_count?: number;
+  pointsValue?: number;
+  estimatedReadingTime?: number;
+}
+
+interface ChallengeQuestion {
+  question: string;
+  points_value: number;
+  correct_answer: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  pointsValue?: number;
+  correctAnswer?: string;
+  optionA?: string;
+  optionB?: string;
+  optionC?: string;
+  optionD?: string;
+}
 
 interface StudentClass {
   _id: string;
@@ -41,7 +68,8 @@ interface ExistingChallenge {
   title: string;
   description: string;
   total_points: number;
-  time_limit_minutes: number;
+  time_limit_minutes?: number;
+  estimated_time_minutes?: number;
   isActive: boolean;
   topic: string;
   class_description: string;
@@ -49,6 +77,8 @@ interface ExistingChallenge {
   reading_level: 'beginner' | 'intermediate' | 'advanced';
   language: 'en' | 'de';
   class_id?: string;
+  source_references?: { title?: string; url?: string }[];
+  items?: ChallengeItem[];
 }
 
 const formSchema = z.object({
@@ -480,7 +510,7 @@ export function CreateChallengeForm() {
                 </Badge>
                 <Badge variant="secondary">
                   <Clock className="mr-1 h-3 w-3" />
-                  ~{challengeToDisplay.estimated_time_minutes || challengeToDisplay.time_limit_minutes} {dict.createChallengeForm.minutesLabel}
+                  ~{challengeToDisplay.estimated_time_minutes} {dict.createChallengeForm.minutesLabel}
                 </Badge>
                 {challengeToDisplay.items &&
                   <Badge variant="secondary">

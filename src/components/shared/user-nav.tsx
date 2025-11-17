@@ -12,13 +12,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
-import { useTranslation } from "@/hooks/use-translation";
+import { useTranslation, useLocale } from "@/contexts/locale-context";
 import { LogOut, Settings, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 
 export function UserNav() {
   const { user, logOut } = useAuth();
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
+  const { locale } = useLocale();
 
   if (!user) {
     return null;

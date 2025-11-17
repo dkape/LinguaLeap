@@ -4,11 +4,11 @@ import { getDictionary } from "@/lib/dictionaries";
 import { Locale } from "@/lib/i18n";
 
 type SignupPageProps = {
-  params: { role: UserRole; locale: Locale };
+  params: Promise<{ role: UserRole; locale: Locale }>;
 };
 
 export default async function SignupPage({ params }: SignupPageProps) {
-  const { role, locale } = params;
+  const { role, locale } = await params;
   const dict = await getDictionary(locale);
   
   if (role !== 'student' && role !== 'teacher') {

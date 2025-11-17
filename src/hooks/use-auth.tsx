@@ -36,7 +36,7 @@ function AuthGuard({ children }: { children: ReactNode }) {
         const locale = pathSegments[1] || 'de'; // Default to German
         
         const isAuthPage = pathname.includes('/login') || pathname.includes('/signup');
-        const isProtectedRoute = pathname.includes('/dashboard');
+        const isProtectedRoute = pathname.includes('/dashboard') || pathname.includes('/teacher/students');
 
         if (!user && isProtectedRoute && !isAuthPage) {
             router.push(`/${locale}`);

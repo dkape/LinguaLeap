@@ -8,7 +8,8 @@
     "settings": "Settings",
     "classes": "Classes",
     "learningPaths": "Learning Paths",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "studentProgress": "Student Progress"
   },
   "dashboard": {
     "welcome": "Welcome back!",

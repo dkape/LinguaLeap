@@ -1,16 +1,17 @@
 import { AuthForm } from "@/components/auth/auth-form";
 import { getDictionary, t } from "@/lib/dictionaries";
-import type { Locale, UserRole } from "@/lib/types";
+import type { UserRole } from "@/lib/types";
+import { Locale } from "@/lib/i18n";
 
 type SignupPageProps = {
-  params: {
+  params: Promise<{
     role: UserRole;
     locale: Locale;
-  };
+  }>;
 };
 
 export default async function SignupPage({ params }: SignupPageProps) {
-  const { role, locale } = params;
+  const { role, locale } = await params;
   const dict = await getDictionary(locale);
 
   if (role !== 'student' && role !== 'teacher') {

@@ -40,3 +40,10 @@ export type LeaderboardEntry = {
   student: User;
   points: number;
 };
+
+export interface Student {
+  id: string;
+  name: string;
+  currentLesson: string;
+  progress: number;
+}

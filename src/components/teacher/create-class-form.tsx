@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import axios from 'axios';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Class name must be at least 2 characters." }),
@@ -24,7 +24,6 @@ const formSchema = z.object({
 });
 
 export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
-  const { api } = useAuth();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,11 +37,18 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await api.post("/classes", values);
-      toast({ title: "Success!", description: "Class created successfully." });
+      await axios.post("/classes", values);
+      toast({
+        title: "Class Created",
+        description: "Your new class has been created successfully.",
+      });
       onSuccess();
     } catch {
-      toast({ variant: "destructive", title: "Error!", description: "Failed to create class." });
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create class. Please try again.",
+      });
     }
   }
 
