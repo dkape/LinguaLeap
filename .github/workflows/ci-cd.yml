@@ -90,81 +90,18 @@ jobs:
         echo "✅ TruffleHog secrets detection completed (non-fatal)"
       continue-on-error: true
 
-    # 2. Generate package-lock.json files for dependency scanning
-    - name: Generate package-lock.json files
-      run: |
-        echo "🔧 Generating package-lock.json files automatically..."
-        
-        # Ensure consistent npm version
-        npm install -g npm@9.8.1
-        
-        # Function to generate lock file (robust with fallbacks)
-        generate_lock_file() {
-          local DIR=$1
-          local NAME=$2
-          echo "📦 Generating $NAME package-lock.json... (dir=$DIR)"
-          cd "$DIR"
-          # Clear npm cache first (non-fatal)
-          npm cache clean --force || true
-          # Remove existing lock file if it exists
-          rm -f package-lock.json || true
+    # 2. Install dependencies (lock files should be pre-generated and committed)
+    - name: Install frontend dependencies
+      run: npm ci --legacy-peer-deps --no-audit
 
-          # Primary attempt: generate lockfile while disabling audit/funding to avoid audit-triggered non-zero exits
-          echo "Running primary npm install to produce package-lock.json (audit disabled)"
-          if NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm install --package-lock-only --ignore-scripts --legacy-peer-deps; then
-            echo "✅ npm produced package-lock.json (primary)"
-          else
-            echo "⚠️ Primary lockfile generation failed; retrying with alternative flags"
-            # Retry without ignoring scripts and with no-audit flag
-            if NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm install --package-lock-only --legacy-peer-deps --no-audit; then
-              echo "✅ npm produced package-lock.json (retry)"
-            else
-              echo "⚠️ Retry failed; attempting npm ci fallback"
-              # Last resort: try npm ci to produce a lockfile (some projects generate lock via ci)
-              if npm ci --package-lock-only --ignore-scripts --legacy-peer-deps; then
-                echo "✅ npm ci produced package-lock.json (fallback)"
-              else
-                echo "❌ All attempts to generate package-lock.json failed"
-              fi
-            fi
-          fi
-
-          if [ -f package-lock.json ]; then
-            echo "✅ $NAME package-lock.json created successfully"
-          else
-            echo "❌ Failed to create $NAME package-lock.json; creating minimal placeholder to allow scans to run"
-            # Create a minimal placeholder lockfile so downstream scanners don't fail hard.
-            printf '%s\n' '{' '  "name": "PLACEHOLDER",' '  "lockfileVersion": 2,' '  "requires": true,' '  "packages": {}' '}' > package-lock.json
-            echo "⚠️ Placeholder package-lock.json created for $NAME (please generate a real lockfile locally and commit)"
-          fi
-
-          cd - > /dev/null || true
-        }
-        
-        # Generate frontend lock file
-        generate_lock_file "." "frontend"
-        
-        # Generate backend lock file
-        generate_lock_file "server" "backend"
-        
-        echo "🎉 All package-lock.json files generated successfully!"
-
-    # 3. Dependency Vulnerability Scanning with npm audit
-    - name: Install dependencies for audit
-      run: |
-        npm ci --audit=false
-        cd server && npm ci --audit=false
+    - name: Install backend dependencies
+      run: cd server && npm ci --legacy-peer-deps --no-audit
 
     - name: Run npm audit - Frontend
-      run: |
-        npm audit --audit-level=moderate --production
-      continue-on-error: true
+      run: npm audit --audit-level=moderate --production || true
 
     - name: Run npm audit - Backend  
-      run: |
-        cd server
-        npm audit --audit-level=moderate --production
-      continue-on-error: true
+      run: cd server && npm audit --audit-level=moderate --production || true
 
     # 4. Advanced Dependency Scanning with Snyk (only if token is available)
     # Snyk scanning disabled to prioritize a working CI/CD. Re-enable when ready to harden further.
@@ -256,15 +193,8 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Clean and install frontend dependencies
-      run: |
-        # Remove lock file if it exists and is out of sync
-        if [ -f package-lock.json ]; then
-          rm package-lock.json
-        fi
-        npm install
-        # Generate new lock file for future consistency
-        npm install --package-lock-only
+    - name: Install frontend dependencies
+      run: npm ci --legacy-peer-deps
 
     - name: Run frontend linting
       run: npm run lint
@@ -345,16 +275,8 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Clean and install backend dependencies
-      run: |
-        cd server
-        # Remove lock file if it exists and is out of sync
-        if [ -f package-lock.json ]; then
-          rm package-lock.json
-        fi
-        npm install
-        # Generate new lock file for future consistency
-        npm install --package-lock-only
+    - name: Install backend dependencies
+      run: cd server && npm ci --legacy-peer-deps
 
     - name: Test MongoDB connection
       env:
