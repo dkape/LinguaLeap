@@ -1,4 +1,5 @@
 import { useTranslation } from "@/contexts/locale-context";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { LayoutDashboard, Users, BookPlus } from "lucide-react";
 
 // Disable static generation for this layout

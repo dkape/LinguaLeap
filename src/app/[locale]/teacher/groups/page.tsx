@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,7 +15,7 @@ interface StudentClass {
   name: string;
   language: string;
   ageRange: string;
-  students: any[]; // Replace with a proper student type
+  students: Array<{_id: string; name: string}>;
 }
 
 export default function StudentGroupsPage() {
@@ -25,19 +25,19 @@ export default function StudentGroupsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isCreateDialogOpen, setCreateDialogOpen] = useState(false);
 
-  const fetchClasses = async () => {
+  const fetchClasses = useCallback(async () => {
     try {
       const response = await api.get("/classes/teacher");
       setClasses(response.data);
-    } catch (err) {
+    } catch {
       setError("Failed to load classes. Please try again later.");
     }
     setLoading(false);
-  };
+  }, [api]);
 
   useEffect(() => {
     fetchClasses();
-  }, [api]);
+  }, [api, fetchClasses]);
 
   const handleClassCreated = () => {
     setCreateDialogOpen(false);

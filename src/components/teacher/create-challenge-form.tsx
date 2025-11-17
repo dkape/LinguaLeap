@@ -74,10 +74,10 @@ export function CreateChallengeForm() {
       }
     }, [challenge]);
   const [isSaving, setIsSaving] = useState(false);
-  const [fullEditingChallengeDetails, setFullEditingChallengeDetails] = useState<any | null>(null);
+  const [fullEditingChallengeDetails, setFullEditingChallengeDetails] = useState<ExistingChallenge | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const { toast } = useToast();
-  const { t, dict } = useTranslation();
+  const { dict } = useTranslation();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -192,14 +192,14 @@ export function CreateChallengeForm() {
         class_id: formValues.class_id || null,
         total_points: challenge.total_points,
         time_limit_minutes: challenge.estimated_time_minutes,
-        items: challenge.items.map((item: any, index: number) => ({
+        items: challenge.items.map((item: ChallengeItem, index: number) => ({
           type: item.type,
           title: item.title,
           content: item.content,
           pointsValue: item.points_value,
           orderIndex: index,
           estimatedReadingTime: item.estimated_reading_time || 60,
-          questions: (item.questions || []).map((q: any, qIndex: number) => ({
+          questions: (item.questions || []).map((q: ChallengeQuestion, qIndex: number) => ({
             question: q.question,
             pointsValue: q.points_value,
             orderIndex: qIndex,
@@ -496,8 +496,8 @@ export function CreateChallengeForm() {
                   <div>
                     <h4 className="font-semibold mb-2">{dict.createChallengeForm.sourcesLabel}</h4>
                     <div className="flex flex-wrap gap-2">
-                      {challengeToDisplay.source_references.map((source: any, index: number) => (
-                        <Badge key={index} variant="outline">{source}</Badge>
+                      {challengeToDisplay.source_references.map((source: { title?: string; url?: string } | string, index: number) => (
+                        <Badge key={index} variant="outline">{typeof source === 'string' ? source : source.title || source.url}</Badge>
                       ))}
                     </div>
                   </div>
@@ -505,7 +505,7 @@ export function CreateChallengeForm() {
 
                 {challengeToDisplay.items &&
                   <Accordion type="single" collapsible className="w-full">
-                    {challengeToDisplay.items.map((item: any, index: number) => (
+                    {challengeToDisplay.items.map((item: ChallengeItem, index: number) => (
                       <AccordionItem value={`item-${index}`} key={index}>
                         <AccordionTrigger className="text-lg">
                           <div className="flex items-center gap-2">
@@ -541,7 +541,7 @@ export function CreateChallengeForm() {
                             {item.questions && item.questions.length > 0 && (
                               <div className="mt-4">
                                 <h5 className="font-semibold mb-2">{dict.createChallengeForm.quizQuestionsLabel}</h5>
-                                {item.questions.map((question: any, qIndex: number) => (
+                                {item.questions.map((question: ChallengeQuestion, qIndex: number) => (
                                   <div key={qIndex} className="mb-4 p-3 border rounded">
                                     <p className="font-medium mb-2">{question.question}</p>
                                     <div className="grid grid-cols-2 gap-2 text-sm">

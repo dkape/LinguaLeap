@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from "@/contexts/locale-context";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
 
 const achievements = [

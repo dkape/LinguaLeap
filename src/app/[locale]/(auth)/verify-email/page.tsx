@@ -27,27 +27,27 @@ function VerifyEmailContent() {
       return;
     }
 
-    verifyEmail(token);
-  }, [token, t]);
+    const verify = async (verificationToken: string) => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${apiUrl}/auth/verify-email?token=${verificationToken}`);
+        const data = await response.json();
 
-  const verifyEmail = async (verificationToken: string) => {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-      const response = await fetch(`${apiUrl}/auth/verify-email?token=${verificationToken}`);
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus('success');
-        setMessage(data.message);
-      } else {
+        if (response.ok) {
+          setStatus('success');
+          setMessage(data.message);
+        } else {
+          setStatus('error');
+          setMessage(data.message || t.failed);
+        }
+      } catch {
         setStatus('error');
-        setMessage(data.message || t.failed);
+        setMessage(t.networkError);
       }
-    } catch {
-      setStatus('error');
-      setMessage(t.networkError);
-    }
-  };
+    };
+
+    verify(token);
+  }, [token, t]);
 
   const handleResendVerification = async () => {
     const email = prompt(t.enterEmail);

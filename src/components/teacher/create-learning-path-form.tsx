@@ -33,7 +33,13 @@ const formSchema = z.object({
 export function CreateLearningPathForm() {
   const { api } = useAuth();
   const { toast } = useToast();
-  const [generatedPath, setGeneratedPath] = useState<any>(null);
+  interface GeneratedLevel {
+    title: string;
+    description?: string;
+    activities?: Array<{ title: string; description?: string }>;
+  }
+
+  const [generatedPath, setGeneratedPath] = useState<{ title: string; description?: string; levels: GeneratedLevel[] } | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -55,7 +61,7 @@ export function CreateLearningPathForm() {
       const response = await api.post("/learning-paths/generate", values);
       setGeneratedPath(response.data);
       toast({ title: "Success!", description: "Learning path generated." });
-    } catch (error) {
+    } catch {
       toast({ variant: "destructive", title: "Error!", description: "Failed to generate learning path." });
     }
     setIsGenerating(false);
@@ -68,7 +74,7 @@ export function CreateLearningPathForm() {
       toast({ title: "Success!", description: "Learning path saved." });
       setGeneratedPath(null);
       form.reset();
-    } catch (error) {
+    } catch {
       toast({ variant: "destructive", title: "Error!", description: "Failed to save learning path." });
     }
     setIsSaving(false);
@@ -188,7 +194,7 @@ export function CreateLearningPathForm() {
             <CardDescription>{generatedPath.description}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {generatedPath.levels.map((level: any, index: number) => (
+            {generatedPath.levels.map((level: GeneratedLevel, index: number) => (
               <div key={index}>
                 <h3 className="font-semibold">Level {index + 1}: {level.title}</h3>
                 <p className="text-sm text-muted-foreground">{level.description}</p>

@@ -18,7 +18,6 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useRef, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useLocale } from "@/contexts/locale-context";
 
 const formSchema = z.object({

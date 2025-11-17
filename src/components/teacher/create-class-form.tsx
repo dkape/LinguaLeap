@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -42,7 +41,7 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
       await api.post("/classes", values);
       toast({ title: "Success!", description: "Class created successfully." });
       onSuccess();
-    } catch (error) {
+    } catch {
       toast({ variant: "destructive", title: "Error!", description: "Failed to create class." });
     }
   }

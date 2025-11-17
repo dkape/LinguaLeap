@@ -3,12 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Medal, Award, Clock, Target, Flame, Star, Crown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Trophy, Medal, Award, Clock, Target } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip } from '@/components/ui/tooltip';
 import { useTranslation } from '@/contexts/locale-context';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 
@@ -188,18 +186,20 @@ export function Leaderboard() {
         
         <div className="flex flex-wrap gap-2">
           {classes.map((cls) => (
-          <button
-            key={cls.id}
-            onClick={() => setSelectedClassId(cls.id)}
-            className={`px-4 py-2 rounded-lg border transition-colors ${
-              selectedClassId === cls.id
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-background hover:bg-muted border-border'
-            }`}
-          >
-            {cls.name}
-          </button>
-        ))}
+            <button
+              key={cls.id}
+              onClick={() => setSelectedClassId(cls.id)}
+              className={`px-4 py-2 rounded-lg border transition-colors ${
+                selectedClassId === cls.id
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background hover:bg-muted border-border'
+              }`}
+            >
+              {cls.name}
+            </button>
+          ))}
+        </div>
+
       </div>
 
       {isLoading ? (

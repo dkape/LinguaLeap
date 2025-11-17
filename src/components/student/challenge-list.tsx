@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Clock, Trophy, BookText, Play, CheckCircle, Users, Sparkles, Star } from 'lucide-react';
+import { Clock, Trophy, BookText, Play, CheckCircle, Users, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/contexts/locale-context';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from "@/contexts/locale-context";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
@@ -41,7 +41,7 @@ export default function TeacherClasses() {
             <CardHeader>
               <CardTitle>{c.name}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <div className="px-6 py-4">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -63,7 +63,7 @@ export default function TeacherClasses() {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
+            </div>
           </Card>
         ))}
       </div>

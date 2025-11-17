@@ -17,7 +17,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/hooks/use-auth";
 import { useState, Suspense, useRef, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from 'next/navigation';
 import { useLocale } from "@/contexts/locale-context";
 
@@ -26,7 +25,6 @@ function ResetPasswordContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [submissionMessage, setSubmissionMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const messageRef = useRef<HTMLDivElement | null>(null);
-  const { toast } = useToast();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const { dict } = useLocale();
