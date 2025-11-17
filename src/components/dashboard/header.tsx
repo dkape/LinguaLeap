@@ -5,6 +5,7 @@ import { Logo } from "@/components/icons";
 import { UserNav } from "@/components/shared/user-nav";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Menu } from "lucide-react";
 import React from "react";
 
@@ -37,6 +38,7 @@ export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
 
       <div className="flex w-full items-center justify-end gap-4">
         <UserNav />
+        <ThemeToggle />
       </div>
     </header>
   );
