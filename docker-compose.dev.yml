@@ -62,6 +62,8 @@ services:
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: https://kapeplus.de:3001/api
+      #NEXT_PUBLIC_ENABLE_ANALYTICS: "false"
+      #NEXT_PUBLIC_ENABLE_DEBUG_MODE: "false"
     ports:
       - "9002:9002"
     depends_on:
