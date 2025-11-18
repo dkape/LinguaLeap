@@ -3,6 +3,8 @@ import { getDictionary, t } from "@/lib/dictionaries";
 import type { UserRole } from "@/lib/types";
 import { Locale } from "@/lib/i18n";
 
+export const dynamic = 'force-dynamic';
+
 type LoginPageProps = {
   params: Promise<{
     role: UserRole;
