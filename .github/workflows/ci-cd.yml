@@ -254,12 +254,17 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: password123
           MONGO_INITDB_DATABASE: lingualeap_test
-          MONGODB_INITDB_SCRIPTS_DIR: /docker-entrypoint-initdb.d
         ports:
           - 27017:27017
-        options: "--health-cmd \"mongosh --quiet --eval 'db.runCommand({ ping: 1 })' --username admin --password password123 --authenticationDatabase admin\" --health-interval 10s --health-timeout 5s --health-retries 5 --health-start-period 20s"
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })' --username admin --password password123 --authenticationDatabase admin"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 20s
         volumes:
-          - ${{ github.workspace }}/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+          - ./mongo-init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+        command: mongod --bind_ip_all
 
     steps:
     - name: Checkout code

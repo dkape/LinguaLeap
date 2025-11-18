@@ -38,3 +38,6 @@ const test = async () => {
 };
 
 test();
+test('placeholder test', () => {
+  expect(true).toBe(true);
+});

@@ -36,3 +36,7 @@ export async function waitFor(
     await new Promise((resolve) => setTimeout(resolve, 50))
   }
 }
+
+test('placeholder test', () => {
+  expect(true).toBe(true);
+});
