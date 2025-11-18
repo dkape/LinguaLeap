@@ -43,12 +43,8 @@ function AuthGuard({ children }: { children: ReactNode }) {
         }
     }, [user, loading, pathname, router]);
 
-    if (loading && (pathname.includes('/student') || pathname.includes('/teacher'))) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div>Loading...</div>
-            </div>
-        );
+    if (loading) {
+        return null; // Return null to prevent rendering children while loading
     }
 
     return <>{children}</>;
