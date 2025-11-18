@@ -1,3 +1,5 @@
+require('./tests/e2e/setup.ts');
+
 import { defineConfig, devices } from '@playwright/test'
 
 /**

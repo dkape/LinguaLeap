@@ -258,6 +258,8 @@ jobs:
         ports:
           - 27017:27017
         options: "--health-cmd \"mongosh --quiet --eval 'db.runCommand({ ping: 1 })' --username admin --password password123 --authenticationDatabase admin\" --health-interval 10s --health-timeout 5s --health-retries 5 --health-start-period 20s"
+        # Keep the container running in the background
+        command: tail -f /dev/null 
         volumes:
           - ${{ github.workspace }}/server/test/setup/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
 

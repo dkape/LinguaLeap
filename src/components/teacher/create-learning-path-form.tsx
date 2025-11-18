@@ -16,11 +16,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import axios from "axios";
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: "Topic must be at least 3 characters." }),
@@ -31,7 +31,6 @@ const formSchema = z.object({
 });
 
 export function CreateLearningPathForm() {
-  const { api } = useAuth();
   const { toast } = useToast();
   interface GeneratedLevel {
     title: string;
@@ -58,7 +57,7 @@ export function CreateLearningPathForm() {
     setIsGenerating(true);
     setGeneratedPath(null);
     try {
-      const response = await api.post("/learning-paths/generate", values);
+      const response = await axios.post("/learning-paths/generate", values);
       setGeneratedPath(response.data);
       toast({ title: "Success!", description: "Learning path generated." });
     } catch {
@@ -70,7 +69,7 @@ export function CreateLearningPathForm() {
   async function onSave() {
     setIsSaving(true);
     try {
-      await api.post("/learning-paths", generatedPath);
+      await axios.post("/learning-paths", generatedPath);
       toast({ title: "Success!", description: "Learning path saved." });
       setGeneratedPath(null);
       form.reset();
