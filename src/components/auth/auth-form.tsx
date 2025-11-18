@@ -22,6 +22,7 @@ import { useState, useRef, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocale, useTranslation } from "@/contexts/locale-context";
+import { Logo } from "@/components/icons";
 
 type AuthFormProps = {
   mode: 'login' | 'signup';
@@ -124,7 +125,10 @@ export function AuthForm({ mode, role }: AuthFormProps) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="text-center">
+        <div className="mx-auto mb-4">
+          <Logo />
+        </div>
         <CardTitle className="font-headline">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
