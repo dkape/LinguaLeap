@@ -5,9 +5,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function StudentSettings() {
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <div className="flex flex-col gap-4">
@@ -21,11 +23,11 @@ export default function StudentSettings() {
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" defaultValue="Alex" />
+            <Input id="name" defaultValue={user?.name} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" defaultValue="alex@example.com" disabled />
+            <Input id="email" type="email" defaultValue={user?.email} disabled />
           </div>
           <Button>Save Changes</Button>
         </CardContent>

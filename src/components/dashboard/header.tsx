@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Menu } from "lucide-react";
 import React from "react";
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 
 type DashboardHeaderProps = {
   sidebarContent: React.ReactNode;
@@ -54,6 +55,7 @@ export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 md:gap-4">
+          <LanguageSwitcher />
           <UserNav />
           <div className="h-6 w-px bg-border hidden md:block" />
           <ThemeToggle />

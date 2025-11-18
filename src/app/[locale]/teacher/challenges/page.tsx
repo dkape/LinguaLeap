@@ -9,7 +9,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function TeacherChallenges() {
-  const { t } = useTranslation();
+  const { dict } = useTranslation();
+  const t = (key: string) => {
+    const keys = key.split('.');
+    let result: any = dict;
+    for (const k of keys) {
+      result = result[k];
+      if (typeof result === 'undefined') {
+        return key;
+      }
+    }
+    return result;
+  };
 
   return (
     <div className="flex flex-col gap-4">

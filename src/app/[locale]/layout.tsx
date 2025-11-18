@@ -4,7 +4,6 @@ import { getDictionary } from '@/lib/dictionaries';
 import { LocaleProvider } from '@/contexts/locale-context';
 import { AuthProvider } from '@/hooks/use-auth';
 import { Toaster } from '@/components/ui/toaster';
-import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import '../globals.css';
 import Image from 'next/image';
 
@@ -40,11 +39,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             objectFit="cover"
             className="absolute top-0 left-0 w-full h-full opacity-30 dark:opacity-25 pointer-events-none lg:object-contain"
           />
-          {/* Language switcher in top right */}
-          <div className="absolute top-4 right-4 z-50">
-            <LanguageSwitcher currentLocale={locale} />
-          </div>
-          
           <div className="relative z-10">
             {children}
           </div>

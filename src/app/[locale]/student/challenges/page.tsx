@@ -5,7 +5,18 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 
 export default function StudentChallenges() {
-  const { t } = useTranslation();
+  const { dict } = useTranslation();
+  const t = (key: string) => {
+    const keys = key.split('.');
+    let result: any = dict;
+    for (const k of keys) {
+      result = result[k];
+      if (typeof result === 'undefined') {
+        return key;
+      }
+    }
+    return result;
+  };
 
   const challenges = [
     {
