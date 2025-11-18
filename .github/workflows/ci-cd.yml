@@ -256,10 +256,14 @@ jobs:
           MONGO_INITDB_DATABASE: lingualeap_test
         ports:
           - 27017:27017
-        options: "--health-cmd \"mongosh --quiet --eval 'db.runCommand({ ping: 1 })' --username admin --password password123 --authenticationDatabase admin\" --health-interval 10s --health-timeout 5s --health-retries 5 --health-start-period 20s"
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })' --username admin --password password123 --authenticationDatabase admin"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 20s
         volumes:
           - ${{ github.workspace }}/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-        command: mongod --bind_ip_all
 
     steps:
     - name: Checkout code
@@ -271,12 +275,14 @@ jobs:
         node-version: '18'
 
     - name: Install backend dependencies
-      run: cd server && npm ci --legacy-peer-deps
+      run: cd server && npm ci --legacy-peer_deps
 
     - name: Test MongoDB connection
       env:
         MONGODB_URI: mongodb://admin:password123@localhost:27017/lingualeap_test?authSource=admin
       run: |
+        # Wait for MongoDB to be healthy
+        sleep 15
         cd server
         npm run test:db
 
