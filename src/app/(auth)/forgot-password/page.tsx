@@ -29,9 +29,6 @@ const formSchema = z.object({
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
 
-// Disable static generation for this page
-export const dynamic = 'force-dynamic';
-
 export default function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
