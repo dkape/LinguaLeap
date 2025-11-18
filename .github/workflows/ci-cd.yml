@@ -194,7 +194,7 @@ jobs:
         node-version: '18'
 
     - name: Install frontend dependencies
-      run: npm ci --legacy-peer-deps
+      run: npm ci --legacy-peer_deps
 
     - name: Run frontend linting
       run: npm run lint
@@ -262,8 +262,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
           --health-start-period 20s
-        volumes:
-          - ${{ github.workspace }}/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
 
     steps:
     - name: Checkout code
