@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   keywords: ["language learning", "education", "children", "reading", "multilingual"],
   authors: [{ name: "LinguaLeap Team" }],
   icons: {
-    icon: "/icon.svg",
+    icon: "/icon.png",
     shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.svg",
+    apple: "/icon.png",
   },
   appleWebApp: {
     capable: true,

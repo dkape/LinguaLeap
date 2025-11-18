@@ -92,10 +92,12 @@ export function Hero() {
             {/* Icon in center */}
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <div className="w-32 h-32 rounded-3xl bg-card border border-border shadow-lg flex items-center justify-center overflow-hidden backdrop-blur-sm">
-                <img 
-                  src="/icon.svg" 
-                  alt="LinguaLeap Icon" 
-                  className="w-20 h-20 object-contain"
+                <Image
+                  src="/icon.png"
+                  alt="LinguaLeap Icon"
+                  width={80}
+                  height={80}
+                  className="object-contain"
                 />
               </div>
             </div>

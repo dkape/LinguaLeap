@@ -127,7 +127,10 @@ body {
 
   body {
     @apply bg-background text-foreground;
-    background-image: linear-gradient(135deg, var(--bg-gradient-from), var(--bg-gradient-to));
+    background-image: url('/background.png'), linear-gradient(135deg, var(--bg-gradient-from), var(--bg-gradient-to));
+    background-blend-mode: overlay;
+    background-size: cover;
+    background-position: center;
     background-attachment: fixed;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
