@@ -17,6 +17,8 @@
 /test-results
 /tests/e2e/screenshots
 /data/
+/logs/
+/.tmp/
 
 # next.js
 /.next/
