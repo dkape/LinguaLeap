@@ -1,4 +1,5 @@
 #!/bin/bash
+cd /home/suadmin/workspaces/LinguaLeap
 
 echo "Fetching latest changes..."
 git fetch
