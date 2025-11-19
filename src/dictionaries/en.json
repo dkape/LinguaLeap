@@ -1,4 +1,33 @@
 {
+  "app": {
+    "title": "LinguaLeap",
+    "tagline": "Language learning for the next generation"
+  },
+  "landing": {
+    "heroTitle": "Unlock the World, One Word at a Time",
+    "heroSubtitle": ". Gamified lessons and personalized paths help young learners leap ahead.",
+    "studentButton": "I'm a Student",
+    "teacherButton": "I'm a Teacher",
+    "footerRights": " All rights reserved."
+  },
+  "common": {
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "update": "Update",
+    "add": "Add",
+    "remove": "Remove",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "actions": "Actions",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "edit": "Edit",
+    "view": "View"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "challenges": "Challenges",
@@ -9,14 +38,19 @@
     "classes": "Classes",
     "learningPaths": "Learning Paths",
     "analytics": "Analytics",
-    "studentProgress": "Student Progress"
+    "studentProgress": "Student Progress",
+    "logout": "Logout"
   },
   "dashboard": {
-    "welcome": "Welcome back!",
-    "description": "Here is an overview of your recent activity.",
+    "welcome": "Welcome back, {name}!",
+    "description": "Ready to continue your language journey?",
+    "toggleMenu": "Toggle navigation menu",
+    "brandName": "LinguaLeap",
     "student": {
       "recentChallenge": "Recent Challenge",
       "recentChallengeDesc": "Your last completed challenge.",
+      "recentActivity": "Recent Activity",
+      "recentActivityDescription": "Your latest actions and progress.",
       "currentProgress": "Current Progress",
       "currentProgressDesc": "Your learning stats.",
       "leaderboardRank": "Leaderboard Rank",
@@ -43,7 +77,171 @@
   },
   "challenges": {
     "title": "Challenges",
-    "description": "Choose a challenge to test your skills."
+    "myChallenges": "My Challenges",
+    "solveChallengesDescription": "Solve exciting reading challenges and earn points!",
+    "noChallenges": "No challenges available",
+    "noChallengesDescription": "Your teacher hasn't created any challenges for your class yet.",
+    "allChallenges": "All",
+    "inProgress": "In Progress",
+    "recommended": "Recommended",
+    "difficulty": {
+      "1": "Easy",
+      "2": "Medium",
+      "3": "Hard"
+    },
+    "progress": "Progress",
+    "tasks": "Tasks",
+    "pointsEarned": "Points earned",
+    "time": "Time",
+    "completed": "Completed",
+    "continue": "Continue",
+    "start": "Start",
+    "abandoned": "Abandoned",
+    "notStarted": "Not started"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "description": "See how you compare to your classmates!",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "allTime": "All Time",
+    "selectStat": "Select Stat",
+    "totalPoints": "Total Points",
+    "completedChallenges": "Completed Challenges",
+    "currentStreak": "Current Streak",
+    "noClasses": "No classes found",
+    "noClassesDescription": "You are not assigned to any class yet.",
+    "noResults": "No results yet",
+    "noResultsDescription": "Solve challenges to appear on the leaderboard!",
+    "rank": "Rank",
+    "you": "You",
+    "avgTime": "Avg Time",
+    "solved": "Solved",
+    "points": "Points"
+  },
+  "classManagement": {
+    "title": "Class Management",
+    "description": "Manage your student classes and assign challenges.",
+    "newClass": "New Class",
+    "createClassTitle": "Create New Class",
+    "createClassDescription": "Create a new student class for your challenges.",
+    "className": "Class Name",
+    "classDescription": "Description",
+    "language": "Language",
+    "ageRange": "Age Range",
+    "selectAgeRange": "Select age range",
+    "createButton": "Create Class",
+    "addStudent": "Add Student",
+    "addStudentTitle": "Add Student to Class",
+    "addStudentDescription": "Enter the student's email address.",
+    "enterEmail": "student@example.com",
+    "addButton": "Add",
+    "students": "Students",
+    "noStudents": "No students in this class yet.",
+    "studentCount": "Students",
+    "removeStudent": "Remove Student",
+    "successCreate": "Class created successfully.",
+    "errorCreate": "Could not create class.",
+    "successAdd": "Student added to class.",
+    "errorAdd": "Could not add student.",
+    "successRemove": "Student removed from class.",
+    "errorRemove": "Could not remove student."
+  },
+  "createChallengeForm": {
+    "existingChallengesTitle": "Existing Challenges",
+    "existingChallengesDescription": "Manage your existing challenges.",
+    "title": "Create New Challenge",
+    "description": "Use AI to generate a personalized reading challenge for your students.",
+    "topicLabel": "Topic",
+    "topicPlaceholder": "e.g. Space Exploration, Dinosaurs, Fairy Tales",
+    "topicDescription": "The main subject of the reading material.",
+    "classDescriptionLabel": "Class Description",
+    "classDescriptionPlaceholder": "e.g. A group of 10-year-olds who love adventure stories...",
+    "classDescriptionDescription": "Describe your students to help the AI tailor the content.",
+    "ageRangeLabel": "Age Range",
+    "ageRangePlaceholder": "Select age range",
+    "ageRange5_6": "5-6 years",
+    "ageRange7_8": "7-8 years",
+    "ageRange9_10": "9-10 years",
+    "ageRange11_12": "11-12 years",
+    "readingLevelLabel": "Reading Level",
+    "readingLevelPlaceholder": "Select reading level",
+    "readingLevelBeginner": "Beginner",
+    "readingLevelIntermediate": "Intermediate",
+    "readingLevelAdvanced": "Advanced",
+    "languageLabel": "Language",
+    "languagePlaceholder": "Select language",
+    "languageGerman": "German",
+    "languageEnglish": "English",
+    "assignToClassLabel": "Assign to Class (Optional)",
+    "assignToClassPlaceholder": "Select a class",
+    "assignToClassDescription": "The challenge will be automatically assigned to this class.",
+    "studentsLabel": "students",
+    "generateButton": "Generate Challenge",
+    "generatingMessage": "Generating your challenge with AI... This may take a minute.",
+    "successToastTitle": "Challenge Generated!",
+    "successToastDescription": "Please review the challenge below and save it.",
+    "errorToastTitle": "Error",
+    "errorToastDescription": "Failed to generate challenge. Please try again.",
+    "saveSuccessToastTitle": "Success",
+    "saveSuccessToastDescription": "Challenge saved successfully.",
+    "saveErrorToastTitle": "Error",
+    "saveErrorToastDescription": "Failed to save challenge.",
+    "statusUpdateSuccessTitle": "Success",
+    "statusUpdateSuccessDescriptionActive": "Challenge is now active.",
+    "statusUpdateSuccessDescriptionInactive": "Challenge is now inactive.",
+    "statusUpdateErrorTitle": "Error",
+    "statusUpdateErrorDescription": "Failed to update challenge status.",
+    "pointsLabel": "Points",
+    "minutesLabel": "Min",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "tasksLabel": "Tasks",
+    "sourcesLabel": "Sources",
+    "sourceLabel": "Source",
+    "wordsLabel": "Words",
+    "estimatedReadingTimeLabel": "Est. Time",
+    "quizQuestionsLabel": "Quiz Questions",
+    "savingButton": "Saving...",
+    "saveButton": "Save Challenge"
+  },
+  "createClassForm": {
+    "className": "Class Name",
+    "classNamePlaceholder": "e.g. Grade 2 Reading Group",
+    "language": "Language",
+    "selectLanguage": "Select a language",
+    "ageRange": "Age Range",
+    "selectAgeRange": "Select an age range",
+    "createButton": "Create Class",
+    "creatingButton": "Creating...",
+    "successTitle": "Class Created",
+    "successDescription": "Your new class has been created successfully.",
+    "errorTitle": "Error",
+    "errorDescription": "Failed to create class. Please try again."
+  },
+  "createLearningPathForm": {
+    "topic": "Topic",
+    "topicPlaceholder": "e.g. The Solar System",
+    "topicDescription": "What is the main topic of this learning path?",
+    "studentGroupDescription": "Student Group Description",
+    "studentGroupPlaceholder": "e.g. A group of 2nd graders who love space.",
+    "studentGroupDescriptionDesc": "Describe the students this path is for.",
+    "ageRange": "Age Range",
+    "readingLevel": "Reading Level",
+    "language": "Language",
+    "generateButton": "Generate with AI",
+    "generatingButton": "Generating...",
+    "saveButton": "Save Learning Path",
+    "savingButton": "Saving...",
+    "successTitle": "Success!",
+    "successGenerate": "Learning path generated.",
+    "successSave": "Learning path saved.",
+    "errorTitle": "Error!",
+    "errorGenerate": "Failed to generate learning path.",
+    "errorSave": "Failed to save learning path."
+  },
+  "studentProgressCard": {
+    "currentLesson": "Current Lesson"
   },
   "progress": {
     "title": "My Progress",
@@ -52,10 +250,6 @@
   "achievements": {
     "title": "My Achievements",
     "description": "Collect badges and celebrate your milestones."
-  },
-  "leaderboard": {
-    "title": "Leaderboard",
-    "description": "Compete with others and climb to the top."
   },
   "settings": {
     "title": "Settings",
@@ -72,5 +266,63 @@
   "analytics": {
     "title": "Analytics",
     "description": "Analyze the performance of your students and classes."
+  },
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "teacher": {
+    "analytics": {
+      "title": "Analytics",
+      "classAverageScores": "Class Average Scores",
+      "studentPerformanceDistribution": "Student Performance Distribution"
+    },
+    "challenges": {
+      "title": "Challenges",
+      "description": "Manage your challenges here.",
+      "createTitle": "Create New Challenge",
+      "createDescription": "Create a new challenge for your students.",
+      "existingTitle": "Existing Challenges",
+      "existingDescription": "View and manage your existing challenges."
+    },
+    "classes": {
+      "title": "Classes",
+      "description": "Manage your classes here.",
+      "createButton": "Create New Class",
+      "studentName": "Student Name",
+      "progress": "Progress",
+      "actions": "Actions"
+    },
+    "create": {
+      "cardTitle": "Create a New Learning Path",
+      "cardDescription": "Use AI to generate a personalized learning path for your students."
+    },
+    "groups": {
+      "title": "Groups",
+      "createClassButton": "Create Class",
+      "createDialogTitle": "Create a new class",
+      "errorTitle": "Error",
+      "alertTitle": "Alert"
+    },
+    "learningPaths": {
+      "title": "Learning Paths",
+      "description": "Manage your learning paths here.",
+      "createButton": "Create New Learning Path"
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Manage your settings here.",
+      "profileCardTitle": "Profile",
+      "passwordCardTitle": "Password",
+      "profileCardDescription": "Update your profile information.",
+      "passwordCardDescription": "Change your password.",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "currentPasswordLabel": "Current Password",
+      "newPasswordLabel": "New Password",
+      "confirmNewPasswordLabel": "Confirm New Password",
+      "saveButton": "Save Changes",
+      "changePasswordButton": "Change Password"
+    }
   }
 }

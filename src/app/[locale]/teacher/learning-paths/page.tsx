@@ -24,10 +24,10 @@ export default function TeacherLearningPaths() {
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">{t('learningPaths.title')}</h1>
-          <p className="text-muted-foreground">{t('learningPaths.description')}</p>
+          <h1 className="text-2xl font-bold">{t('teacher.learningPaths.title')}</h1>
+          <p className="text-muted-foreground">{t('teacher.learningPaths.description')}</p>
         </div>
-        <Button>Create New Learning Path</Button>
+        <Button>{t('teacher.learningPaths.create')}</Button>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {learningPaths.map((path, index) => (
@@ -37,10 +37,10 @@ export default function TeacherLearningPaths() {
               <CardDescription>{path.description}</CardDescription>
             </CardHeader>
             <CardContent className="flex justify-between items-center">
-              <span className="text-sm font-medium text-muted-foreground">{path.challenges} challenges</span>
+              <span className="text-sm font-medium text-muted-foreground">{path.challenges} {t('teacher.learningPaths.challenges')}</span>
               <div>
-                <Button variant="ghost" size="sm">Edit</Button>
-                <Button variant="ghost" size="sm" className="text-red-500">Delete</Button>
+                <Button variant="ghost" size="sm">{t('common.edit')}</Button>
+                <Button variant="ghost" size="sm" className="text-red-500">{t('common.delete')}</Button>
               </div>
             </CardContent>
           </Card>

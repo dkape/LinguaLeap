@@ -19,28 +19,28 @@ export default function StudentLeaderboard() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">{t('leaderboard.title')}</h1>
-      <p className="text-muted-foreground">{t('leaderboard.description')}</p>
+      <h1 className="text-2xl font-bold">{t('student.leaderboard.title')}</h1>
+      <p className="text-muted-foreground">{t('student.leaderboard.description')}</p>
       <Card>
         <CardHeader>
           <CardTitle>Class 3A Leaderboard</CardTitle>
-          <CardDescription>See how you rank against your classmates.</CardDescription>
+          <CardDescription>{t('student.leaderboard.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Rank</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Challenges</TableHead>
+                <TableHead className="w-[100px]">{t('student.leaderboard.rank')}</TableHead>
+                <TableHead>{t('student.leaderboard.name')}</TableHead>
+                <TableHead>{t('student.leaderboard.score')}</TableHead>
+                <TableHead>{t('student.leaderboard.completedChallenges')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {leaderboardData.map((row) => (
                 <TableRow key={row.rank} className={row.name === 'You' ? 'bg-muted' : ''}>
                   <TableCell className="font-medium">{row.rank}</TableCell>
-                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.name === 'You' ? t('student.leaderboard.you') : row.name}</TableCell>
                   <TableCell>{row.score}</TableCell>
                   <TableCell>{row.challenges}</TableCell>
                 </TableRow>

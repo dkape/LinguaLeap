@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/components/ui/badge';
 import { Users, Plus, Mail, Trash2, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/contexts/locale-context';
 
 import axios from 'axios';
 
@@ -37,12 +38,12 @@ export function ClassManagement() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [selectedClass, setSelectedClass] = useState<StudentClass | null>(null);
   const selectedClassCardRef = useRef<HTMLDivElement | null>(null);
-    // Scroll to the selected class card when it appears
-    useEffect(() => {
-      if (selectedClass && selectedClassCardRef.current) {
-        selectedClassCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, [selectedClass]);
+  // Scroll to the selected class card when it appears
+  useEffect(() => {
+    if (selectedClass && selectedClassCardRef.current) {
+      selectedClassCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selectedClass]);
   const [students, setStudents] = useState<Student[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isAddStudentDialogOpen, setIsAddStudentDialogOpen] = useState(false);
@@ -50,6 +51,7 @@ export function ClassManagement() {
   const [newStudentEmail, setNewStudentEmail] = useState('');
 
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [newClass, setNewClass] = useState({
     name: '',
@@ -67,8 +69,8 @@ export function ClassManagement() {
       console.error('Error fetching classes:', error);
       toast({
         variant: 'destructive',
-        title: 'Fehler',
-        description: 'Klassen konnten nicht geladen werden.'
+        title: t('common.error'),
+        description: t('classManagement.errorCreate') // Using a generic error for loading too or add loadError key
       });
     }
   }, [toast]);
@@ -86,8 +88,8 @@ export function ClassManagement() {
       console.error('Error fetching class details:', error);
       toast({
         variant: 'destructive',
-        title: 'Fehler',
-        description: 'Klassendetails konnten nicht geladen werden.'
+        title: t('common.error'),
+        description: t('classManagement.errorCreate') // Reusing error key or add specific one
       });
     }
   };
@@ -96,8 +98,8 @@ export function ClassManagement() {
     if (!newClass.name || !newClass.language) {
       toast({
         variant: 'destructive',
-        title: 'Fehler',
-        description: 'Name und Sprache sind erforderlich.'
+        title: t('common.error'),
+        description: t('classManagement.errorCreate')
       });
       return;
     }
@@ -106,8 +108,8 @@ export function ClassManagement() {
     try {
       await axios.post('/classes', newClass);
       toast({
-        title: 'Erfolg',
-        description: 'Klasse wurde erfolgreich erstellt.'
+        title: t('common.success'),
+        description: t('classManagement.successCreate')
       });
       setIsCreateDialogOpen(false);
       setNewClass({ name: '', description: '', language: 'de', age_range: '' });
@@ -116,8 +118,8 @@ export function ClassManagement() {
       console.error('Error creating class:', error);
       toast({
         variant: 'destructive',
-        title: 'Fehler',
-        description: 'Klasse konnte nicht erstellt werden.'
+        title: t('common.error'),
+        description: t('classManagement.errorCreate')
       });
     } finally {
       setIsLoading(false);
@@ -133,8 +135,8 @@ export function ClassManagement() {
         studentEmail: newStudentEmail
       });
       toast({
-        title: 'Erfolg',
-        description: 'Schüler wurde zur Klasse hinzugefügt.'
+        title: t('common.success'),
+        description: t('classManagement.successAdd')
       });
       setIsAddStudentDialogOpen(false);
       setNewStudentEmail('');
@@ -143,8 +145,8 @@ export function ClassManagement() {
       console.error('Error adding student:', error);
       toast({
         variant: 'destructive',
-        title: 'Fehler',
-        description: (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Schüler konnte nicht hinzugefügt werden.'
+        title: t('common.error'),
+        description: (error as { response?: { data?: { message?: string } } })?.response?.data?.message || t('classManagement.errorAdd')
       });
     } finally {
       setIsLoading(false);
@@ -157,16 +159,16 @@ export function ClassManagement() {
     try {
       await axios.delete(`/classes/${selectedClass._id}/students/${studentId}`);
       toast({
-        title: 'Erfolg',
-        description: 'Schüler wurde aus der Klasse entfernt.'
+        title: t('common.success'),
+        description: t('classManagement.successRemove')
       });
       fetchClassDetails(selectedClass._id);
     } catch (error) {
       console.error('Error removing student:', error);
       toast({
         variant: 'destructive',
-        title: 'Fehler',
-        description: 'Schüler konnte nicht entfernt werden.'
+        title: t('common.error'),
+        description: t('classManagement.errorRemove')
       });
     }
   };
@@ -175,27 +177,27 @@ export function ClassManagement() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Klassenverwaltung</h2>
-          <p className="text-muted-foreground">Verwalten Sie Ihre Schülerklassen und weisen Sie Herausforderungen zu.</p>
+          <h2 className="text-2xl font-bold">{t('classManagement.title')}</h2>
+          <p className="text-muted-foreground">{t('classManagement.description')}</p>
         </div>
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Neue Klasse
+              {t('classManagement.newClass')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Neue Klasse erstellen</DialogTitle>
+              <DialogTitle>{t('classManagement.createClassTitle')}</DialogTitle>
               <DialogDescription>
-                Erstellen Sie eine neue Schülerklasse für Ihre Herausforderungen.
+                {t('classManagement.createClassDescription')}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Klassenname</label>
+                <label className="text-sm font-medium">{t('classManagement.className')}</label>
                 <Input
                   value={newClass.name}
                   onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
@@ -203,7 +205,7 @@ export function ClassManagement() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Beschreibung</label>
+                <label className="text-sm font-medium">{t('classManagement.classDescription')}</label>
                 <Textarea
                   value={newClass.description}
                   onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
@@ -211,38 +213,38 @@ export function ClassManagement() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Sprache</label>
+                <label className="text-sm font-medium">{t('classManagement.language')}</label>
                 <Select value={newClass.language} onValueChange={(value: 'de' | 'en') => setNewClass({ ...newClass, language: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="de">Deutsch</SelectItem>
-                    <SelectItem value="en">Englisch</SelectItem>
+                    <SelectItem value="de">{t('createChallengeForm.languageGerman')}</SelectItem>
+                    <SelectItem value="en">{t('createChallengeForm.languageEnglish')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">Altersbereich</label>
+                <label className="text-sm font-medium">{t('classManagement.ageRange')}</label>
                 <Select value={newClass.age_range} onValueChange={(value) => setNewClass({ ...newClass, age_range: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Altersbereich wählen" />
+                    <SelectValue placeholder={t('classManagement.selectAgeRange')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="5-6">5-6 Jahre</SelectItem>
-                    <SelectItem value="7-8">7-8 Jahre</SelectItem>
-                    <SelectItem value="9-10">9-10 Jahre</SelectItem>
-                    <SelectItem value="11-12">11-12 Jahre</SelectItem>
+                    <SelectItem value="5-6">{t('createChallengeForm.ageRange5_6')}</SelectItem>
+                    <SelectItem value="7-8">{t('createChallengeForm.ageRange7_8')}</SelectItem>
+                    <SelectItem value="9-10">{t('createChallengeForm.ageRange9_10')}</SelectItem>
+                    <SelectItem value="11-12">{t('createChallengeForm.ageRange11_12')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                Abbrechen
+                {t('common.cancel')}
               </Button>
               <Button onClick={createClass} disabled={isLoading}>
-                Klasse erstellen
+                {t('classManagement.createButton')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -264,8 +266,8 @@ export function ClassManagement() {
             </CardHeader>
             <CardContent>
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Sprache: {cls.language === 'de' ? 'Deutsch' : 'Englisch'}</span>
-                {cls.age_range && <span>Alter: {cls.age_range}</span>}
+                <span>{t('classManagement.language')}: {cls.language === 'de' ? t('createChallengeForm.languageGerman') : t('createChallengeForm.languageEnglish')}</span>
+                {cls.age_range && <span>{t('classManagement.ageRange')}: {cls.age_range}</span>}
               </div>
             </CardContent>
           </Card>
@@ -284,14 +286,14 @@ export function ClassManagement() {
                 <DialogTrigger asChild>
                   <Button variant="outline">
                     <Mail className="mr-2 h-4 w-4" />
-                    Schüler hinzufügen
+                    {t('classManagement.addStudent')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Schüler zur Klasse hinzufügen</DialogTitle>
+                    <DialogTitle>{t('classManagement.addStudentTitle')}</DialogTitle>
                     <DialogDescription>
-                      Geben Sie die E-Mail-Adresse des Schülers ein.
+                      {t('classManagement.addStudentDescription')}
                     </DialogDescription>
                   </DialogHeader>
                   <div>
@@ -299,15 +301,15 @@ export function ClassManagement() {
                       type="email"
                       value={newStudentEmail}
                       onChange={(e) => setNewStudentEmail(e.target.value)}
-                      placeholder="schueler@example.com"
+                      placeholder={t('classManagement.enterEmail')}
                     />
                   </div>
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setIsAddStudentDialogOpen(false)}>
-                      Abbrechen
+                      {t('common.cancel')}
                     </Button>
                     <Button onClick={addStudentToClass} disabled={isLoading}>
-                      Hinzufügen
+                      {t('classManagement.addButton')}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -316,9 +318,9 @@ export function ClassManagement() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <h4 className="font-semibold">Schüler ({students.length})</h4>
+              <h4 className="font-semibold">{t('classManagement.students')} ({students.length})</h4>
               {students.length === 0 ? (
-                <p className="text-muted-foreground">Noch keine Schüler in dieser Klasse.</p>
+                <p className="text-muted-foreground">{t('classManagement.noStudents')}</p>
               ) : (
                 <div className="space-y-2">
                   {students.map((student) => (
@@ -338,7 +340,7 @@ export function ClassManagement() {
                       <div className="flex items-center space-x-2">
                         <Badge variant="outline">
                           <Trophy className="mr-1 h-3 w-3" />
-                          {student.total_challenge_points} Punkte
+                          {student.total_challenge_points} {t('common.points')}
                         </Badge>
                         <Button
                           variant="ghost"

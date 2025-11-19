@@ -30,10 +30,10 @@ export default function TeacherClasses() {
     <div className="flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">{t('classes.title')}</h1>
-          <p className="text-muted-foreground">{t('classes.description')}</p>
+          <h1 className="text-2xl font-bold">{t('teacher.classes.title')}</h1>
+          <p className="text-muted-foreground">{t('teacher.classes.description')}</p>
         </div>
-        <Button>Create New Class</Button>
+        <Button>{t('teacher.classes.create')}</Button>
       </div>
       <div className="grid gap-4 md:grid-cols-1">
         {classes.map((c, index) => (
@@ -45,9 +45,9 @@ export default function TeacherClasses() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Student Name</TableHead>
-                    <TableHead>Progress</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t('teacher.classes.studentName')}</TableHead>
+                    <TableHead>{t('teacher.classes.progress')}</TableHead>
+                    <TableHead className="text-right">{t('teacher.classes.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -56,8 +56,8 @@ export default function TeacherClasses() {
                       <TableCell>{s.name}</TableCell>
                       <TableCell>{s.progress}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">View</Button>
-                        <Button variant="ghost" size="sm" className="text-red-500">Remove</Button>
+                        <Button variant="ghost" size="sm">{t('teacher.classes.view')}</Button>
+                        <Button variant="ghost" size="sm" className="text-red-500">{t('teacher.classes.remove')}</Button>
                       </TableCell>
                     </TableRow>
                   ))}

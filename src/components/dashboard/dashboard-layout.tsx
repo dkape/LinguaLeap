@@ -5,6 +5,7 @@ import { Logo } from "../icons";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/contexts/locale-context";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -13,13 +14,14 @@ type DashboardLayoutProps = {
 
 export function DashboardLayout({ children, navItems }: DashboardLayoutProps) {
   const pathname = usePathname();
-  
+  const { t } = useTranslation();
+
   const sidebarContent = (
     <>
       <div className="flex h-16 items-center border-b px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold text-primary">
           <Logo className="h-7 w-7" />
-          <span className="text-xl font-bold">LinguaLeap</span>
+          <span className="text-xl font-bold">{t('dashboard.brandName')}</span>
         </Link>
       </div>
       <div className="flex-1 overflow-auto py-2">
@@ -32,8 +34,8 @@ export function DashboardLayout({ children, navItems }: DashboardLayoutProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted",
-                    isActive && "bg-muted text-primary"
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted",
+                  isActive && "bg-muted text-primary"
                 )}
               >
                 <Icon className="h-4 w-4" />

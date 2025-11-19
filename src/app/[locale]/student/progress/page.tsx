@@ -17,13 +17,13 @@ export default function StudentProgress() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">{t('progress.title')}</h1>
-      <p className="text-muted-foreground">{t('progress.description')}</p>
+      <h1 className="text-2xl font-bold">{t('student.progress.title')}</h1>
+      <p className="text-muted-foreground">{t('student.progress.description')}</p>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Challenge Scores</CardTitle>
-            <CardDescription>Your scores on the last 5 challenges.</CardDescription>
+            <CardTitle>{t('student.progress.challengeScores')}</CardTitle>
+            <CardDescription>{t('student.progress.challengeScoresDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -40,8 +40,8 @@ export default function StudentProgress() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Completion Time</CardTitle>
-            <CardDescription>Time taken for the last 5 challenges (in seconds).</CardDescription>
+            <CardTitle>{t('student.progress.completionTime')}</CardTitle>
+            <CardDescription>{t('student.progress.completionTimeDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>

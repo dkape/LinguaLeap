@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -81,15 +81,6 @@ interface ExistingChallenge {
   items?: ChallengeItem[];
 }
 
-const formSchema = z.object({
-  topic: z.string().min(3, { message: "Thema muss mindestens 3 Zeichen lang sein." }),
-  class_description: z.string().min(10, { message: "Beschreibung muss mindestens 10 Zeichen lang sein." }),
-  age_range: z.string({ required_error: "Bitte wählen Sie einen Altersbereich." }),
-  reading_level: z.enum(['beginner', 'intermediate', 'advanced'], { required_error: "Bitte wählen Sie ein Leseniveau." }),
-  language: z.enum(['en', 'de']),
-  class_id: z.string().optional(),
-});
-
 export function CreateChallengeForm() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [existingChallenges, setExistingChallenges] = useState<ExistingChallenge[]>([]);
@@ -97,18 +88,29 @@ export function CreateChallengeForm() {
   const [challenge, setChallenge] = useState<GenerateChallengeOutput | null>(null);
   const [isTogglingStatus, setIsTogglingStatus] = useState<string | null>(null);
   const generatedCardRef = useRef<HTMLDivElement | null>(null);
-    // Scroll to the generated card when it appears
-    useEffect(() => {
-      if (challenge && generatedCardRef.current) {
-        generatedCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, [challenge]);
+
+  // Scroll to the generated card when it appears
+  useEffect(() => {
+    if (challenge && generatedCardRef.current) {
+      generatedCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [challenge]);
+
   const [isSaving, setIsSaving] = useState(false);
   const [fullEditingChallengeDetails, setFullEditingChallengeDetails] = useState<ExistingChallenge | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const { toast } = useToast();
-  const { dict } = useTranslation();
-  
+  const { t } = useTranslation();
+
+  const formSchema = useMemo(() => z.object({
+    topic: z.string().min(3, { message: t('common.error') }), // Ideally more specific validation message
+    class_description: z.string().min(10, { message: t('common.error') }),
+    age_range: z.string({ required_error: t('common.error') }),
+    reading_level: z.enum(['beginner', 'intermediate', 'advanced'], { required_error: t('common.error') }),
+    language: z.enum(['en', 'de']),
+    class_id: z.string().optional(),
+  }), [t]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -150,8 +152,8 @@ export function CreateChallengeForm() {
           console.error('Error fetching challenge details:', error);
           toast({
             variant: "destructive",
-            title: "Error",
-            description: "Could not load challenge details.",
+            title: t('common.error'),
+            description: t('common.error'), // "Could not load challenge details."
           });
         } finally {
           setIsLoadingDetails(false);
@@ -161,7 +163,7 @@ export function CreateChallengeForm() {
     } else {
       setFullEditingChallengeDetails(null);
     }
-  }, [editingChallenge, toast]);
+  }, [editingChallenge, toast, t]);
 
   const fetchClasses = async () => {
     try {
@@ -193,22 +195,22 @@ export function CreateChallengeForm() {
       });
       setChallenge(result);
       toast({
-        title: dict.createChallengeForm.successToastTitle,
-        description: dict.createChallengeForm.successToastDescription,
+        title: t('createChallengeForm.successToastTitle'),
+        description: t('createChallengeForm.successToastDescription'),
       });
     } catch (error) {
       console.error("Error generating challenge:", error);
       toast({
         variant: "destructive",
-        title: dict.createChallengeForm.errorToastTitle,
-        description: dict.createChallengeForm.errorToastDescription,
+        title: t('createChallengeForm.errorToastTitle'),
+        description: t('createChallengeForm.errorToastDescription'),
       });
     }
   }
 
   async function onSaveChallenge() {
     if (!challenge) return;
-    
+
     setIsSaving(true);
     try {
       const formValues = form.getValues();
@@ -241,10 +243,10 @@ export function CreateChallengeForm() {
           }))
         })),
       });
-      
+
       toast({
-        title: dict.createChallengeForm.saveSuccessToastTitle,
-        description: dict.createChallengeForm.saveSuccessToastDescription,
+        title: t('createChallengeForm.saveSuccessToastTitle'),
+        description: t('createChallengeForm.saveSuccessToastDescription'),
       });
       setChallenge(null);
       form.reset();
@@ -252,8 +254,8 @@ export function CreateChallengeForm() {
       console.error("Error saving challenge:", error);
       toast({
         variant: "destructive",
-        title: dict.createChallengeForm.saveErrorToastTitle,
-        description: dict.createChallengeForm.saveErrorToastDescription,
+        title: t('createChallengeForm.saveErrorToastTitle'),
+        description: t('createChallengeForm.saveErrorToastDescription'),
       });
     } finally {
       setIsSaving(false);
@@ -264,21 +266,21 @@ export function CreateChallengeForm() {
     setIsTogglingStatus(challengeId);
     try {
       const response = await axios.patch(`/challenges/${challengeId}/toggle-status`);
-      setExistingChallenges((prev: ExistingChallenge[]) => 
+      setExistingChallenges((prev: ExistingChallenge[]) =>
         prev.map((c: ExistingChallenge) => c._id === challengeId ? { ...c, isActive: response.data.isActive } : c)
       );
       toast({
-        title: dict.createChallengeForm.statusUpdateSuccessTitle,
-        description: response.data.isActive 
-          ? dict.createChallengeForm.statusUpdateSuccessDescriptionActive 
-          : dict.createChallengeForm.statusUpdateSuccessDescriptionInactive,
+        title: t('createChallengeForm.statusUpdateSuccessTitle'),
+        description: response.data.isActive
+          ? t('createChallengeForm.statusUpdateSuccessDescriptionActive')
+          : t('createChallengeForm.statusUpdateSuccessDescriptionInactive'),
       });
     } catch (error) {
       console.error('Error toggling challenge status:', error);
       toast({
         variant: "destructive",
-        title: dict.createChallengeForm.statusUpdateErrorTitle,
-        description: dict.createChallengeForm.statusUpdateErrorDescription,
+        title: t('createChallengeForm.statusUpdateErrorTitle'),
+        description: t('createChallengeForm.statusUpdateErrorDescription'),
       });
     } finally {
       setIsTogglingStatus(null);
@@ -292,8 +294,8 @@ export function CreateChallengeForm() {
       {existingChallenges.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>{dict.createChallengeForm.existingChallengesTitle}</CardTitle>
-            <CardDescription>{dict.createChallengeForm.existingChallengesDescription}</CardDescription>
+            <CardTitle>{t('createChallengeForm.existingChallengesTitle')}</CardTitle>
+            <CardDescription>{t('createChallengeForm.existingChallengesDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {existingChallenges.map((challenge: ExistingChallenge) => (
@@ -304,25 +306,25 @@ export function CreateChallengeForm() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between text-sm text-muted-foreground">
-                    <span><Trophy className="inline-block w-4 h-4 mr-1" /> {challenge.total_points} {dict.createChallengeForm.pointsLabel}</span>
-                    <span><Clock className="inline-block w-4 h-4 mr-1" /> {challenge.time_limit_minutes} {dict.createChallengeForm.minutesLabel}</span>
+                    <span><Trophy className="inline-block w-4 h-4 mr-1" /> {challenge.total_points} {t('createChallengeForm.pointsLabel')}</span>
+                    <span><Clock className="inline-block w-4 h-4 mr-1" /> {challenge.time_limit_minutes} {t('createChallengeForm.minutesLabel')}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                  <Button 
-                    variant={challenge.isActive ? "secondary" : "default"} 
-                    size="sm" 
+                  <Button
+                    variant={challenge.isActive ? "secondary" : "default"}
+                    size="sm"
                     onClick={() => toggleChallengeStatus(challenge._id)}
                     disabled={isTogglingStatus === challenge._id}
                   >
                     {isTogglingStatus === challenge._id ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
-                      challenge.isActive ? dict.createChallengeForm.deactivate : dict.createChallengeForm.activate
+                      challenge.isActive ? t('createChallengeForm.deactivate') : t('createChallengeForm.activate')
                     )}
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => setEditingChallenge(challenge)}>
-                      {dict.common.edit}
+                    {t('common.edit')}
                   </Button>
                 </CardFooter>
               </Card>
@@ -331,16 +333,14 @@ export function CreateChallengeForm() {
         </Card>
       )}
 
-
-
       <Card>
         <CardHeader>
           <div className='flex items-center gap-2'>
             <Wand2 className='h-6 w-6 text-primary' />
-            <CardTitle className="text-2xl font-headline">{dict.createChallengeForm.title}</CardTitle>
+            <CardTitle className="text-2xl font-headline">{t('createChallengeForm.title')}</CardTitle>
           </div>
           <CardDescription>
-            {dict.createChallengeForm.description}
+            {t('createChallengeForm.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -353,11 +353,11 @@ export function CreateChallengeForm() {
                     name="topic"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.createChallengeForm.topicLabel}</FormLabel>
+                        <FormLabel>{t('createChallengeForm.topicLabel')}</FormLabel>
                         <FormControl>
-                          <Input placeholder={dict.createChallengeForm.topicPlaceholder} {...field} />
+                          <Input placeholder={t('createChallengeForm.topicPlaceholder')} {...field} />
                         </FormControl>
-                        <FormDescription>{dict.createChallengeForm.topicDescription}</FormDescription>
+                        <FormDescription>{t('createChallengeForm.topicDescription')}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -367,15 +367,15 @@ export function CreateChallengeForm() {
                     name="class_description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.createChallengeForm.classDescriptionLabel}</FormLabel>
+                        <FormLabel>{t('createChallengeForm.classDescriptionLabel')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder={dict.createChallengeForm.classDescriptionPlaceholder}
+                            placeholder={t('createChallengeForm.classDescriptionPlaceholder')}
                             className="resize-none"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>{dict.createChallengeForm.classDescriptionDescription}</FormDescription>
+                        <FormDescription>{t('createChallengeForm.classDescriptionDescription')}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -387,16 +387,16 @@ export function CreateChallengeForm() {
                     name="age_range"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.createChallengeForm.ageRangeLabel}</FormLabel>
+                        <FormLabel>{t('createChallengeForm.ageRangeLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.ageRangePlaceholder} /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={t('createChallengeForm.ageRangePlaceholder')} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="5-6">{dict.createChallengeForm.ageRange5_6}</SelectItem>
-                            <SelectItem value="7-8">{dict.createChallengeForm.ageRange7_8}</SelectItem>
-                            <SelectItem value="9-10">{dict.createChallengeForm.ageRange9_10}</SelectItem>
-                            <SelectItem value="11-12">{dict.createChallengeForm.ageRange11_12}</SelectItem>
+                            <SelectItem value="5-6">{t('createChallengeForm.ageRange5_6')}</SelectItem>
+                            <SelectItem value="7-8">{t('createChallengeForm.ageRange7_8')}</SelectItem>
+                            <SelectItem value="9-10">{t('createChallengeForm.ageRange9_10')}</SelectItem>
+                            <SelectItem value="11-12">{t('createChallengeForm.ageRange11_12')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -408,15 +408,15 @@ export function CreateChallengeForm() {
                     name="reading_level"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.createChallengeForm.readingLevelLabel}</FormLabel>
+                        <FormLabel>{t('createChallengeForm.readingLevelLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.readingLevelPlaceholder} /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={t('createChallengeForm.readingLevelPlaceholder')} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="beginner">{dict.createChallengeForm.readingLevelBeginner}</SelectItem>
-                            <SelectItem value="intermediate">{dict.createChallengeForm.readingLevelIntermediate}</SelectItem>
-                            <SelectItem value="advanced">{dict.createChallengeForm.readingLevelAdvanced}</SelectItem>
+                            <SelectItem value="beginner">{t('createChallengeForm.readingLevelBeginner')}</SelectItem>
+                            <SelectItem value="intermediate">{t('createChallengeForm.readingLevelIntermediate')}</SelectItem>
+                            <SelectItem value="advanced">{t('createChallengeForm.readingLevelAdvanced')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -428,14 +428,14 @@ export function CreateChallengeForm() {
                     name="language"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.createChallengeForm.languageLabel}</FormLabel>
+                        <FormLabel>{t('createChallengeForm.languageLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.languagePlaceholder} /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={t('createChallengeForm.languagePlaceholder')} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="de">{dict.createChallengeForm.languageGerman}</SelectItem>
-                            <SelectItem value="en">{dict.createChallengeForm.languageEnglish}</SelectItem>
+                            <SelectItem value="de">{t('createChallengeForm.languageGerman')}</SelectItem>
+                            <SelectItem value="en">{t('createChallengeForm.languageEnglish')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -447,33 +447,33 @@ export function CreateChallengeForm() {
                     name="class_id"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.createChallengeForm.assignToClassLabel}</FormLabel>
+                        <FormLabel>{t('createChallengeForm.assignToClassLabel')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder={dict.createChallengeForm.assignToClassPlaceholder} /></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder={t('createChallengeForm.assignToClassPlaceholder')} /></SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {classes.map((cls: StudentClass) => (
                               <SelectItem key={cls._id} value={cls._id}>
-                                {cls.name} ({cls.student_count} {dict.createChallengeForm.studentsLabel})
+                                {cls.name} ({cls.student_count} {t('createChallengeForm.studentsLabel')})
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormDescription>{dict.createChallengeForm.assignToClassDescription}</FormDescription>
+                        <FormDescription>{t('createChallengeForm.assignToClassDescription')}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
               </div>
-              
+
               <Button type="submit" size="lg" disabled={isSubmitting}>
-                {editingChallenge ? 'Update Challenge' : dict.createChallengeForm.generateButton}
+                {editingChallenge ? t('common.update') : t('createChallengeForm.generateButton')}
               </Button>
               {editingChallenge && (
                 <Button variant="ghost" onClick={() => setEditingChallenge(null)}>
-                  {dict.common.cancel}
+                  {t('common.cancel')}
                 </Button>
               )}
             </form>
@@ -484,14 +484,14 @@ export function CreateChallengeForm() {
       {isSubmitting && (
         <div className="text-center p-8">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary mb-4" />
-          <p className="text-muted-foreground">{dict.createChallengeForm.generatingMessage}</p>
+          <p className="text-muted-foreground">{t('createChallengeForm.generatingMessage')}</p>
         </div>
       )}
 
       {isLoadingDetails && (
         <div className="text-center p-8">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary mb-4" />
-          <p className="text-muted-foreground">Loading challenge details...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       )}
 
@@ -506,16 +506,16 @@ export function CreateChallengeForm() {
               <div className="flex gap-4 mt-4">
                 <Badge variant="secondary">
                   <Trophy className="mr-1 h-3 w-3" />
-                  {challengeToDisplay.total_points} {dict.createChallengeForm.pointsLabel}
+                  {challengeToDisplay.total_points} {t('createChallengeForm.pointsLabel')}
                 </Badge>
                 <Badge variant="secondary">
                   <Clock className="mr-1 h-3 w-3" />
-                  ~{challengeToDisplay.estimated_time_minutes} {dict.createChallengeForm.minutesLabel}
+                  ~{challengeToDisplay.estimated_time_minutes} {t('createChallengeForm.minutesLabel')}
                 </Badge>
                 {challengeToDisplay.items &&
                   <Badge variant="secondary">
                     <BookText className="mr-1 h-3 w-3" />
-                    {challengeToDisplay.items.length} {dict.createChallengeForm.tasksLabel}
+                    {challengeToDisplay.items.length} {t('createChallengeForm.tasksLabel')}
                   </Badge>
                 }
               </div>
@@ -524,7 +524,7 @@ export function CreateChallengeForm() {
               <div className="space-y-4">
                 {challengeToDisplay.source_references && challengeToDisplay.source_references.length > 0 && (
                   <div>
-                    <h4 className="font-semibold mb-2">{dict.createChallengeForm.sourcesLabel}</h4>
+                    <h4 className="font-semibold mb-2">{t('createChallengeForm.sourcesLabel')}</h4>
                     <div className="flex flex-wrap gap-2">
                       {challengeToDisplay.source_references.map((source: { title?: string; url?: string } | string, index: number) => (
                         <Badge key={index} variant="outline">{typeof source === 'string' ? source : source.title || source.url}</Badge>
@@ -546,7 +546,7 @@ export function CreateChallengeForm() {
                             )}
                             <span>{item.title}</span>
                             <Badge variant="outline" className="ml-2">
-                              {item.pointsValue || item.points_value} {dict.createChallengeForm.pointsLabel}
+                              {item.pointsValue || item.points_value} {t('createChallengeForm.pointsLabel')}
                             </Badge>
                           </div>
                         </AccordionTrigger>
@@ -558,19 +558,19 @@ export function CreateChallengeForm() {
 
                             {item.source_reference && (
                               <p className="text-xs text-muted-foreground italic">
-                                {dict.createChallengeForm.sourceLabel}: {item.source_reference}
+                                {t('createChallengeForm.sourceLabel')}: {item.source_reference}
                               </p>
                             )}
 
                             {item.word_count && (
                               <p className="text-xs text-muted-foreground">
-                                {dict.createChallengeForm.wordsLabel}: {item.word_count} | {dict.createChallengeForm.estimatedReadingTimeLabel}: {Math.ceil((item.estimated_reading_time || item.estimatedReadingTime || 0) / 60)} {dict.createChallengeForm.minutesLabel}
+                                {t('createChallengeForm.wordsLabel')}: {item.word_count} | {t('createChallengeForm.estimatedReadingTimeLabel')}: {Math.ceil((item.estimated_reading_time || item.estimatedReadingTime || 0) / 60)} {t('createChallengeForm.minutesLabel')}
                               </p>
                             )}
 
                             {item.questions && item.questions.length > 0 && (
                               <div className="mt-4">
-                                <h5 className="font-semibold mb-2">{dict.createChallengeForm.quizQuestionsLabel}</h5>
+                                <h5 className="font-semibold mb-2">{t('createChallengeForm.quizQuestionsLabel')}</h5>
                                 {item.questions.map((question: ChallengeQuestion, qIndex: number) => (
                                   <div key={qIndex} className="mb-4 p-3 border rounded">
                                     <p className="font-medium mb-2">{question.question}</p>
@@ -589,7 +589,7 @@ export function CreateChallengeForm() {
                                       </div>
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-1">
-                                      {dict.createChallengeForm.pointsLabel}: {question.points_value || question.pointsValue}
+                                      {t('createChallengeForm.pointsLabel')}: {question.points_value || question.pointsValue}
                                     </p>
                                   </div>
                                 ))}
@@ -609,10 +609,10 @@ export function CreateChallengeForm() {
                   {isSaving ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {dict.createChallengeForm.savingButton}
+                      {t('createChallengeForm.savingButton')}
                     </>
                   ) : (
-                    dict.createChallengeForm.saveButton
+                    t('createChallengeForm.saveButton')
                   )}
                 </Button>
               </CardFooter>

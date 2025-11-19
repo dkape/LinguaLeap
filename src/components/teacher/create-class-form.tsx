@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,16 +16,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from '@/contexts/locale-context';
 import axios from 'axios';
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Class name must be at least 2 characters." }),
-  language: z.string(),
-  ageRange: z.string(),
-});
 
 export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
   const { toast } = useToast();
+  const { t } = useTranslation();
+
+  const formSchema = useMemo(() => z.object({
+    name: z.string().min(2, { message: t('createClassForm.validation.nameMin') }),
+    language: z.string(),
+    ageRange: z.string(),
+  }), [t]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,15 +42,15 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
     try {
       await axios.post("/classes", values);
       toast({
-        title: "Class Created",
-        description: "Your new class has been created successfully.",
+        title: t('createClassForm.successTitle'),
+        description: t('createClassForm.successDescription'),
       });
       onSuccess();
     } catch {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to create class. Please try again.",
+        title: t('createClassForm.errorTitle'),
+        description: t('createClassForm.errorDescription'),
       });
     }
   }
@@ -60,9 +63,9 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Class Name</FormLabel>
+              <FormLabel>{t('createClassForm.classNameLabel')}</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. Grade 2 Reading Group" {...field} />
+                <Input placeholder={t('createClassForm.classNamePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -73,16 +76,16 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
           name="language"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Language</FormLabel>
+              <FormLabel>{t('createClassForm.languageLabel')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a language" />
+                    <SelectValue placeholder={t('createClassForm.languagePlaceholder')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="de">German</SelectItem>
+                  <SelectItem value="en">{t('createChallengeForm.languageEnglish')}</SelectItem>
+                  <SelectItem value="de">{t('createChallengeForm.languageGerman')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -94,18 +97,18 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
           name="ageRange"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Age Range</FormLabel>
+              <FormLabel>{t('createClassForm.ageRangeLabel')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select an age range" />
+                    <SelectValue placeholder={t('createClassForm.ageRangePlaceholder')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="5-6">5-6 years</SelectItem>
-                  <SelectItem value="7-8">7-8 years</SelectItem>
-                  <SelectItem value="9-10">9-10 years</SelectItem>
-                  <SelectItem value="11-12">11-12 years</SelectItem>
+                  <SelectItem value="5-6">{t('createChallengeForm.ageRange5_6')}</SelectItem>
+                  <SelectItem value="7-8">{t('createChallengeForm.ageRange7_8')}</SelectItem>
+                  <SelectItem value="9-10">{t('createChallengeForm.ageRange9_10')}</SelectItem>
+                  <SelectItem value="11-12">{t('createChallengeForm.ageRange11_12')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -113,7 +116,7 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
           )}
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? "Creating..." : "Create Class"}
+          {form.formState.isSubmitting ? t('createClassForm.creatingButton') : t('createClassForm.createButton')}
         </Button>
       </form>
     </Form>

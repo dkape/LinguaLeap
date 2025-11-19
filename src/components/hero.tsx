@@ -4,8 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useTranslation } from '@/contexts/locale-context';
 
 export function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative w-full overflow-hidden">
       {/* Animated background elements */}
@@ -21,44 +24,44 @@ export function Hero() {
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium text-primary">
                 <Sparkles className="h-4 w-4" />
-                <span>AI-Powered Learning Platform</span>
+                <span>{t('landing.badge')}</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                <span className="gradient-text">Learn Languages</span>
+                <span className="gradient-text">{t('landing.titleLine1')}</span>
                 <br />
-                <span className="text-foreground">The Fun Way</span>
+                <span className="text-foreground">{t('landing.titleLine2')}</span>
               </h1>
 
               <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-md">
-                Master new languages with interactive exercises, AI-powered lessons, and a community of learners just like you.
+                {t('landing.description')}
               </p>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 pt-4">
-              <Button 
+              <Button
                 size="lg"
                 className="gap-2 transition-all duration-300 hover:translate-x-1 active:scale-95"
               >
-                Get Started
+                {t('landing.getStarted')}
                 <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 className="transition-all duration-300 hover:bg-muted active:scale-95"
               >
-                Learn More
+                {t('landing.learnMore')}
               </Button>
             </div>
 
             {/* Stats or Features */}
             <div className="grid grid-cols-3 gap-6 pt-8">
               {[
-                { label: 'Languages', value: '25+' },
-                { label: 'Lessons', value: '1000+' },
-                { label: 'Learners', value: '50K+' },
+                { label: t('landing.stats.languages'), value: '25+' },
+                { label: t('landing.stats.lessons'), value: '1000+' },
+                { label: t('landing.stats.learners'), value: '50K+' },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <p className="text-2xl font-bold text-primary">{stat.value}</p>

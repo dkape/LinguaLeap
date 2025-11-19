@@ -13,44 +13,44 @@ export default function StudentSettings() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
-      <p className="text-muted-foreground">{t('settings.description')}</p>
+      <h1 className="text-2xl font-bold">{t('student.settings.title')}</h1>
+      <p className="text-muted-foreground">{t('student.settings.description')}</p>
       <Card>
         <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Update your personal information.</CardDescription>
+          <CardTitle>{t('student.settings.profile')}</CardTitle>
+          <CardDescription>{t('student.settings.profileDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t('student.settings.name')}</Label>
             <Input id="name" defaultValue={user?.name} />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('student.settings.email')}</Label>
             <Input id="email" type="email" defaultValue={user?.email} disabled />
           </div>
-          <Button>Save Changes</Button>
+          <Button>{t('student.settings.saveChanges')}</Button>
         </CardContent>
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Password</CardTitle>
-          <CardDescription>Change your password.</CardDescription>
+          <CardTitle>{t('student.settings.password')}</CardTitle>
+          <CardDescription>{t('student.settings.passwordDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="current-password">Current Password</Label>
+            <Label htmlFor="current-password">{t('student.settings.currentPassword')}</Label>
             <Input id="current-password" type="password" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="new-password">New Password</Label>
+            <Label htmlFor="new-password">{t('student.settings.newPassword')}</Label>
             <Input id="new-password" type="password" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="confirm-password">Confirm New Password</Label>
+            <Label htmlFor="confirm-password">{t('student.settings.confirmNewPassword')}</Label>
             <Input id="confirm-password" type="password" />
           </div>
-          <Button>Change Password</Button>
+          <Button>{t('student.settings.changePassword')}</Button>
         </CardContent>
       </Card>
     </div>

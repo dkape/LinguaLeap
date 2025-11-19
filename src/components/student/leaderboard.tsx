@@ -64,7 +64,7 @@ export function Leaderboard() {
       const response = await axios.get('/classes/student/my-classes');
       const studentClasses = response.data.classes;
       setClasses(studentClasses);
-      
+
       // Auto-select first class
       if (studentClasses.length > 0) {
         setSelectedClassId(studentClasses[0].id);
@@ -128,9 +128,9 @@ export function Leaderboard() {
       <Card>
         <CardContent className="text-center py-8">
           <Trophy className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Keine Klassen gefunden</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('leaderboard.noClasses')}</h3>
           <p className="text-muted-foreground">
-            Du bist noch keiner Klasse zugeordnet.
+            {t('leaderboard.noClassesDescription')}
           </p>
         </CardContent>
       </Card>
@@ -140,9 +140,9 @@ export function Leaderboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Bestenliste</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('leaderboard.title')}</h2>
         <p className="text-muted-foreground">
-          Sieh dir an, wie du im Vergleich zu deinen Klassenkameraden abschneidest!
+          {t('leaderboard.description')}
         </p>
       </div>
 
@@ -183,17 +183,16 @@ export function Leaderboard() {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="flex flex-wrap gap-2">
           {classes.map((cls) => (
             <button
               key={cls.id}
               onClick={() => setSelectedClassId(cls.id)}
-              className={`px-4 py-2 rounded-lg border transition-colors ${
-                selectedClassId === cls.id
+              className={`px-4 py-2 rounded-lg border transition-colors ${selectedClassId === cls.id
                   ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-background hover:bg-muted border-border'
-              }`}
+                }`}
             >
               {cls.name}
             </button>
@@ -222,22 +221,21 @@ export function Leaderboard() {
         <Card>
           <CardContent className="text-center py-8">
             <Trophy className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Noch keine Ergebnisse</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('leaderboard.noResults')}</h3>
             <p className="text-muted-foreground">
-              Löse Herausforderungen, um auf der Bestenliste zu erscheinen!
+              {t('leaderboard.noResultsDescription')}
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
           {leaderboard.map((entry) => (
-            <Card 
-              key={entry.id} 
-              className={`transition-all ${
-                isCurrentUser(entry.id) 
-                  ? 'ring-2 ring-primary shadow-lg' 
+            <Card
+              key={entry.id}
+              className={`transition-all ${isCurrentUser(entry.id)
+                  ? 'ring-2 ring-primary shadow-lg'
                   : 'hover:shadow-md'
-              }`}
+                }`}
             >
               <CardContent className="p-4">
                 <div className="flex items-center space-x-4">
@@ -266,11 +264,11 @@ export function Leaderboard() {
                       <h3 className={`font-semibold ${isCurrentUser(entry.id) ? 'text-primary' : ''}`}>
                         {entry.name}
                         {isCurrentUser(entry.id) && (
-                          <Badge variant="secondary" className="ml-2">Du</Badge>
+                          <Badge variant="secondary" className="ml-2">{t('leaderboard.you')}</Badge>
                         )}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        {entry.completed_challenges} Herausforderungen gelöst
+                        {entry.completed_challenges} {t('leaderboard.completedChallenges')}
                       </p>
                     </div>
                   </div>
@@ -282,23 +280,23 @@ export function Leaderboard() {
                         <Trophy className="h-4 w-4 mr-1" />
                         <span className="font-bold">{entry.total_points}</span>
                       </div>
-                      <p className="text-muted-foreground">Punkte</p>
+                      <p className="text-muted-foreground">{t('leaderboard.points')}</p>
                     </div>
-                    
+
                     <div className="text-center">
                       <div className="flex items-center text-blue-600">
                         <Target className="h-4 w-4 mr-1" />
                         <span className="font-bold">{entry.completed_challenges}</span>
                       </div>
-                      <p className="text-muted-foreground">Gelöst</p>
+                      <p className="text-muted-foreground">{t('leaderboard.solved')}</p>
                     </div>
-                    
+
                     <div className="text-center">
                       <div className="flex items-center text-green-600">
                         <Clock className="h-4 w-4 mr-1" />
                         <span className="font-bold">{formatTime(entry.avg_completion_time)}</span>
                       </div>
-                      <p className="text-muted-foreground">Ø Zeit</p>
+                      <p className="text-muted-foreground">{t('leaderboard.avgTime')}</p>
                     </div>
                   </div>
                 </div>

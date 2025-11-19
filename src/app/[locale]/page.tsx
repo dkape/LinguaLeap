@@ -21,23 +21,17 @@ export default function Home() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-bold font-headline text-foreground mb-4">
-            {locale === 'de' 
-              ? 'Entdecke die Welt, Wort für Wort'
-              : 'Unlock the World, One Word at a Time'
-            }
+            {t('landing.heroTitle')}
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground mb-8">
             {t('app.tagline')}
-            {locale === 'de' 
-              ? '. Spielerische Lektionen und personalisierte Lernpfade helfen jungen Lernenden, voranzukommen.'
-              : '. Gamified lessons and personalized paths help young learners leap ahead.'
-            }
+            {t('landing.heroSubtitle')}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
             <Button size="lg" className="w-full text-lg py-8" asChild>
               <Link href={`/${locale}/login/student`}>
-                {locale === 'de' ? 'Ich bin Schüler' : "I'm a Student"}
+                {t('landing.studentButton')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -48,7 +42,7 @@ export default function Home() {
               asChild
             >
               <Link href={`/${locale}/login/teacher`}>
-                {locale === 'de' ? 'Ich bin Lehrer' : "I'm a Teacher"}
+                {t('landing.teacherButton')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -57,8 +51,8 @@ export default function Home() {
       </main>
       <footer className="p-4 text-center text-muted-foreground text-sm">
         <p>
-          &copy; {new Date().getFullYear()} {t('app.title')}. 
-          {locale === 'de' ? ' Alle Rechte vorbehalten.' : ' All rights reserved.'}
+          &copy; {new Date().getFullYear()} {t('app.title')}.
+          {t('landing.footerRights')}
         </p>
       </footer>
     </div>

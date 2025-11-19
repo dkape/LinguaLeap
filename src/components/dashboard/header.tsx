@@ -9,7 +9,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { Menu } from "lucide-react";
 import React from "react";
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
-import { useLocale } from "@/contexts/locale-context";
+import { useLocale, useTranslation } from "@/contexts/locale-context";
 
 type DashboardHeaderProps = {
   sidebarContent: React.ReactNode;
@@ -17,6 +17,7 @@ type DashboardHeaderProps = {
 
 export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
   const { locale } = useLocale();
+  const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
@@ -25,13 +26,13 @@ export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
         <div className="lg:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="icon"
                 className="transition-all duration-200 hover:bg-muted"
               >
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle navigation menu</span>
+                <span className="sr-only">{t('dashboard.toggleMenu')}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0">
@@ -41,15 +42,15 @@ export function DashboardHeader({ sidebarContent }: DashboardHeaderProps) {
         </div>
 
         {/* Logo & Brand */}
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="items-center gap-2 hidden lg:flex group"
         >
           <div className="relative">
             <Logo className="h-8 w-8 text-primary transition-all duration-300 group-hover:scale-110" />
           </div>
           <span className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent transition-all duration-300 group-hover:from-accent group-hover:to-primary">
-            LinguaLeap
+            {t('dashboard.brandName')}
           </span>
         </Link>
 

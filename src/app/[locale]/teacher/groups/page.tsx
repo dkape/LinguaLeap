@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useCallback } from "react";
@@ -9,16 +8,18 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, PlusCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CreateClassForm } from "@/components/teacher/create-class-form";
+import { useTranslation } from "@/contexts/locale-context";
 
 interface StudentClass {
   _id: string;
   name: string;
   language: string;
   ageRange: string;
-  students: Array<{_id: string; name: string}>;
+  students: Array<{ _id: string; name: string }>;
 }
 
 export default function StudentGroupsPage() {
+  const { t } = useTranslation();
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,10 +30,10 @@ export default function StudentGroupsPage() {
       const response = await axios.get("/classes/teacher");
       setClasses(response.data);
     } catch {
-      setError("Failed to load classes. Please try again later.");
+      setError(t('teacher.groups.error'));
     }
     setLoading(false);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchClasses();
@@ -47,17 +48,17 @@ export default function StudentGroupsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Student Groups</h1>
+        <h1 className="text-2xl font-bold">{t('teacher.groups.title')}</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Create Class
+              {t('teacher.groups.createClass')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create a new class</DialogTitle>
+              <DialogTitle>{t('teacher.groups.createDialogTitle')}</DialogTitle>
             </DialogHeader>
             <CreateClassForm onSuccess={handleClassCreated} />
           </DialogContent>
@@ -70,7 +71,7 @@ export default function StudentGroupsPage() {
         </div>
       ) : error ? (
         <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{t('teacher.groups.errorTitle')}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : (
@@ -80,11 +81,11 @@ export default function StudentGroupsPage() {
               <CardHeader>
                 <CardTitle>{c.name}</CardTitle>
                 <CardDescription>
-                  {c.language} - Ages {c.ageRange}
+                  {c.language} - {t('teacher.groups.ages')} {c.ageRange}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p>{c.students.length} students</p>
+                <p>{c.students.length} {t('teacher.groups.students')}</p>
               </CardContent>
             </Card>
           ))}

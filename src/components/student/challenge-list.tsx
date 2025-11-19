@@ -116,13 +116,13 @@ export function ChallengeList() {
   const getStatusText = (status: string | null) => {
     switch (status) {
       case 'completed':
-        return 'Abgeschlossen';
+        return t('challenges.completed');
       case 'in_progress':
-        return 'In Bearbeitung';
+        return t('challenges.inProgress');
       case 'abandoned':
-        return 'Abgebrochen';
+        return t('challenges.abandoned');
       default:
-        return 'Nicht begonnen';
+        return t('challenges.notStarted');
     }
   };
 
@@ -153,9 +153,9 @@ export function ChallengeList() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Meine Herausforderungen</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('challenges.myChallenges')}</h2>
         <p className="text-muted-foreground">
-          Löse spannende Lese-Herausforderungen und sammle Punkte!
+          {t('challenges.solveChallengesDescription')}
         </p>
       </div>
 
@@ -163,9 +163,9 @@ export function ChallengeList() {
         <Card>
           <CardContent className="text-center py-8">
             <BookText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Keine Herausforderungen verfügbar</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('challenges.noChallenges')}</h3>
             <p className="text-muted-foreground">
-              Dein Lehrer hat noch keine Herausforderungen für deine Klasse erstellt.
+              {t('challenges.noChallengesDescription')}
             </p>
           </CardContent>
         </Card>
@@ -193,13 +193,13 @@ export function ChallengeList() {
           </div>
 
           {filteredChallenges.map((challenge) => {
-            const progress = challenge.total_items > 0 
-              ? (challenge.completed_items / challenge.total_items) * 100 
+            const progress = challenge.total_items > 0
+              ? (challenge.completed_items / challenge.total_items) * 100
               : 0;
 
             return (
-              <Card 
-                key={challenge.id} 
+              <Card
+                key={challenge.id}
                 className={cn(
                   "hover:shadow-md transition-shadow",
                   challenge.recommended && "border-2 border-primary"
@@ -215,24 +215,24 @@ export function ChallengeList() {
                         <span>{challenge.class_name} • {challenge.teacher_name}</span>
                       </div>
                     </div>
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className={`${getStatusColor(challenge.attempt_status)} text-white`}
                     >
                       {getStatusText(challenge.attempt_status)}
                     </Badge>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-4">
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">
                       <Trophy className="mr-1 h-3 w-3" />
-                      {challenge.total_points} Punkte
+                      {challenge.total_points} {t('common.points')}
                     </Badge>
                     <Badge variant="outline">
                       <Clock className="mr-1 h-3 w-3" />
-                      ~{challenge.estimated_completion_time} Min
+                      ~{challenge.estimated_completion_time} {t('common.minutes')}
                     </Badge>
                     {getDifficultyBadge(challenge.difficulty_level)}
                     {challenge.tags.map(tag => (
@@ -248,7 +248,7 @@ export function ChallengeList() {
                     )}
                     <Badge variant="outline">
                       <BookText className="mr-1 h-3 w-3" />
-                      {challenge.total_items} Aufgaben
+                      {challenge.total_items} {t('common.tasks')}
                     </Badge>
                     <Badge variant="outline">
                       {challenge.topic}
@@ -258,15 +258,15 @@ export function ChallengeList() {
                   {challenge.attempt_status && challenge.attempt_status !== 'not_started' && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Fortschritt</span>
-                        <span>{challenge.completed_items}/{challenge.total_items} Aufgaben</span>
+                        <span>{t('challenges.progress')}</span>
+                        <span>{challenge.completed_items}/{challenge.total_items} {t('common.tasks')}</span>
                       </div>
                       <Progress value={progress} className="h-2" />
-                      
+
                       {challenge.attempt_status === 'completed' && (
                         <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>Erreichte Punkte: {challenge.total_points_earned}</span>
-                          <span>Zeit: {formatTime(challenge.total_time_spent_seconds)}</span>
+                          <span>{t('challenges.pointsEarned')}: {challenge.total_points_earned}</span>
+                          <span>{t('challenges.time')}: {formatTime(challenge.total_time_spent_seconds)}</span>
                         </div>
                       )}
                     </div>
@@ -276,17 +276,17 @@ export function ChallengeList() {
                     {challenge.attempt_status === 'completed' ? (
                       <Button variant="outline" disabled>
                         <CheckCircle className="mr-2 h-4 w-4" />
-                        Abgeschlossen
+                        {t('challenges.completed')}
                       </Button>
                     ) : challenge.attempt_status === 'in_progress' ? (
                       <Button onClick={() => continueChallenge(challenge.id)}>
                         <Play className="mr-2 h-4 w-4" />
-                        Fortsetzen
+                        {t('challenges.continue')}
                       </Button>
                     ) : (
                       <Button onClick={() => startChallenge(challenge.id)}>
                         <Play className="mr-2 h-4 w-4" />
-                        Starten
+                        {t('challenges.start')}
                       </Button>
                     )}
                   </div>
