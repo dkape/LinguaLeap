@@ -13,32 +13,32 @@ export default function TeacherDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Active Classes</CardTitle>
-            <CardDescription>Your current classes.</CardDescription>
+            <CardTitle>{t('dashboard.teacher.activeClasses')}</CardTitle>
+            <CardDescription>{t('dashboard.teacher.activeClassesDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="font-semibold">3 Classes</p>
+            <p className="font-semibold">{t('dashboard.teacher.classesCount', { count: 3 })}</p>
             <p className="text-sm text-muted-foreground">3A, 4B, 5C</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Total Students</CardTitle>
-            <CardDescription>All students in your classes.</CardDescription>
+            <CardTitle>{t('dashboard.teacher.totalStudents')}</CardTitle>
+            <CardDescription>{t('dashboard.teacher.totalStudentsDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="font-semibold">78 Students</p>
-            <p className="text-sm text-muted-foreground">+5 this week</p>
+            <p className="font-semibold">{t('dashboard.teacher.studentsCount', { count: 78 })}</p>
+            <p className="text-sm text-muted-foreground">{t('dashboard.teacher.newStudentsThisWeek', { count: 5 })}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Overall Performance</CardTitle>
-            <CardDescription>Average student performance.</CardDescription>
+            <CardTitle>{t('dashboard.teacher.overallPerformance')}</CardTitle>
+            <CardDescription>{t('dashboard.teacher.overallPerformanceDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="font-semibold">82% Average Score</p>
-            <p className="text-sm text-muted-foreground">-2% from last week</p>
+            <p className="font-semibold">{t('dashboard.teacher.averageScore', { percent: 82 })}</p>
+            <p className="text-sm text-muted-foreground">{t('dashboard.teacher.scoreChange', { percent: -2 })}</p>
           </CardContent>
         </Card>
       </div>

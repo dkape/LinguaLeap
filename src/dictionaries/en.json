@@ -13,7 +13,33 @@
   },
   "dashboard": {
     "welcome": "Welcome back!",
-    "description": "Here is an overview of your recent activity."
+    "description": "Here is an overview of your recent activity.",
+    "student": {
+      "recentChallenge": "Recent Challenge",
+      "recentChallengeDesc": "Your last completed challenge.",
+      "currentProgress": "Current Progress",
+      "currentProgressDesc": "Your learning stats.",
+      "leaderboardRank": "Leaderboard Rank",
+      "leaderboardRankDesc": "Your current position.",
+      "challengesCompleted": "{count} Challenges Completed",
+      "averageAccuracy": "{percent}% average accuracy",
+      "correctAnswers": "{correct}/{total} correct answers",
+      "rankInClass": "#{rank} in Class {class}",
+      "topPercent": "Top {percent}%"
+    },
+    "teacher": {
+      "activeClasses": "Active Classes",
+      "activeClassesDesc": "Your current classes.",
+      "totalStudents": "Total Students",
+      "totalStudentsDesc": "All students in your classes.",
+      "overallPerformance": "Overall Performance",
+      "overallPerformanceDesc": "Average student performance.",
+      "classesCount": "{count} Classes",
+      "studentsCount": "{count} Students",
+      "newStudentsThisWeek": "+{count} this week",
+      "averageScore": "{percent}% Average Score",
+      "scoreChange": "{percent}% from last week"
+    }
   },
   "challenges": {
     "title": "Challenges",

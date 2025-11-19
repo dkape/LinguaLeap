@@ -13,32 +13,32 @@ export default function StudentDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Challenge</CardTitle>
-            <CardDescription>Your last completed challenge.</CardDescription>
+            <CardTitle>{t('dashboard.student.recentChallenge')}</CardTitle>
+            <CardDescription>{t('dashboard.student.recentChallengeDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="font-semibold">The Adventures of Tom Sawyer</p>
-            <p className="text-sm text-muted-foreground">9/10 correct answers</p>
+            <p className="text-sm text-muted-foreground">{t('dashboard.student.correctAnswers', { correct: 9, total: 10 })}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Current Progress</CardTitle>
-            <CardDescription>Your learning stats.</CardDescription>
+            <CardTitle>{t('dashboard.student.currentProgress')}</CardTitle>
+            <CardDescription>{t('dashboard.student.currentProgressDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="font-semibold">12 Challenges Completed</p>
-            <p className="text-sm text-muted-foreground">85% average accuracy</p>
+            <p className="font-semibold">{t('dashboard.student.challengesCompleted', { count: 12 })}</p>
+            <p className="text-sm text-muted-foreground">{t('dashboard.student.averageAccuracy', { percent: 85 })}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Leaderboard Rank</CardTitle>
-            <CardDescription>Your current position.</CardDescription>
+            <CardTitle>{t('dashboard.student.leaderboardRank')}</CardTitle>
+            <CardDescription>{t('dashboard.student.leaderboardRankDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="font-semibold">#5 in Class 3A</p>
-            <p className="text-sm text-muted-foreground">Top 20%</p>
+            <p className="font-semibold">{t('dashboard.student.rankInClass', { rank: 5, class: '3A' })}</p>
+            <p className="text-sm text-muted-foreground">{t('dashboard.student.topPercent', { percent: 20 })}</p>
           </CardContent>
         </Card>
       </div>
