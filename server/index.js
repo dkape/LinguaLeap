@@ -30,6 +30,7 @@ app.use('/api/classes', classRoutes);
 app.use('/api/challenges', challengeRoutes);
 app.use('/api/learning-paths', learningPathRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/achievements', require('./routes/achievements'));
 
 app.get('/', (req, res) => {
   res.send('Hello from the LinguaLeap server!');

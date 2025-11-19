@@ -135,7 +135,9 @@
     "next": "Next",
     "finish": "Finish",
     "edit": "Edit",
-    "view": "View"
+    "view": "View",
+    "exit": "Exit",
+    "backToDashboard": "Back to Dashboard"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -207,6 +209,16 @@
     "start": "Start",
     "abandoned": "Abandoned",
     "notStarted": "Not started"
+  },
+  "challenge": {
+    "fetchError": "Failed to load challenge attempt.",
+    "submitError": "Failed to submit progress.",
+    "completedSuccess": "Challenge completed successfully!",
+    "notFound": "Challenge attempt not found.",
+    "progress": "Progress",
+    "item": "Item",
+    "markAsRead": "Mark as Read",
+    "submitAnswers": "Submit Answers"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -354,7 +366,11 @@
   },
   "progress": {
     "title": "My Progress",
-    "description": "Track your learning curve and see your results."
+    "description": "Track your learning curve and see your results.",
+    "challengeScores": "Challenge Scores",
+    "challengeScoresDesc": "Your scores on completed challenges.",
+    "completionTime": "Completion Time",
+    "completionTimeDesc": "Time taken to complete challenges (in seconds)."
   },
   "achievements": {
     "title": "My Achievements",
@@ -435,6 +451,26 @@
       "confirmNewPasswordLabel": "Confirm New Password",
       "saveButton": "Save Changes",
       "changePasswordButton": "Change Password"
+    }
+  },
+  "student": {
+    "achievements": {
+      "title": "My Achievements",
+      "description": "Collect badges and celebrate your milestones.",
+      "items": {
+        "firstLogin": {
+          "title": "First Steps",
+          "description": "Logged in for the first time."
+        },
+        "completed5": {
+          "title": "High Five",
+          "description": "Completed 5 challenges."
+        },
+        "perfectScore": {
+          "title": "Perfectionist",
+          "description": "Achieved 100% score in a challenge."
+        }
+      }
     }
   }
 }

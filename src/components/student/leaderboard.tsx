@@ -11,30 +11,17 @@ import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 
 interface LeaderboardEntry {
-  id: number;
+  id: string;
   name: string;
   avatarUrl: string;
   total_points: number;
   completed_challenges: number;
   avg_completion_time: number;
   rank_position: number;
-  rank_change: number;
-  badges: Array<{
-    id: string;
-    name: string;
-    icon: string;
-    rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  }>;
-  streak_days: number;
-  best_subjects: string[];
-  recent_achievements: Array<{
-    name: string;
-    earned_at: string;
-  }>;
 }
 
 interface StudentClass {
-  id: number;
+  id: string;
   name: string;
   teacher_name: string;
 }
@@ -42,7 +29,7 @@ interface StudentClass {
 export function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [classes, setClasses] = useState<StudentClass[]>([]);
-  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'allTime'>('weekly');
   const [statFilter, setStatFilter] = useState<'points' | 'challenges' | 'streak'>('points');
@@ -62,19 +49,26 @@ export function Leaderboard() {
   const fetchStudentClasses = async () => {
     try {
       const response = await axios.get('/classes/student/my-classes');
-      const studentClasses = response.data.classes;
+      const studentClasses = response.data.classes.map((c: any) => ({
+        id: c._id,
+        name: c.name,
+        teacher_name: c.teacher?.name || ''
+      }));
       setClasses(studentClasses);
 
       // Auto-select first class
       if (studentClasses.length > 0) {
         setSelectedClassId(studentClasses[0].id);
+      } else {
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error fetching student classes:', error);
+      setIsLoading(false);
     }
   };
 
-  const fetchLeaderboard = async (classId: number) => {
+  const fetchLeaderboard = async (classId: string) => {
     setIsLoading(true);
     try {
       const response = await axios.get(`/challenges/class/${classId}/leaderboard`);
@@ -119,11 +113,11 @@ export function Leaderboard() {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const isCurrentUser = (entryId: number) => {
-    return user && user.id === entryId.toString();
+  const isCurrentUser = (entryId: string) => {
+    return user && user.id === entryId;
   };
 
-  if (classes.length === 0) {
+  if (classes.length === 0 && !isLoading) {
     return (
       <Card>
         <CardContent className="text-center py-8">
@@ -150,38 +144,9 @@ export function Leaderboard() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex gap-2">
-            <Button
-              variant={timeframe === 'weekly' ? 'default' : 'outline'}
-              onClick={() => setTimeframe('weekly')}
-            >
-              {t('leaderboard.weekly')}
-            </Button>
-            <Button
-              variant={timeframe === 'monthly' ? 'default' : 'outline'}
-              onClick={() => setTimeframe('monthly')}
-            >
-              {t('leaderboard.monthly')}
-            </Button>
-            <Button
-              variant={timeframe === 'allTime' ? 'default' : 'outline'}
-              onClick={() => setTimeframe('allTime')}
-            >
-              {t('leaderboard.allTime')}
-            </Button>
+            {/* Timeframe buttons removed as backend doesn't support filtering yet */}
           </div>
-          <Select
-            value={statFilter}
-            onValueChange={(value) => setStatFilter(value as 'points' | 'challenges' | 'streak')}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t('leaderboard.selectStat')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="points">{t('leaderboard.totalPoints')}</SelectItem>
-              <SelectItem value="challenges">{t('leaderboard.completedChallenges')}</SelectItem>
-              <SelectItem value="streak">{t('leaderboard.currentStreak')}</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Stat filter removed as backend returns all stats */}
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -190,8 +155,8 @@ export function Leaderboard() {
               key={cls.id}
               onClick={() => setSelectedClassId(cls.id)}
               className={`px-4 py-2 rounded-lg border transition-colors ${selectedClassId === cls.id
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background hover:bg-muted border-border'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background hover:bg-muted border-border'
                 }`}
             >
               {cls.name}
@@ -233,8 +198,8 @@ export function Leaderboard() {
             <Card
               key={entry.id}
               className={`transition-all ${isCurrentUser(entry.id)
-                  ? 'ring-2 ring-primary shadow-lg'
-                  : 'hover:shadow-md'
+                ? 'ring-2 ring-primary shadow-lg'
+                : 'hover:shadow-md'
                 }`}
             >
               <CardContent className="p-4">
@@ -256,7 +221,7 @@ export function Leaderboard() {
                   <div className="flex items-center space-x-3 flex-1">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={entry.avatarUrl}
+                      src={entry.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${entry.name}`}
                       alt={entry.name}
                       className="w-10 h-10 rounded-full"
                     />

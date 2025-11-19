@@ -128,7 +128,9 @@
     "next": "Weiter",
     "finish": "Fertig",
     "edit": "Bearbeiten",
-    "view": "Ansehen"
+    "view": "Ansehen",
+    "exit": "Verlassen",
+    "backToDashboard": "Zurück zum Dashboard"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -200,6 +202,16 @@
     "start": "Starten",
     "abandoned": "Abgebrochen",
     "notStarted": "Nicht begonnen"
+  },
+  "challenge": {
+    "fetchError": "Herausforderung konnte nicht geladen werden.",
+    "submitError": "Fortschritt konnte nicht gesendet werden.",
+    "completedSuccess": "Herausforderung erfolgreich abgeschlossen!",
+    "notFound": "Herausforderungsversuch nicht gefunden.",
+    "progress": "Fortschritt",
+    "item": "Element",
+    "markAsRead": "Als gelesen markieren",
+    "submitAnswers": "Antworten senden"
   },
   "leaderboard": {
     "title": "Bestenliste",
@@ -354,7 +366,11 @@
   },
   "progress": {
     "title": "Mein Fortschritt",
-    "description": "Verfolge deine Lernkurve und sieh dir deine Ergebnisse an."
+    "description": "Verfolge deine Lernkurve und sieh dir deine Ergebnisse an.",
+    "challengeScores": "Herausforderungsergebnisse",
+    "challengeScoresDesc": "Deine Ergebnisse bei abgeschlossenen Herausforderungen.",
+    "completionTime": "Abschlusszeit",
+    "completionTimeDesc": "Benötigte Zeit für Herausforderungen (in Sekunden)."
   },
   "achievements": {
     "title": "Meine Erfolge",
@@ -435,6 +451,26 @@
       "confirmNewPasswordLabel": "Neues Passwort bestätigen",
       "saveButton": "Änderungen speichern",
       "changePasswordButton": "Passwort ändern"
+    }
+  },
+  "student": {
+    "achievements": {
+      "title": "Meine Erfolge",
+      "description": "Sammle Abzeichen und feiere deine Meilensteine.",
+      "items": {
+        "firstLogin": {
+          "title": "Erste Schritte",
+          "description": "Zum ersten Mal angemeldet."
+        },
+        "completed5": {
+          "title": "High Five",
+          "description": "5 Herausforderungen abgeschlossen."
+        },
+        "perfectScore": {
+          "title": "Perfektionist",
+          "description": "100% Punktzahl in einer Herausforderung erreicht."
+        }
+      }
     }
   }
 }

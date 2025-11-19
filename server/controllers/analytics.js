@@ -1,10 +1,19 @@
 const ChallengeAttempt = require('../models/ChallengeAttempt');
 const User = require('../models/User');
+const StudentClass = require('../models/StudentClass');
+const Challenge = require('../models/Challenge');
 
 const getTeacherPerformance = async (req, res) => {
   try {
-    // This is a simplified example. A real implementation would involve more complex aggregation.
-    const attempts = await ChallengeAttempt.find({ teacherId: req.user.userId });
+    // Find all challenges created by the teacher
+    const challenges = await Challenge.find({ teacherId: req.user.userId }).select('_id');
+    const challengeIds = challenges.map(c => c._id);
+
+    if (challengeIds.length === 0) {
+      return res.json({ averageCompletionRate: 0, averageScore: 0 });
+    }
+
+    const attempts = await ChallengeAttempt.find({ challengeId: { $in: challengeIds } });
 
     if (attempts.length === 0) {
       return res.json({ averageCompletionRate: 0, averageScore: 0 });
@@ -17,7 +26,7 @@ const getTeacherPerformance = async (req, res) => {
     for (const attempt of attempts) {
       if (attempt.status === 'completed') {
         totalCompletionRate += 1;
-        totalScore += attempt.score;
+        totalScore += attempt.totalPointsEarned; // Use totalPointsEarned instead of score
         completedCount++;
       }
     }
@@ -28,6 +37,83 @@ const getTeacherPerformance = async (req, res) => {
     res.json({ averageCompletionRate, averageScore });
   } catch (error) {
     console.error('Error fetching teacher performance:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getTeacherAnalytics = async (req, res) => {
+  try {
+    const teacherId = req.user.userId;
+
+    // 1. Get all classes for the teacher
+    const classes = await StudentClass.find({ teacherId }).select('_id name');
+    const classMap = classes.reduce((acc, cls) => {
+      acc[cls._id.toString()] = cls.name;
+      return acc;
+    }, {});
+
+    // 2. Get all challenges for the teacher
+    const challenges = await Challenge.find({ teacherId }).select('_id classId');
+    const challengeClassMap = challenges.reduce((acc, ch) => {
+      if (ch.classId) {
+        acc[ch._id.toString()] = ch.classId.toString();
+      }
+      return acc;
+    }, {});
+
+    const challengeIds = challenges.map(c => c._id);
+
+    // 3. Get all attempts for these challenges
+    const attempts = await ChallengeAttempt.find({ challengeId: { $in: challengeIds }, status: 'completed' });
+
+    // 4. Aggregate data
+    const classStats = {}; // classId -> { totalScore, count }
+    const performanceDistribution = {
+      'Top 10%': 0,
+      '75-90%': 0,
+      '50-75%': 0,
+      'Below 50%': 0
+    };
+
+    attempts.forEach(attempt => {
+      // Class stats
+      const classId = challengeClassMap[attempt.challengeId.toString()];
+      if (classId && classMap[classId]) {
+        if (!classStats[classId]) {
+          classStats[classId] = { totalScore: 0, count: 0 };
+        }
+        classStats[classId].totalScore += attempt.totalPointsEarned; // Assuming totalPointsEarned is absolute score. If it's relative to total possible, we need that too.
+        // For simplicity, let's assume we want average points. Or better, percentage if we had total possible.
+        // Let's assume totalPointsEarned is what we track.
+        classStats[classId].count++;
+      }
+
+      // Distribution (Mock logic for buckets based on points, ideally should be percentage)
+      // Assuming max points is around 100 for normalization or just using raw points
+      const score = attempt.totalPointsEarned;
+      if (score >= 90) performanceDistribution['Top 10%']++;
+      else if (score >= 75) performanceDistribution['75-90%']++;
+      else if (score >= 50) performanceDistribution['50-75%']++;
+      else performanceDistribution['Below 50%']++;
+    });
+
+    // Format class data
+    const classData = Object.keys(classStats).map(classId => ({
+      name: classMap[classId],
+      avgScore: Math.round(classStats[classId].totalScore / classStats[classId].count),
+      completionRate: 100 // Placeholder, calculating real rate requires total students
+    }));
+
+    // Format distribution data
+    const studentPerformance = Object.keys(performanceDistribution).map(key => ({
+      name: key,
+      value: performanceDistribution[key]
+    }));
+
+    res.json({ classData, studentPerformance });
+
+  } catch (error) {
+    console.error('Error fetching teacher analytics:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -46,4 +132,4 @@ const getGlobalLeaderboard = async (req, res) => {
   }
 };
 
-module.exports = { getTeacherPerformance, getGlobalLeaderboard };
+module.exports = { getTeacherPerformance, getTeacherAnalytics, getGlobalLeaderboard };

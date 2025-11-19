@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Clock, Trophy, BookText, Play, CheckCircle, Users, Sparkles } from 'lucide-react';
+import { Clock, Trophy, BookText, Play, CheckCircle, Users } from 'lucide-react';
 import { useTranslation } from '@/contexts/locale-context';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -13,17 +13,17 @@ import { useLocale } from '@/contexts/locale-context';
 import axios from 'axios';
 
 interface Challenge {
-  id: number;
+  _id: string;
   title: string;
   description: string;
   topic: string;
   language: 'de' | 'en';
-  age_range: string;
-  reading_level: string;
+  ageRange: string;
+  readingLevel: string;
   class_name: string;
   teacher_name: string;
-  total_points: number;
-  time_limit_minutes: number;
+  totalPoints: number;
+  timeLimitMinutes: number;
   total_items: number;
   completed_items: number;
   attempt_status: 'not_started' | 'in_progress' | 'completed' | 'abandoned' | null;
@@ -32,41 +32,20 @@ interface Challenge {
   started_at: string | null;
   completed_at: string | null;
   createdAt: string;
-  difficulty_level: 1 | 2 | 3;
-  tags: string[];
-  estimated_completion_time: number;
-  recommended: boolean;
-  next_milestone: {
-    type: string;
-    points_needed: number;
-  };
 }
 
 export function ChallengeList() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'in_progress' | 'recommended'>('all');
+  const [filter, setFilter] = useState<'all' | 'in_progress'>('all');
   const { t } = useTranslation();
 
   const filteredChallenges = challenges.filter(challenge => {
     if (filter === 'all') return true;
     if (filter === 'in_progress') return challenge.attempt_status === 'in_progress';
-    if (filter === 'recommended') return challenge.recommended;
     return true;
   });
 
-  const getDifficultyBadge = (level: number) => {
-    const colors = {
-      1: 'bg-green-100 text-green-800',
-      2: 'bg-yellow-100 text-yellow-800',
-      3: 'bg-red-100 text-red-800'
-    };
-    return (
-      <Badge className={colors[level as 1 | 2 | 3]}>
-        {t(`challenges.difficulty.${level}`)}
-      </Badge>
-    );
-  };
   const router = useRouter();
   const { locale } = useLocale();
 
@@ -85,19 +64,24 @@ export function ChallengeList() {
     }
   };
 
-  const startChallenge = async (challengeId: number) => {
+  const startChallenge = async (challengeId: string) => {
     try {
       const response = await axios.post(`/challenges/${challengeId}/start`);
       const attemptId = response.data.attemptId;
+      // TODO: Create this page
       router.push(`/${locale}/student/challenge/${attemptId}`);
     } catch (error) {
       console.error('Error starting challenge:', error);
     }
   };
 
-  const continueChallenge = (challengeId: number) => {
+  const continueChallenge = (challengeId: string) => {
     // Find the attempt ID and continue
-    router.push(`/${locale}/student/challenge/${challengeId}`);
+    // For now, assuming we navigate to the same page, but we might need to fetch the attempt ID if not available
+    // But wait, if status is in_progress, we probably have an attempt.
+    // The API response for student challenges doesn't explicitly return attemptId, but we can probably find it or the start endpoint handles it.
+    // Actually, startChallenge endpoint checks for existing attempt and returns it if it exists.
+    startChallenge(challengeId);
   };
 
   const getStatusColor = (status: string | null) => {
@@ -127,6 +111,7 @@ export function ChallengeList() {
   };
 
   const formatTime = (seconds: number) => {
+    if (!seconds) return '0:00';
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -184,12 +169,6 @@ export function ChallengeList() {
             >
               {t('challenges.inProgress')}
             </Button>
-            <Button
-              variant={filter === 'recommended' ? 'default' : 'outline'}
-              onClick={() => setFilter('recommended')}
-            >
-              {t('challenges.recommended')}
-            </Button>
           </div>
 
           {filteredChallenges.map((challenge) => {
@@ -199,10 +178,9 @@ export function ChallengeList() {
 
             return (
               <Card
-                key={challenge.id}
+                key={challenge._id}
                 className={cn(
-                  "hover:shadow-md transition-shadow",
-                  challenge.recommended && "border-2 border-primary"
+                  "hover:shadow-md transition-shadow"
                 )}
               >
                 <CardHeader>
@@ -228,24 +206,12 @@ export function ChallengeList() {
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline">
                       <Trophy className="mr-1 h-3 w-3" />
-                      {challenge.total_points} {t('common.points')}
+                      {challenge.totalPoints} {t('common.points')}
                     </Badge>
                     <Badge variant="outline">
                       <Clock className="mr-1 h-3 w-3" />
-                      ~{challenge.estimated_completion_time} {t('common.minutes')}
+                      ~{challenge.timeLimitMinutes} {t('common.minutes')}
                     </Badge>
-                    {getDifficultyBadge(challenge.difficulty_level)}
-                    {challenge.tags.map(tag => (
-                      <Badge key={tag} variant="outline" className="bg-blue-50 text-blue-800">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {challenge.recommended && (
-                      <Badge variant="outline" className="bg-purple-100 text-purple-800">
-                        <Sparkles className="mr-1 h-3 w-3" />
-                        {t('challenges.recommended')}
-                      </Badge>
-                    )}
                     <Badge variant="outline">
                       <BookText className="mr-1 h-3 w-3" />
                       {challenge.total_items} {t('common.tasks')}
@@ -279,12 +245,12 @@ export function ChallengeList() {
                         {t('challenges.completed')}
                       </Button>
                     ) : challenge.attempt_status === 'in_progress' ? (
-                      <Button onClick={() => continueChallenge(challenge.id)}>
+                      <Button onClick={() => continueChallenge(challenge._id)}>
                         <Play className="mr-2 h-4 w-4" />
                         {t('challenges.continue')}
                       </Button>
                     ) : (
-                      <Button onClick={() => startChallenge(challenge.id)}>
+                      <Button onClick={() => startChallenge(challenge._id)}>
                         <Play className="mr-2 h-4 w-4" />
                         {t('challenges.start')}
                       </Button>

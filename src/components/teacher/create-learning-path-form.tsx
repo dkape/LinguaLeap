@@ -23,7 +23,11 @@ import { Loader2 } from "lucide-react";
 import { useTranslation } from '@/contexts/locale-context';
 import axios from "axios";
 
-export function CreateLearningPathForm() {
+interface CreateLearningPathFormProps {
+  onSuccess?: () => void;
+}
+
+export function CreateLearningPathForm({ onSuccess }: CreateLearningPathFormProps) {
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -76,6 +80,7 @@ export function CreateLearningPathForm() {
       toast({ title: t('createLearningPathForm.saveSuccessTitle'), description: t('createLearningPathForm.saveSuccessDescription') });
       setGeneratedPath(null);
       form.reset();
+      if (onSuccess) onSuccess();
     } catch {
       toast({ variant: "destructive", title: t('createLearningPathForm.saveErrorTitle'), description: t('createLearningPathForm.saveErrorDescription') });
     }
