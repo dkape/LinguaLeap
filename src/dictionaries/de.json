@@ -3,6 +3,115 @@
     "title": "LinguaLeap",
     "tagline": "Sprachenlernen für die nächste Generation"
   },
+  "auth": {
+    "login": {
+      "title": "Willkommen zurück!",
+      "description": "Geben Sie Ihre Anmeldedaten ein.",
+      "button": "Anmelden",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "forgotPassword": "Passwort vergessen?",
+      "noAccount": "Noch kein Konto?",
+      "signupLink": "Registrieren",
+      "emailVerificationRequired": "E-Mail-Verifizierung erforderlich",
+      "emailVerificationRequiredDescription": "Bitte verifizieren Sie Ihre E-Mail-Adresse, um sich anzumelden.",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort",
+      "loginFailed": "Anmeldung fehlgeschlagen",
+      "emailPlaceholder": "name@beispiel.de",
+      "passwordPlaceholder": "••••••••"
+    },
+    "signup": {
+      "title": "Konto erstellen",
+      "description": "Geben Sie Ihre Daten ein, um sich zu registrieren.",
+      "button": "Registrieren",
+      "name": "Name",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "hasAccount": "Haben Sie bereits ein Konto?",
+      "loginLink": "Anmelden",
+      "registrationSuccessful": "Registrierung erfolgreich!",
+      "checkEmail": "Bitte überprüfen Sie Ihre E-Mail, um Ihr Konto zu verifizieren.",
+      "registrationFailed": "Registrierung fehlgeschlagen",
+      "emailInUse": "Diese E-Mail wird bereits verwendet. Bitte versuchen Sie eine andere.",
+      "nameRequired": "Name ist für die Registrierung erforderlich.",
+      "teacher": "Lehrer",
+      "student": "Schüler",
+      "namePlaceholder": "Ihr Name"
+    },
+    "verification": {
+      "title": "E-Mail verifizieren",
+      "verifying": "Verifiziere E-Mail...",
+      "success": "E-Mail verifiziert!",
+      "failed": "Verifizierung fehlgeschlagen",
+      "successMessage": "E-Mail erfolgreich verifiziert! Sie können sich jetzt anmelden.",
+      "invalidToken": "Ungültiges oder abgelaufenes Verifizierungs-Token",
+      "goToLogin": "Zur Anmeldung",
+      "resendVerification": "Verifizierungs-E-Mail erneut senden",
+      "resendSuccess": "Verifizierungs-E-Mail erfolgreich gesendet!",
+      "enterEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein, um die Verifizierung erneut zu senden:",
+      "sending": "Sende...",
+      "networkError": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
+      "noToken": "Kein Verifizierungs-Token angegeben",
+      "resendFailed": "Fehler beim erneuten Senden der Verifizierungs-E-Mail",
+      "backToLogin": "Zurück zur Anmeldung",
+      "loading": "Laden...",
+      "waitMessage": "Bitte warten Sie, während wir Ihre E-Mail verifizieren."
+    },
+    "forgotPassword": {
+      "title": "Passwort vergessen",
+      "description": "Geben Sie Ihre E-Mail ein, um Ihr Passwort zurückzusetzen.",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "name@beispiel.de",
+      "button": "Reset-E-Mail senden",
+      "rememberPassword": "Erinnern Sie sich an Ihr Passwort? ",
+      "loginLink": "Anmelden",
+      "successTitle": "Erfolg",
+      "successDescription": "Passwort-Reset-E-Mail gesendet!",
+      "errorTitle": "Fehler",
+      "genericError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "description": "Geben Sie Ihr neues Passwort ein.",
+      "passwordLabel": "Neues Passwort",
+      "confirmPasswordLabel": "Neues Passwort bestätigen",
+      "button": "Passwort zurücksetzen",
+      "loading": "Laden...",
+      "invalidToken": "Ungültiges oder fehlendes Reset-Token.",
+      "successTitle": "Erfolg",
+      "successDescription": "Passwort erfolgreich zurückgesetzt!",
+      "errorTitle": "Fehler",
+      "genericError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      "passwordsDontMatch": "Passwörter stimmen nicht überein",
+      "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein."
+    },
+    "roles": {
+      "teacher": "Lehrer",
+      "student": "Schüler"
+    }
+  },
+  "language": {
+    "switch": "Sprache wechseln",
+    "german": "Deutsch",
+    "english": "Englisch",
+    "current": "Aktuelle Sprache"
+  },
+  "errors": {
+    "general": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.",
+    "validationError": "Bitte überprüfen Sie Ihre Eingaben.",
+    "unauthorized": "Sie sind nicht berechtigt, diese Aktion durchzuführen.",
+    "notFound": "Die angeforderte Seite wurde nicht gefunden.",
+    "serverError": "Serverfehler. Bitte versuchen Sie es später erneut.",
+    "invalidRole": "Ungültige Rolle angegeben."
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "minLength": "Mindestens {min} Zeichen erforderlich",
+    "maxLength": "Maximal {max} Zeichen erlaubt",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein"
+  },
   "common": {
     "delete": "Löschen",
     "cancel": "Abbrechen",
@@ -288,7 +397,10 @@
     "classes": {
       "title": "Klassen",
       "description": "Verwalte deine Klassen hier.",
+      "create": "Neue Klasse erstellen",
       "createButton": "Neue Klasse erstellen",
+      "view": "Ansehen",
+      "remove": "Entfernen",
       "studentName": "Schülername",
       "progress": "Fortschritt",
       "actions": "Aktionen"
