@@ -130,7 +130,12 @@
     "edit": "Bearbeiten",
     "view": "Ansehen",
     "exit": "Verlassen",
-    "backToDashboard": "Zurück zum Dashboard"
+    "backToDashboard": "Zurück zum Dashboard",
+    "decorativeBackground": "Dekorativer Hintergrund",
+    "previousSlide": "Vorherige Folie",
+    "nextSlide": "Nächste Folie",
+    "close": "Schließen",
+    "toggleSidebar": "Seitenleiste umschalten"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -240,7 +245,9 @@
     "createClassTitle": "Neue Klasse erstellen",
     "createClassDescription": "Erstellen Sie eine neue Schülerklasse für Ihre Herausforderungen.",
     "className": "Klassenname",
+    "classNamePlaceholder": "z.B. Klasse 3A",
     "classDescription": "Beschreibung",
+    "classDescriptionPlaceholder": "Beschreibung der Klasse...",
     "language": "Sprache",
     "ageRange": "Altersbereich",
     "selectAgeRange": "Altersbereich wählen",
@@ -362,7 +369,8 @@
     "heroSubtitle": "Spielerische Lektionen und personalisierte Lernpfade helfen jungen Lernenden, voranzukommen.",
     "studentButton": "Ich bin Schüler",
     "teacherButton": "Ich bin Lehrer",
-    "footerRights": "Alle Rechte vorbehalten."
+    "footerRights": "Alle Rechte vorbehalten.",
+    "logoAlt": "LinguaLeap Icon"
   },
   "progress": {
     "title": "Mein Fortschritt",
@@ -454,6 +462,9 @@
     }
   },
   "student": {
+    "progress": {
+      "title": "Schülerfortschritt"
+    },
     "achievements": {
       "title": "Meine Erfolge",
       "description": "Sammle Abzeichen und feiere deine Meilensteine.",

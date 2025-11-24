@@ -8,7 +8,8 @@
     "heroSubtitle": ". Gamified lessons and personalized paths help young learners leap ahead.",
     "studentButton": "I'm a Student",
     "teacherButton": "I'm a Teacher",
-    "footerRights": " All rights reserved."
+    "footerRights": " All rights reserved.",
+    "logoAlt": "LinguaLeap Icon"
   },
   "auth": {
     "login": {
@@ -137,7 +138,12 @@
     "edit": "Edit",
     "view": "View",
     "exit": "Exit",
-    "backToDashboard": "Back to Dashboard"
+    "backToDashboard": "Back to Dashboard",
+    "decorativeBackground": "Decorative background",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "close": "Close",
+    "toggleSidebar": "Toggle Sidebar"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -247,7 +253,9 @@
     "createClassTitle": "Create New Class",
     "createClassDescription": "Create a new student class for your challenges.",
     "className": "Class Name",
+    "classNamePlaceholder": "e.g. Class 3A",
     "classDescription": "Description",
+    "classDescriptionPlaceholder": "Class description...",
     "language": "Language",
     "ageRange": "Age Range",
     "selectAgeRange": "Select age range",
@@ -454,6 +462,9 @@
     }
   },
   "student": {
+    "progress": {
+      "title": "Student Progress"
+    },
     "achievements": {
       "title": "My Achievements",
       "description": "Collect badges and celebrate your milestones.",

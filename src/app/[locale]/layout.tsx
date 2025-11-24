@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { locales, type Locale } from '@/lib/i18n';
-import { getDictionary } from '@/lib/dictionaries';
+import { getDictionary, t } from '@/lib/dictionaries';
 import { LocaleProvider } from '@/contexts/locale-context';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import '../globals.css';
@@ -32,7 +32,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <div className="min-h-screen bg-background relative">
         <Image
           src="/background.png"
-          alt="Decorative background"
+          alt={t(dict, 'common.decorativeBackground')}
           layout="fill"
           objectFit="cover"
           className="absolute top-0 left-0 w-full h-full opacity-30 dark:opacity-25 pointer-events-none lg:object-contain"

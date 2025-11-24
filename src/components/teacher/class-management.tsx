@@ -201,7 +201,7 @@ export function ClassManagement() {
                 <Input
                   value={newClass.name}
                   onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
-                  placeholder="z.B. Klasse 3A"
+                  placeholder={t('classManagement.classNamePlaceholder')}
                 />
               </div>
               <div>
@@ -209,7 +209,7 @@ export function ClassManagement() {
                 <Textarea
                   value={newClass.description}
                   onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
-                  placeholder="Beschreibung der Klasse..."
+                  placeholder={t('classManagement.classDescriptionPlaceholder')}
                 />
               </div>
               <div>

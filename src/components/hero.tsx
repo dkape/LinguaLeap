@@ -97,7 +97,7 @@ export function Hero() {
               <div className="w-32 h-32 rounded-3xl bg-card border border-border shadow-lg flex items-center justify-center overflow-hidden backdrop-blur-sm">
                 <Image
                   src="/icon.png"
-                  alt="LinguaLeap Icon"
+                  alt={t('landing.logoAlt')}
                   width={80}
                   height={80}
                   className="object-contain"

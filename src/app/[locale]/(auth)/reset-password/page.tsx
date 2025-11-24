@@ -85,11 +85,10 @@ function ResetPasswordContent() {
             {submissionMessage && (
               <div
                 ref={messageRef}
-                className={`p-4 mb-4 rounded-md text-sm ${
-                  submissionMessage.type === 'success'
+                className={`p-4 mb-4 rounded-md text-sm ${submissionMessage.type === 'success'
                     ? 'bg-green-100 border border-green-200 text-green-800'
                     : 'bg-destructive/10 text-destructive border border-destructive/20'
-                }`}
+                  }`}
               >
                 <p className="font-semibold mb-1">
                   {submissionMessage.type === 'success'
@@ -106,7 +105,7 @@ function ResetPasswordContent() {
                 <FormItem>
                   <FormLabel>{dict.auth.resetPassword.passwordLabel}</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder={dict.auth.login.passwordPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
