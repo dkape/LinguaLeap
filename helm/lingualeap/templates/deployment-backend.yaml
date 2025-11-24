@@ -48,12 +48,12 @@ spec:
             - name: MONGODB_URI
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "lingualeap.fullname" . }}-secrets
+                  name: {{ .Values.externalSecret.name }}
                   key: mongodb-uri
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "lingualeap.fullname" . }}-secrets
+                  name: {{ .Values.externalSecret.name }}
                   key: jwt-secret
             - name: EMAIL_FROM
               value: {{ .Values.config.emailFrom }}
@@ -70,8 +70,13 @@ spec:
             - name: SMTP_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "lingualeap.fullname" . }}-secrets
+                  name: {{ .Values.externalSecret.name }}
                   key: smtp-password
+            - name: GOOGLE_GENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.name }}
+                  key: google-genai-api-key
           {{- if .Values.healthCheck.enabled }}
           livenessProbe:
             httpGet:
