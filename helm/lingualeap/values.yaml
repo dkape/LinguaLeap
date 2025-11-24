@@ -139,7 +139,7 @@ config:
     host: "smtp.kapeplus.de"
     port: 587
     secure: true
-    user: "lingualeap"
+    user: "jarvis"
 
 # Secret Management
 externalSecret:
