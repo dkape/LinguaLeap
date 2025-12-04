@@ -2,13 +2,13 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
-  DOCKER_REGISTRY: docker.io
-  DOCKER_USERNAME: danielkape
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_USERNAME: ${{ github.repository_owner }}
   IMAGE_NAME_FRONTEND: lingualeap-frontend
   IMAGE_NAME_BACKEND: lingualeap-backend
 
@@ -22,115 +22,115 @@ jobs:
       actions: read
     env:
       FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-      with:
-        fetch-depth: 0  # Shallow clones should be disabled for better analysis
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '18'
-        # Note: cache disabled because we generate lock files dynamically
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "18"
+          # Note: cache disabled because we generate lock files dynamically
 
-    # 1. Secrets Detection with TruffleHog
-    - name: TruffleHog OSS - Secrets Detection (stable install)
-      run: |
-        echo "🔍 Running TruffleHog secrets detection (pip install)..."
+      # 1. Secrets Detection with TruffleHog
+      - name: TruffleHog OSS - Secrets Detection (stable install)
+        run: |
+          echo "🔍 Running TruffleHog secrets detection (pip install)..."
 
-        set -euo pipefail
+          set -euo pipefail
 
-        # Ensure Python and pip are available
-        if ! command -v python3 >/dev/null 2>&1; then
-          echo "Installing python3..."
-          sudo apt-get update -y && sudo apt-get install -y python3 python3-venv python3-pip git
-        fi
-
-        # Use pip to install a known stable TruffleHog release
-        PIP_TRUFFLEHOG_VERSION="3.18.0" || true
-        python3 -m pip install --upgrade pip
-        python3 -m pip install "trufflehog==${PIP_TRUFFLEHOG_VERSION}" || python3 -m pip install trufflehog
-
-        # helper to run trufflehog safely
-        run_trufflehog() {
-          echo "Running: trufflehog $*"
-          if ! trufflehog "$@"; then
-            echo "TruffleHog completed with findings or errors (non-fatal)"
-            return 0
+          # Ensure Python and pip are available
+          if ! command -v python3 >/dev/null 2>&1; then
+            echo "Installing python3..."
+            sudo apt-get update -y && sudo apt-get install -y python3 python3-venv python3-pip git
           fi
-        }
 
-        # Determine scan strategy based on event type
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          echo "📋 Pull request detected - scanning diff from base to head"
-          BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          # Use pip to install a known stable TruffleHog release
+          PIP_TRUFFLEHOG_VERSION="3.18.0" || true
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "trufflehog==${PIP_TRUFFLEHOG_VERSION}" || python3 -m pip install trufflehog
 
-          if [ "$BASE_SHA" != "$HEAD_SHA" ]; then
-            echo "🔄 Scanning commits from $BASE_SHA to $HEAD_SHA"
-            run_trufflehog git file://. --since-commit="$BASE_SHA" --branch="$HEAD_SHA" --only-verified --no-update || true
+          # helper to run trufflehog safely
+          run_trufflehog() {
+            echo "Running: trufflehog $*"
+            if ! trufflehog "$@"; then
+              echo "TruffleHog completed with findings or errors (non-fatal)"
+              return 0
+            fi
+          }
+
+          # Determine scan strategy based on event type
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "📋 Pull request detected - scanning diff from base to head"
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+            if [ "$BASE_SHA" != "$HEAD_SHA" ]; then
+              echo "🔄 Scanning commits from $BASE_SHA to $HEAD_SHA"
+              run_trufflehog git file://. --since-commit="$BASE_SHA" --branch="$HEAD_SHA" --only-verified --no-update || true
+            else
+              echo "⚠️ Base and head commits are identical, scanning entire repository"
+              run_trufflehog filesystem . --only-verified --no-update || true
+            fi
           else
-            echo "⚠️ Base and head commits are identical, scanning entire repository"
-            run_trufflehog filesystem . --only-verified --no-update || true
+            # For push events, scan the last few commits or entire repo if it's the first commit
+            COMMIT_COUNT=$(git rev-list --count HEAD || true)
+            if [ -n "$COMMIT_COUNT" ] && [ "$COMMIT_COUNT" -gt 1 ]; then
+              echo "📋 Push event detected - scanning recent commits"
+              run_trufflehog git file://. --since-commit="HEAD~5" --branch="HEAD" --only-verified --no-update || true
+            else
+              echo "📋 Initial commit detected - scanning entire repository"
+              run_trufflehog filesystem . --only-verified --no-update || true
+            fi
           fi
-        else
-          # For push events, scan the last few commits or entire repo if it's the first commit
-          COMMIT_COUNT=$(git rev-list --count HEAD || true)
-          if [ -n "$COMMIT_COUNT" ] && [ "$COMMIT_COUNT" -gt 1 ]; then
-            echo "📋 Push event detected - scanning recent commits"
-            run_trufflehog git file://. --since-commit="HEAD~5" --branch="HEAD" --only-verified --no-update || true
-          else
-            echo "📋 Initial commit detected - scanning entire repository"
-            run_trufflehog filesystem . --only-verified --no-update || true
-          fi
-        fi
 
-        echo "✅ TruffleHog secrets detection completed (non-fatal)"
-      continue-on-error: true
+          echo "✅ TruffleHog secrets detection completed (non-fatal)"
+        continue-on-error: true
 
-    # 2. Install dependencies (lock files should be pre-generated and committed)
-    - name: Install frontend dependencies
-      run: npm ci --legacy-peer-deps --no-audit
+      # 2. Install dependencies (lock files should be pre-generated and committed)
+      - name: Install frontend dependencies
+        run: npm ci --legacy-peer-deps --no-audit
 
-    - name: Install backend dependencies
-      run: cd server && npm ci --legacy-peer-deps --no-audit
+      - name: Install backend dependencies
+        run: cd server && npm ci --legacy-peer-deps --no-audit
 
-    - name: Run npm audit - Frontend
-      run: npm audit --audit-level=moderate --production || true
+      - name: Run npm audit - Frontend
+        run: npm audit --audit-level=moderate --production || true
 
-    - name: Run npm audit - Backend  
-      run: cd server && npm audit --audit-level=moderate --production || true
+      - name: Run npm audit - Backend
+        run: cd server && npm audit --audit-level=moderate --production || true
 
-    # 4. Advanced Dependency Scanning with Snyk (only if token is available)
-    # Snyk scanning disabled to prioritize a working CI/CD. Re-enable when ready to harden further.
+      # 4. Advanced Dependency Scanning with Snyk (only if token is available)
+      # Snyk scanning disabled to prioritize a working CI/CD. Re-enable when ready to harden further.
 
-    # 5. SAST (Static Application Security Testing) with Semgrep
-    - name: Semgrep SAST Scan
-      uses: semgrep/semgrep-action@v1
-      with:
-        config: >-
-          p/security-audit
-          p/secrets
-          p/owasp-top-ten
-          p/javascript
-          p/typescript
-          p/react
-          p/nodejs
-        sarif: true
-      env:
-        SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN || '' }}
-      continue-on-error: true
+      # 5. SAST (Static Application Security Testing) with Semgrep
+      - name: Semgrep SAST Scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+            p/javascript
+            p/typescript
+            p/react
+            p/nodejs
+          sarif: true
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN || '' }}
+        continue-on-error: true
 
-    # 6. License Compliance Check (only if token is available)
-    - name: FOSSA License Scan
-      if: ${{ env.FOSSA_API_KEY != '' }}
-      uses: fossas/fossa-action@main
-      with:
-        api-key: ${{ secrets.FOSSA_API_KEY }}
-        run-tests: true
-      continue-on-error: true
+      # 6. License Compliance Check (only if token is available)
+      - name: FOSSA License Scan
+        if: ${{ env.FOSSA_API_KEY != '' }}
+        uses: fossas/fossa-action@main
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+          run-tests: true
+        continue-on-error: true
 
     # 7. Code Quality and Security with CodeQL
     # - name: Initialize CodeQL
@@ -183,70 +183,70 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CACHE_KEY: ${{ needs.setup-env.outputs.cache-key }}
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "18"
 
-    - name: Install frontend dependencies
-      run: npm ci --legacy-peer_deps
+      - name: Install frontend dependencies
+        run: npm ci --legacy-peer_deps
 
-    - name: Run frontend linting
-      run: npm run lint
-      continue-on-error: false
+      - name: Run frontend linting
+        run: npm run lint
+        continue-on-error: false
 
-    - name: Run frontend type checking
-      run: npm run typecheck
-      continue-on-error: false
+      - name: Run frontend type checking
+        run: npm run typecheck
+        continue-on-error: false
 
-    - name: Run frontend unit tests
-      run: npm run test:coverage
-      continue-on-error: false
+      - name: Run frontend unit tests
+        run: npm run test:coverage
+        continue-on-error: false
 
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v5
-      with:
-        files: ./coverage/lcov.info
-        flags: frontend
-        name: frontend-coverage
-        fail_ci_if_error: false
-      continue-on-error: true
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
+        continue-on-error: true
 
-    - name: Install Playwright browsers
-      run: npx playwright install --with-deps
-      continue-on-error: false
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+        continue-on-error: false
 
-    - name: Run frontend E2E tests
-      run: npm run test:e2e
-      continue-on-error: false
+      - name: Run frontend E2E tests
+        run: npm run test:e2e
+        continue-on-error: false
 
-    - name: Upload Playwright test results
-      if: always()
-      uses: actions/upload-artifact@v5
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - name: Upload Playwright test results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
-    - name: Upload E2E test results
-      if: always()
-      uses: actions/upload-artifact@v5
-      with:
-        name: e2e-test-results
-        path: test-results/
-        retention-days: 30
+      - name: Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: e2e-test-results
+          path: test-results/
+          retention-days: 30
 
   backend-test:
     needs: [security-scan, setup-env]
     runs-on: ubuntu-latest
     env:
       CACHE_KEY: ${{ needs.setup-env.outputs.cache-key }}
-    
+
     services:
       mongodb:
         image: mongo:7.0
@@ -264,56 +264,56 @@ jobs:
           --health-start-period 20s
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "18"
 
-    - name: Install backend dependencies
-      run: cd server && npm ci --legacy-peer_deps
+      - name: Install backend dependencies
+        run: cd server && npm ci --legacy-peer_deps
 
-    - name: Test MongoDB connection
-      env:
-        MONGODB_URI: mongodb://admin:password123@localhost:27017/lingualeap_test?authSource=admin
-      run: |
-        # Wait for MongoDB to be healthy
-        sleep 15
-        cd server
-        npm run test:db
+      - name: Test MongoDB connection
+        env:
+          MONGODB_URI: mongodb://admin:password123@localhost:27017/lingualeap_test?authSource=admin
+        run: |
+          # Wait for MongoDB to be healthy
+          sleep 15
+          cd server
+          npm run test:db
 
-    - name: Run backend tests
-      env:
-        NODE_ENV: test
-        MONGODB_URI: mongodb://admin:password123@localhost:27017/lingualeap_test?authSource=admin
-        JWT_SECRET: test_jwt_secret_for_testing_purposes_only
-        EMAIL_FROM: test@lingualeap.com
-        EMAIL_HOST: localhost
-        EMAIL_PORT: 1025
-        EMAIL_SECURE: false
-        CLIENT_URL: http://localhost:3000
-        API_URL: http://localhost:3001
-        REDIS_URL: redis://localhost:6379
-        LOG_LEVEL: error
-      run: |
-        cd server
-        # Add retry mechanism for flaky tests
-        for i in 1 2 3; do
-          echo "Test attempt $i/3"
-          if npm test; then
-            echo "Tests passed on attempt $i"
-            exit 0
-          fi
-          echo "Tests failed on attempt $i"
-          if [ $i -lt 3 ]; then
-            echo "Waiting 30 seconds before retry..."
-            sleep 30
-          fi
-        done
-        echo "Tests failed after 3 attempts"
-        exit 1
+      - name: Run backend tests
+        env:
+          NODE_ENV: test
+          MONGODB_URI: mongodb://admin:password123@localhost:27017/lingualeap_test?authSource=admin
+          JWT_SECRET: test_jwt_secret_for_testing_purposes_only
+          EMAIL_FROM: test@lingualeap.com
+          EMAIL_HOST: localhost
+          EMAIL_PORT: 1025
+          EMAIL_SECURE: false
+          CLIENT_URL: http://localhost:3000
+          API_URL: http://localhost:3001
+          REDIS_URL: redis://localhost:6379
+          LOG_LEVEL: error
+        run: |
+          cd server
+          # Add retry mechanism for flaky tests
+          for i in 1 2 3; do
+            echo "Test attempt $i/3"
+            if npm test; then
+              echo "Tests passed on attempt $i"
+              exit 0
+            fi
+            echo "Tests failed on attempt $i"
+            if [ $i -lt 3 ]; then
+              echo "Waiting 30 seconds before retry..."
+              sleep 30
+            fi
+          done
+          echo "Tests failed after 3 attempts"
+          exit 1
 
   test:
     needs: [frontend-test, backend-test]
@@ -326,71 +326,75 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ env.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}
-          ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
 
-    - name: Build and push frontend image (Multi-platform)
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: ./Dockerfile.frontend
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
-          ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
-        cache-from: |
-          type=gha
-          type=registry,ref=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:buildcache
-        cache-to: type=gha,mode=max
-        build-args: |
-          NODE_VERSION=18
-          BUILD_DATE=${{ github.event.repository.updated_at }}
-          COMMIT_SHA=${{ github.sha }}
-        labels: |
-          org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-          org.opencontainers.image.revision=${{ github.sha }}
-          org.opencontainers.image.created=${{ github.event.repository.updated_at }}
+      - name: Build and push frontend image (Multi-platform)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.frontend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
+          cache-from: |
+            type=gha
+            type=registry,ref=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:buildcache
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_VERSION=18
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+            COMMIT_SHA=${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
 
-    - name: Build and push backend image (Multi-platform)
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: ./Dockerfile.backend
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: |
-          ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest
-          ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Build and push backend image (Multi-platform)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.backend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   # Container Security Scanning - runs after images are built
   container-security-scan:
@@ -399,125 +403,133 @@ jobs:
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
+      packages: read
       security-events: write
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-    # 1. Trivy Container Vulnerability Scanning
-    - name: Run Trivy vulnerability scanner - Frontend
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest'
-        format: 'sarif'
-        output: 'trivy-frontend-results.sarif'
-        severity: 'CRITICAL,HIGH,MEDIUM'
-        exit-code: '0'  # Don't fail on vulnerabilities, just report
-        ignore-unfixed: true
-      continue-on-error: true
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Run Trivy vulnerability scanner - Backend
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest'
-        format: 'sarif'
-        output: 'trivy-backend-results.sarif'
-        severity: 'CRITICAL,HIGH,MEDIUM'
-        exit-code: '0'  # Don't fail on vulnerabilities, just report
-        ignore-unfixed: true
-      continue-on-error: true
+      # 1. Trivy Container Vulnerability Scanning
+      - name: Run Trivy vulnerability scanner - Frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest"
+          format: "sarif"
+          output: "trivy-frontend-results.sarif"
+          severity: "CRITICAL,HIGH,MEDIUM"
+          exit-code: "0" # Don't fail on vulnerabilities, just report
+          ignore-unfixed: true
+        continue-on-error: true
 
-    # 2. Docker Scout Security Analysis
-    - name: Docker Scout CVEs - Frontend
-      uses: docker/scout-action@v1
-      with:
-        command: cves
-        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest'
-        sarif-file: 'scout-frontend-results.sarif'
-        summary: true
-      continue-on-error: true
+      - name: Run Trivy vulnerability scanner - Backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest"
+          format: "sarif"
+          output: "trivy-backend-results.sarif"
+          severity: "CRITICAL,HIGH,MEDIUM"
+          exit-code: "0" # Don't fail on vulnerabilities, just report
+          ignore-unfixed: true
+        continue-on-error: true
 
-    - name: Docker Scout CVEs - Backend
-      uses: docker/scout-action@v1
-      with:
-        command: cves
-        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest'
-        sarif-file: 'scout-backend-results.sarif'
-        summary: true
-      continue-on-error: true
+      # 2. Docker Scout Security Analysis
+      - name: Docker Scout CVEs - Frontend
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: "${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest"
+          sarif-file: "scout-frontend-results.sarif"
+          summary: true
+        continue-on-error: true
 
-    # 3. Grype Container Vulnerability Scanner (Alternative to Trivy)
-    - name: Run Grype vulnerability scanner - Frontend
-      uses: anchore/scan-action@v7
-      with:
-        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest'
-        fail-build: false
-        severity-cutoff: high
-      continue-on-error: true
+      - name: Docker Scout CVEs - Backend
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: "${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest"
+          sarif-file: "scout-backend-results.sarif"
+          summary: true
+        continue-on-error: true
 
-    - name: Run Grype vulnerability scanner - Backend
-      uses: anchore/scan-action@v7
-      with:
-        image: '${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest'
-        fail-build: false
-        severity-cutoff: high
-      continue-on-error: true
+      # 3. Grype Container Vulnerability Scanner (Alternative to Trivy)
+      - name: Run Grype vulnerability scanner - Frontend
+        uses: anchore/scan-action@v7
+        with:
+          image: "${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest"
+          fail-build: false
+          severity-cutoff: high
+        continue-on-error: true
 
-    # 4. Upload all container scan results (check if files exist first)
-    - name: Check and upload Trivy Frontend results
-      run: |
-        if [ -f "trivy-frontend-results.sarif" ]; then
-          echo "Trivy frontend SARIF found, uploading..."
-        else
-          echo "Trivy frontend SARIF not found, skipping upload"
-        fi
-      continue-on-error: true
+      - name: Run Grype vulnerability scanner - Backend
+        uses: anchore/scan-action@v7
+        with:
+          image: "${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest"
+          fail-build: false
+          severity-cutoff: high
+        continue-on-error: true
 
-    - name: Upload Trivy Frontend scan results
-      if: hashFiles('trivy-frontend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: 'trivy-frontend-results.sarif'
-        category: 'trivy-frontend'
-      continue-on-error: true
+      # 4. Upload all container scan results (check if files exist first)
+      - name: Check and upload Trivy Frontend results
+        run: |
+          if [ -f "trivy-frontend-results.sarif" ]; then
+            echo "Trivy frontend SARIF found, uploading..."
+          else
+            echo "Trivy frontend SARIF not found, skipping upload"
+          fi
+        continue-on-error: true
 
-    - name: Upload Trivy Backend scan results
-      if: hashFiles('trivy-backend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: 'trivy-backend-results.sarif'
-        category: 'trivy-backend'
-      continue-on-error: true
+      - name: Upload Trivy Frontend scan results
+        if: hashFiles('trivy-frontend-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "trivy-frontend-results.sarif"
+          category: "trivy-frontend"
+        continue-on-error: true
 
-    - name: Upload Docker Scout Frontend results
-      if: hashFiles('scout-frontend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: 'scout-frontend-results.sarif'
-        category: 'docker-scout-frontend'
-      continue-on-error: true
+      - name: Upload Trivy Backend scan results
+        if: hashFiles('trivy-backend-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "trivy-backend-results.sarif"
+          category: "trivy-backend"
+        continue-on-error: true
 
-    - name: Upload Docker Scout Backend results
-      if: hashFiles('scout-backend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: 'scout-backend-results.sarif'
-        category: 'docker-scout-backend'
-      continue-on-error: true
+      - name: Upload Docker Scout Frontend results
+        if: hashFiles('scout-frontend-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "scout-frontend-results.sarif"
+          category: "docker-scout-frontend"
+        continue-on-error: true
 
-    - name: Upload Grype Frontend results
-      if: hashFiles('grype-frontend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: 'grype-frontend-results.sarif'
-        category: 'grype-frontend'
-      continue-on-error: true
+      - name: Upload Docker Scout Backend results
+        if: hashFiles('scout-backend-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "scout-backend-results.sarif"
+          category: "docker-scout-backend"
+        continue-on-error: true
 
-    - name: Upload Grype Backend results
-      if: hashFiles('grype-backend-results.sarif') != ''
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: 'grype-backend-results.sarif'
-        category: 'grype-backend'
-      continue-on-error: true
+      - name: Upload Grype Frontend results
+        if: hashFiles('grype-frontend-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "grype-frontend-results.sarif"
+          category: "grype-frontend"
+        continue-on-error: true
+
+      - name: Upload Grype Backend results
+        if: hashFiles('grype-backend-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "grype-backend-results.sarif"
+          category: "grype-backend"
+        continue-on-error: true
