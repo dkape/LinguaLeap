@@ -92,10 +92,10 @@ jobs:
 
       # 2. Install dependencies (lock files should be pre-generated and committed)
       - name: Install frontend dependencies
-        run: npm ci --legacy-peer-deps --no-audit
+        run: npm ci --no-audit
 
       - name: Install backend dependencies
-        run: cd server && npm ci --legacy-peer-deps --no-audit
+        run: cd server && npm ci --no-audit
 
       - name: Run npm audit - Frontend
         run: npm audit --audit-level=moderate --production || true
@@ -194,7 +194,7 @@ jobs:
           node-version: "18"
 
       - name: Install frontend dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Run frontend linting
         run: npm run lint
@@ -273,7 +273,7 @@ jobs:
           node-version: "18"
 
       - name: Install backend dependencies
-        run: cd server && npm ci --legacy-peer-deps
+        run: cd server && npm ci
 
       - name: Test MongoDB connection
         env:

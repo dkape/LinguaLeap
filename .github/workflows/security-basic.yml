@@ -23,12 +23,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         # Remove cache to ensure clean install
@@ -227,7 +227,7 @@ jobs:
 
     # 7. Upload security results as artifacts (for private repositories)
     - name: Upload Security Results
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: basic-security-results
         path: |

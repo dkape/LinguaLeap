@@ -31,12 +31,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         # Note: cache disabled because we generate lock files dynamically
@@ -169,7 +169,7 @@ jobs:
 
     # 9. Upload all security results as artifacts (for private repositories)
     - name: Upload Comprehensive Security Results
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: comprehensive-security-results
         path: |
@@ -203,7 +203,7 @@ jobs:
         echo "Check the Actions tab for detailed logs and any failures." >> security-report.md
 
     - name: Upload Security Report as Artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
         name: security-report
         path: |
