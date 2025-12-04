@@ -15,3 +15,7 @@ sources:
 maintainers:
   - name: Daniel Kape
     email: daniel@kapeplus.de
+dependencies:
+  - name: mongodb
+    version: 13.x.x
+    repository: https://charts.bitnami.com/bitnami

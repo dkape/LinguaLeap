@@ -34,7 +34,7 @@ securityContext:
   runAsUser: 1001
   capabilities:
     drop:
-    - ALL
+      - ALL
   readOnlyRootFilesystem: false
 
 service:
@@ -54,7 +54,7 @@ ingress:
     traefik.ingress.kubernetes.io/router.tls: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: lingualeap.yourdomain.com
+    - host: lingualeap.fun
       paths:
         - path: /
           pathType: Prefix
@@ -65,7 +65,7 @@ ingress:
   tls:
     - secretName: lingualeap-tls
       hosts:
-        - lingualeap.yourdomain.com
+        - lingualeap.fun
 
 resources:
   frontend:
@@ -97,15 +97,15 @@ tolerations: []
 affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 100
-      podAffinityTerm:
-        labelSelector:
-          matchExpressions:
-          - key: app.kubernetes.io/name
-            operator: In
-            values:
-            - lingualeap
-        topologyKey: kubernetes.io/hostname
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - lingualeap
+          topologyKey: kubernetes.io/hostname
 
 # MongoDB configuration
 mongodb:
@@ -113,10 +113,9 @@ mongodb:
   auth:
     enabled: true
     rootUser: admin
-    rootPassword: "mongodb-root-password"
     username: lingualeap
-    password: "mongodb-lingualeap-password"
     database: lingualeap
+    existingSecret: lingualeap-secrets
   persistence:
     enabled: true
     size: 10Gi
@@ -132,17 +131,20 @@ mongodb:
 # Application configuration
 config:
   nodeEnv: production
-  jwtSecret: "your-super-secure-jwt-secret-key-change-this-in-production"
-  emailFrom: "noreply@lingualeap.yourdomain.com"
-  clientUrl: "https://lingualeap.yourdomain.com"
-  
+  emailFrom: "noreply@lingualeap.fun"
+  clientUrl: "https://lingualeap.fun"
+
   # SMTP configuration
   smtp:
-    host: "smtp.yourdomain.com"
+    host: "smtp.kapeplus.de"
     port: 587
     secure: true
-    user: "noreply@lingualeap.yourdomain.com"
-    password: "your-smtp-password"
+    user: "jarvis"
+
+# Secret Management
+externalSecret:
+  enabled: true
+  name: lingualeap-secrets
 
 # Monitoring
 monitoring:
