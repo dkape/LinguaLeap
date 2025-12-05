@@ -36,8 +36,8 @@ export default function TeacherDashboard() {
         const classes = classesRes.data.classes;
         const performance = performanceRes.data;
 
-        const totalStudents = classes.reduce((acc: number, cls: any) => acc + (cls.student_count || 0), 0);
-        const classesList = classes.map((c: any) => c.name).slice(0, 3); // Show first 3 classes
+        const totalStudents = classes.reduce((acc: number, cls: { student_count: number }) => acc + (cls.student_count || 0), 0);
+        const classesList = classes.map((c: { name: string }) => c.name).slice(0, 3); // Show first 3 classes
 
         setStats({
           activeClasses: classes.length,

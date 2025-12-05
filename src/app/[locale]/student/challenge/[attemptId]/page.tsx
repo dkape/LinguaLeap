@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslation } from "@/contexts/locale-context";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, CheckCircle, Clock, BookOpen, HelpCircle } from "lucide-react";
+import { Loader2, Clock, BookOpen, HelpCircle } from "lucide-react";
 import axios from 'axios';
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -87,14 +87,7 @@ export default function ChallengeAttemptPage() {
         }
     }, [attemptId, t, toast]);
 
-    const handleStartReading = async (itemId: string) => {
-        try {
-            await axios.post(`/challenges/attempts/${attemptId}/items/${itemId}/start-reading`);
-            // Update local state to reflect reading status if needed
-        } catch (error) {
-            console.error('Error starting reading:', error);
-        }
-    };
+
 
     const handleCompleteReading = async (itemId: string) => {
         setIsSubmitting(true);
