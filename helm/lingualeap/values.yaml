@@ -4,15 +4,15 @@ replicaCount:
   backend: 2
 
 image:
-  registry: docker.io
-  repository: danielkape
+  registry: ghcr.io
+  repository: dkape
   frontend:
     name: lingualeap-frontend
     tag: "latest"
   backend:
     name: lingualeap-backend
     tag: "latest"
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""

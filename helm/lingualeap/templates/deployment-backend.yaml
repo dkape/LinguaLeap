@@ -60,13 +60,25 @@ spec:
             - name: CLIENT_URL
               value: {{ .Values.config.clientUrl }}
             - name: SMTP_HOST
-              value: {{ .Values.config.smtp.host }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.name }}
+                  key: smtp-host
             - name: SMTP_PORT
-              value: "{{ .Values.config.smtp.port }}"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.name }}
+                  key: smtp-port
             - name: SMTP_SECURE
-              value: "{{ .Values.config.smtp.secure }}"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.name }}
+                  key: smtp-secure
             - name: SMTP_USER
-              value: {{ .Values.config.smtp.user }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.name }}
+                  key: smtp-user
             - name: SMTP_PASS
               valueFrom:
                 secretKeyRef:

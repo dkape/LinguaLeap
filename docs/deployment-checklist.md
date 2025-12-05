@@ -7,7 +7,7 @@
 - [ ] All dependencies installed
 - [ ] Package-lock.json files are in sync
 - [ ] Environment variables configured
-- [ ] Docker Hub account ready (danielkape)
+- [ ] GHCR access configured (dkape)
 
 ### 2. Local Development Testing
 - [ ] Docker development environment working
@@ -21,7 +21,7 @@
 
 ### 3. CI/CD Pipeline Setup
 - [ ] GitHub repository configured
-- [ ] Docker Hub credentials added to GitHub Secrets (`DOCKER_PASSWORD`)
+- [ ] GHCR credentials added to GitHub Secrets (`GITHUB_TOKEN` is used automatically)
 - [ ] CI/CD pipeline passing all tests
 - [ ] Docker images building and pushing successfully
 
@@ -67,20 +67,19 @@ ingress:
 config:
   clientUrl: "https://lingualeap.yourdomain.com"  # ✏️ Change this
   emailFrom: "noreply@lingualeap.yourdomain.com"  # ✏️ Change this
-  jwtSecret: "your-super-secure-jwt-secret-change-this"  # ✏️ Change this
-  
-  smtp:
-    host: "smtp.yourdomain.com"  # ✏️ Change this
-    user: "noreply@lingualeap.yourdomain.com"  # ✏️ Change this
-    password: "your-smtp-password"  # ✏️ Change this
 
-mongodb:
-  auth:
-    rootPassword: "secure-mongodb-root-password"  # ✏️ Change this
-    password: "secure-mongodb-lingualeap-password"  # ✏️ Change this
+# Secrets are managed via scripts/generate-k8s-secrets.sh
+# Do NOT commit secrets to values.yaml
 ```
 
-#### 2. Deploy to Kubernetes
+#### 2. Generate Secrets
+Run the secret generation script to create the necessary Kubernetes secrets:
+```bash
+./scripts/generate-k8s-secrets.sh
+```
+```
+
+#### 3. Deploy to Kubernetes
 ```bash
 # Deploy with Helm
 ./scripts/deploy-k8s.sh
@@ -92,7 +91,7 @@ helm install lingualeap ./helm/lingualeap \
   --values ./helm/lingualeap/values.yaml
 ```
 
-#### 3. Set up ArgoCD (Optional)
+#### 4. Set up ArgoCD (Optional)
 ```bash
 # Apply ArgoCD application
 kubectl apply -f argocd-application.yaml
