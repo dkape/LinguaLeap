@@ -35,16 +35,6 @@ export function Leaderboard() {
   const { t } = useTranslation();
   const { user } = useAuth();
 
-  useEffect(() => {
-    fetchStudentClasses();
-  }, [fetchStudentClasses]);
-
-  useEffect(() => {
-    if (selectedClassId) {
-      fetchLeaderboard(selectedClassId);
-    }
-  }, [selectedClassId, fetchLeaderboard]);
-
   const fetchStudentClasses = useCallback(async () => {
     try {
       const response = await axios.get('/classes/student/my-classes');
@@ -78,6 +68,18 @@ export function Leaderboard() {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchStudentClasses();
+  }, [fetchStudentClasses]);
+
+  useEffect(() => {
+    if (selectedClassId) {
+      fetchLeaderboard(selectedClassId);
+    }
+  }, [selectedClassId, fetchLeaderboard]);
+
+
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
