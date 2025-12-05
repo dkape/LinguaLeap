@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import { Trophy, Medal, Award, Clock, Target } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { useTranslation } from '@/contexts/locale-context';
 import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
@@ -31,21 +31,21 @@ export function Leaderboard() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+
   const { t } = useTranslation();
   const { user } = useAuth();
 
   useEffect(() => {
     fetchStudentClasses();
-  }, []);
+  }, [fetchStudentClasses]);
 
   useEffect(() => {
     if (selectedClassId) {
       fetchLeaderboard(selectedClassId);
     }
-  }, [selectedClassId]);
+  }, [selectedClassId, fetchLeaderboard]);
 
-  const fetchStudentClasses = async () => {
+  const fetchStudentClasses = useCallback(async () => {
     try {
       const response = await axios.get('/classes/student/my-classes');
       const studentClasses = response.data.classes.map((c: { _id: string; name: string; teacher?: { name: string } }) => ({
@@ -65,9 +65,9 @@ export function Leaderboard() {
       console.error('Error fetching student classes:', error);
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const fetchLeaderboard = async (classId: string) => {
+  const fetchLeaderboard = useCallback(async (classId: string) => {
     setIsLoading(true);
     try {
       const response = await axios.get(`/challenges/class/${classId}/leaderboard`);
@@ -77,7 +77,7 @@ export function Leaderboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
