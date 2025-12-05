@@ -19,22 +19,22 @@ kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f 
 
 # Prompt for secrets if not provided as environment variables
 if [ -z "$MONGODB_ROOT_PASSWORD" ]; then
-    read -s -p "Enter MongoDB Root Password: " MONGODB_ROOT_PASSWORD
+    read -p "Enter MongoDB Root Password: " MONGODB_ROOT_PASSWORD
     echo ""
 fi
 
 if [ -z "$MONGODB_PASSWORD" ]; then
-    read -s -p "Enter MongoDB User Password: " MONGODB_PASSWORD
+    read -p "Enter MongoDB User Password: " MONGODB_PASSWORD
     echo ""
 fi
 
 if [ -z "$JWT_SECRET" ]; then
-    read -s -p "Enter JWT Secret: " JWT_SECRET
+    read -p "Enter JWT Secret: " JWT_SECRET
     echo ""
 fi
 
 if [ -z "$GOOGLE_GENAI_API_KEY" ]; then
-    read -s -p "Enter Google GenAI API Key: " GOOGLE_GENAI_API_KEY
+    read -p "Enter Google GenAI API Key: " GOOGLE_GENAI_API_KEY
     echo ""
 fi
 
@@ -55,7 +55,7 @@ if [ -z "$SMTP_USER" ]; then
 fi
 
 if [ -z "$SMTP_PASSWORD" ]; then
-    read -s -p "Enter SMTP Password: " SMTP_PASSWORD
+    read -p "Enter SMTP Password: " SMTP_PASSWORD
     echo ""
 fi
 
