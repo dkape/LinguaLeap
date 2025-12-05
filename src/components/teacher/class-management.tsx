@@ -73,7 +73,7 @@ export function ClassManagement() {
         description: t('classManagement.errorCreate') // Using a generic error for loading too or add loadError key
       });
     }
-  }, [toast]);
+  }, [toast, t]);
 
   useEffect(() => {
     fetchClasses();

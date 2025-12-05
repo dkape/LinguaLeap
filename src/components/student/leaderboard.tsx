@@ -31,8 +31,7 @@ export function Leaderboard() {
   const [classes, setClasses] = useState<StudentClass[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'allTime'>('weekly');
-  const [statFilter, setStatFilter] = useState<'points' | 'challenges' | 'streak'>('points');
+  const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
   const { user } = useAuth();
 
@@ -49,7 +48,7 @@ export function Leaderboard() {
   const fetchStudentClasses = async () => {
     try {
       const response = await axios.get('/classes/student/my-classes');
-      const studentClasses = response.data.classes.map((c: any) => ({
+      const studentClasses = response.data.classes.map((c: { _id: string; name: string; teacher?: { name: string } }) => ({
         id: c._id,
         name: c.name,
         teacher_name: c.teacher?.name || ''
