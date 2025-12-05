@@ -14,7 +14,8 @@ image:
     tag: "latest"
   pullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: ghcr-secret
 nameOverride: ""
 fullnameOverride: ""
 

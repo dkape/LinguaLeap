@@ -17,6 +17,16 @@ fi
 # Ensure namespace exists
 kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
+# Copy ghcr-secret from default namespace if it exists
+if kubectl get secret ghcr-secret -n default &> /dev/null; then
+    echo "Copying ghcr-secret from default namespace..."
+    kubectl get secret ghcr-secret -n default -o yaml | \
+    sed "s/namespace: default/namespace: $NAMESPACE/" | \
+    kubectl apply -f -
+else
+    echo "Warning: ghcr-secret not found in default namespace. Image pulling might fail if using private registry."
+fi
+
 # Prompt for secrets if not provided as environment variables
 if [ -z "$MONGODB_ROOT_PASSWORD" ]; then
     read -p "Enter MongoDB Root Password: " MONGODB_ROOT_PASSWORD

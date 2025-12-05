@@ -73,7 +73,7 @@ config:
 ```
 
 #### 2. Generate Secrets
-Run the secret generation script to create the necessary Kubernetes secrets:
+Run the secret generation script to create the necessary Kubernetes secrets (this also attempts to copy `ghcr-secret` from the default namespace):
 ```bash
 ./scripts/generate-k8s-secrets.sh
 ```
