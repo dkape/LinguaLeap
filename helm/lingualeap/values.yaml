@@ -51,11 +51,9 @@ ingress:
   enabled: true
   className: "traefik"
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: lingualeap.fun
+    - host: lingualeap.marvin.lab
       paths:
         - path: /
           pathType: Prefix
@@ -63,10 +61,7 @@ ingress:
         - path: /api
           pathType: Prefix
           service: backend
-  tls:
-    - secretName: lingualeap-tls
-      hosts:
-        - lingualeap.fun
+  tls: []
 
 resources:
   frontend:
@@ -130,8 +125,8 @@ mongodb:
 # Application configuration
 config:
   nodeEnv: production
-  emailFrom: "noreply@lingualeap.fun"
-  clientUrl: "https://lingualeap.fun"
+  emailFrom: "noreply@lingualeap.marvin.lab"
+  clientUrl: "http://lingualeap.marvin.lab"
   # Default secrets for dev/demo - override these in production or use externalSecret
   jwtSecret: "dev-jwt-secret-please-change"
   googleGenaiApiKey: ""
