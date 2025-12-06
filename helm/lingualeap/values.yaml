@@ -115,12 +115,10 @@ mongodb:
     enabled: true
     rootUser: admin
     username: lingualeap
+    password: lingualeap_password
     database: lingualeap
-    existingSecret: lingualeap-secrets
   persistence:
-    enabled: true
-    size: 10Gi
-    storageClass: ""
+    enabled: false
   resources:
     limits:
       cpu: 500m
@@ -134,6 +132,9 @@ config:
   nodeEnv: production
   emailFrom: "noreply@lingualeap.fun"
   clientUrl: "https://lingualeap.fun"
+  # Default secrets for dev/demo - override these in production or use externalSecret
+  jwtSecret: "dev-jwt-secret-please-change"
+  googleGenaiApiKey: ""
 
   # SMTP configuration
   smtp:
@@ -141,10 +142,11 @@ config:
     port: 587
     secure: true
     user: "jarvis"
+    password: "smtp-password-placeholder"
 
 # Secret Management
 externalSecret:
-  enabled: true
+  enabled: false
   name: lingualeap-secrets
 
 # Monitoring
