@@ -114,7 +114,7 @@ mongodb:
   auth:
     enabled: true
     rootUser: admin
-    username: lingualeap
+    username: admin
     password: lingualeap_password
     database: lingualeap
   persistence:
