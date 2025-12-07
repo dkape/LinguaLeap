@@ -61,6 +61,14 @@ ingress:
         - path: /api
           pathType: Prefix
           service: backend
+    - host: lingualeap.fun
+      paths:
+        - path: /
+          pathType: Prefix
+          service: frontend
+        - path: /api
+          pathType: Prefix
+          service: backend
   tls: []
 
 resources:
