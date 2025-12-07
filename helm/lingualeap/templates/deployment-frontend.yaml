@@ -44,7 +44,7 @@ spec:
             - name: NODE_ENV
               value: {{ .Values.config.nodeEnv }}
             - name: NEXT_PUBLIC_API_URL
-              value: "{{ .Values.config.clientUrl }}/api"
+              value: "/api"
           {{- if .Values.healthCheck.enabled }}
           livenessProbe:
             httpGet:
