@@ -183,6 +183,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CACHE_KEY: ${{ needs.setup-env.outputs.cache-key }}
+      NEXT_PUBLIC_API_URL: "http://localhost:3001/api"
 
     steps:
       - name: Checkout code
