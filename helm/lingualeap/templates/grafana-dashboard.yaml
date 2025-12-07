@@ -334,7 +334,7 @@ data:
                 "uid": "${datasource}"
               },
               "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"${namespace}\", pod=~\"lingualeap-.*\", container!=\"\"}[5m])) by (pod)",
-              "legendFormat": "{{pod}}",
+              "legendFormat": "{{ "{{" }}pod}}",
               "refId": "A"
             }
           ],
@@ -425,7 +425,7 @@ data:
                 "uid": "${datasource}"
               },
               "expr": "sum(container_memory_working_set_bytes{namespace=\"${namespace}\", pod=~\"lingualeap-.*\", container!=\"\"}) by (pod)",
-              "legendFormat": "{{pod}}",
+              "legendFormat": "{{ "{{" }}pod}}",
               "refId": "A"
             }
           ],
@@ -529,7 +529,7 @@ data:
                 "uid": "${datasource}"
               },
               "expr": "sum(rate(traefik_service_requests_total{namespace=\"lingualeap\"}[5m])) by (service, code)",
-              "legendFormat": "{{service}} - {{code}}",
+              "legendFormat": "{{ "{{" }}service}} - {{ "{{" }}code}}",
               "refId": "A"
             }
           ],
@@ -620,7 +620,7 @@ data:
                 "uid": "${datasource}"
               },
               "expr": "hist_quantile(0.99, sum(rate(traefik_service_request_duration_seconds_bucket{namespace=\"lingualeap\"}[5m])) by (le, service))",
-              "legendFormat": "{{service}} P99",
+              "legendFormat": "{{ "{{" }}service}} P99",
               "refId": "A"
             }
           ],
