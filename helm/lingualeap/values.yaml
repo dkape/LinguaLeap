@@ -2,33 +2,27 @@
 replicaCount:
   frontend: 2
   backend: 2
-
 image:
   registry: ghcr.io
   repository: dkape
   frontend:
     name: lingualeap-frontend
-    tag: "latest"
+    tag: "v1.0.229"
   backend:
     name: lingualeap-backend
-    tag: "latest"
+    tag: "v1.0.229"
   pullPolicy: Always
-
 imagePullSecrets:
   - name: ghcr-secret
 nameOverride: ""
 fullnameOverride: ""
-
 serviceAccount:
   create: true
   annotations: {}
   name: ""
-
 podAnnotations: {}
-
 podSecurityContext:
   fsGroup: 1001
-
 securityContext:
   allowPrivilegeEscalation: false
   runAsNonRoot: true
@@ -37,7 +31,6 @@ securityContext:
     drop:
       - ALL
   readOnlyRootFilesystem: false
-
 service:
   type: ClusterIP
   frontend:
@@ -46,7 +39,6 @@ service:
   backend:
     port: 80
     targetPort: 3001
-
 ingress:
   enabled: true
   className: "traefik"
@@ -70,7 +62,6 @@ ingress:
           pathType: Prefix
           service: backend
   tls: []
-
 resources:
   frontend:
     limits:
@@ -86,18 +77,14 @@ resources:
     requests:
       cpu: 250m
       memory: 256Mi
-
 autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 10
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
@@ -110,7 +97,6 @@ affinity:
                 values:
                   - lingualeap
           topologyKey: kubernetes.io/hostname
-
 # MongoDB configuration
 mongodb:
   enabled: true
@@ -129,7 +115,6 @@ mongodb:
     requests:
       cpu: 250m
       memory: 256Mi
-
 # Application configuration
 config:
   nodeEnv: production
@@ -138,8 +123,7 @@ config:
   # Default secrets for dev/demo - override these in production or use externalSecret
   jwtSecret: "dev-jwt-secret-please-change"
   googleGenaiApiKey: ""
-  appVersion: "dev"
-
+  appVersion: "v1.0.229"
   # SMTP configuration
   smtp:
     host: "smtp.kapeplus.de"
@@ -147,12 +131,10 @@ config:
     secure: true
     user: "jarvis"
     password: "smtp-password-placeholder"
-
 # Secret Management
 externalSecret:
   enabled: false
   name: lingualeap-secrets
-
 # Monitoring
 monitoring:
   enabled: true
@@ -160,7 +142,6 @@ monitoring:
     enabled: true
     interval: 30s
     path: /metrics
-
 # Health checks
 healthCheck:
   enabled: true
