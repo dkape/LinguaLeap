@@ -1,8 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import Script from "next/script";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -27,7 +33,6 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0f1419" },
   ],
-  viewport: "width=device-width, initial-scale=1.0, viewport-fit=cover",
 };
 
 export default function RootLayout({
