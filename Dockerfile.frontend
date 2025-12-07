@@ -9,11 +9,11 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
 RUN npm config set registry https://registry.yarnpkg.com && \
-    if [ -f package-lock.json ]; then \
-      npm ci --network-timeout=600000; \
-    else \
-      npm install --network-timeout=600000 && npm install --package-lock-only --network-timeout=600000; \
-    fi
+  if [ -f package-lock.json ]; then \
+  npm ci --network-timeout=600000; \
+  else \
+  npm install --network-timeout=600000 && npm install --package-lock-only --network-timeout=600000; \
+  fi
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -27,6 +27,11 @@ RUN mkdir -p public
 # Build the application with network resilience
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+# Accept version argument and make it available at build time
+ARG NEXT_PUBLIC_APP_VERSION
+ENV NEXT_PUBLIC_APP_VERSION=$NEXT_PUBLIC_APP_VERSION
+
 RUN npm run build
 
 # Install production dependencies for runtime
@@ -34,11 +39,11 @@ FROM base AS prod-deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm config set registry https://registry.yarnpkg.com && \
-    if [ -f package-lock.json ]; then \
-      npm ci --omit=dev --network-timeout=600000; \
-    else \
-      npm install --omit=dev --network-timeout=600000; \
-    fi
+  if [ -f package-lock.json ]; then \
+  npm ci --omit=dev --network-timeout=600000; \
+  else \
+  npm install --omit=dev --network-timeout=600000; \
+  fi
 
 # Production image, copy all the files and run next
 FROM base AS runner

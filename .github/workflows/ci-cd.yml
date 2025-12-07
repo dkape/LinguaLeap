@@ -11,6 +11,7 @@ env:
   DOCKER_USERNAME: ${{ github.repository_owner }}
   IMAGE_NAME_FRONTEND: lingualeap-frontend
   IMAGE_NAME_BACKEND: lingualeap-backend
+  VERSION: "v1.0.${{ github.run_number }}"
 
 jobs:
   # Security scanning job - runs early to catch issues fast
@@ -370,7 +371,7 @@ jobs:
           push: true
           tags: |
             ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
-            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
           cache-from: |
             type=gha
             type=registry,ref=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:buildcache
@@ -379,6 +380,7 @@ jobs:
             NODE_VERSION=18
             BUILD_DATE=${{ github.event.repository.updated_at }}
             COMMIT_SHA=${{ github.sha }}
+            NEXT_PUBLIC_APP_VERSION=${{ env.VERSION }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -393,7 +395,7 @@ jobs:
           push: true
           tags: |
             ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest
-            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:${{ github.sha }}
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -540,40 +542,40 @@ jobs:
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
-  
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
-  
+
       - name: Update Helm values
         run: |
           # Use yq to safely update the values.yaml file
           # We update both frontend and backend tags to match the current commit SHA
-  
+
           # Install yq
           wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
-  
+
           # Update the file
-          yq -i '.image.frontend.tag = "${{ github.sha }}"' helm/lingualeap/values.yaml
-          yq -i '.image.backend.tag = "${{ github.sha }}"' helm/lingualeap/values.yaml
-  
-          echo "Updated values.yaml image tags to ${{ github.sha }}"
+          yq -i '.image.frontend.tag = "${{ env.VERSION }}"' helm/lingualeap/values.yaml
+          yq -i '.image.backend.tag = "${{ env.VERSION }}"' helm/lingualeap/values.yaml
+
+          echo "Updated values.yaml image tags to ${{ env.VERSION }}"
           cat helm/lingualeap/values.yaml | grep tag
-  
+
       - name: Commit and Push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-  
+
           git add helm/lingualeap/values.yaml
-  
+
           # Only commit if there are changes
           if git diff-index --quiet HEAD; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update image tags to ${{ github.sha }} [skip ci]"
+            git commit -m "chore: update image tags to ${{ env.VERSION }} [skip ci]"
             git push
           fi

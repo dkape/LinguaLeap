@@ -42,6 +42,11 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <LanguageSwitcher currentLocale={locale} />
         </div>
 
+        {/* Version indicator in bottom right */}
+        <div className="absolute bottom-2 right-4 z-50 text-xs text-muted-foreground opacity-50 pointer-events-none">
+          v{process.env.NEXT_PUBLIC_APP_VERSION || 'dev'}
+        </div>
+
         <div className="relative z-10">
           {children}
         </div>
