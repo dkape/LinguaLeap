@@ -45,6 +45,8 @@ spec:
               value: {{ .Values.config.nodeEnv }}
             - name: NEXT_PUBLIC_API_URL
               value: "/api"
+            - name: APP_VERSION
+              value: {{ .Values.config.appVersion | quote }}
           {{- if .Values.healthCheck.enabled }}
           livenessProbe:
             httpGet:

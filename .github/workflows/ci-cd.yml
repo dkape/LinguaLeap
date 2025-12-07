@@ -380,7 +380,6 @@ jobs:
             NODE_VERSION=18
             BUILD_DATE=${{ github.event.repository.updated_at }}
             COMMIT_SHA=${{ github.sha }}
-            NEXT_PUBLIC_APP_VERSION=${{ env.VERSION }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
@@ -561,6 +560,7 @@ jobs:
           # Update the file
           yq -i '.image.frontend.tag = "${{ env.VERSION }}"' helm/lingualeap/values.yaml
           yq -i '.image.backend.tag = "${{ env.VERSION }}"' helm/lingualeap/values.yaml
+          yq -i '.config.appVersion = "${{ env.VERSION }}"' helm/lingualeap/values.yaml
 
           echo "Updated values.yaml image tags to ${{ env.VERSION }}"
           cat helm/lingualeap/values.yaml | grep tag

@@ -44,7 +44,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
         {/* Version indicator in bottom right */}
         <div className="absolute bottom-2 right-4 z-50 text-xs text-muted-foreground opacity-50 pointer-events-none">
-          v{process.env.NEXT_PUBLIC_APP_VERSION || 'dev'}
+          v{process.env.APP_VERSION || 'dev'}
         </div>
 
         <div className="relative z-10">

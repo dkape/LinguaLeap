@@ -138,6 +138,7 @@ config:
   # Default secrets for dev/demo - override these in production or use externalSecret
   jwtSecret: "dev-jwt-secret-please-change"
   googleGenaiApiKey: ""
+  appVersion: "dev"
 
   # SMTP configuration
   smtp:

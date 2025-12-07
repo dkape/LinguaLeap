@@ -27,11 +27,6 @@ RUN mkdir -p public
 # Build the application with network resilience
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-
-# Accept version argument and make it available at build time
-ARG NEXT_PUBLIC_APP_VERSION
-ENV NEXT_PUBLIC_APP_VERSION=$NEXT_PUBLIC_APP_VERSION
-
 RUN npm run build
 
 # Install production dependencies for runtime
