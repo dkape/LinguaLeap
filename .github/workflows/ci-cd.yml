@@ -534,46 +534,46 @@ jobs:
           sarif_file: "grype-backend-results.sarif"
           category: "grype-backend"
         continue-on-error: true
-update-k8s-manifest:
-  needs: container-security-scan
-  runs-on: ubuntu-latest
-  if: github.ref == 'refs/heads/main'
-  permissions:
-    contents: write
-
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        ref: main
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Update Helm values
-      run: |
-        # Use yq to safely update the values.yaml file
-        # We update both frontend and backend tags to match the current commit SHA
-
-        # Install yq
-        wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
-
-        # Update the file
-        yq -i '.image.frontend.tag = "${{ github.sha }}"' helm/lingualeap/values.yaml
-        yq -i '.image.backend.tag = "${{ github.sha }}"' helm/lingualeap/values.yaml
-
-        echo "Updated values.yaml image tags to ${{ github.sha }}"
-        cat helm/lingualeap/values.yaml | grep tag
-
-    - name: Commit and Push changes
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-        git add helm/lingualeap/values.yaml
-
-        # Only commit if there are changes
-        if git diff-index --quiet HEAD; then
-          echo "No changes to commit"
-        else
-          git commit -m "chore: update image tags to ${{ github.sha }} [skip ci]"
-          git push
-        fi
+  update-k8s-manifest:
+    needs: container-security-scan
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Update Helm values
+        run: |
+          # Use yq to safely update the values.yaml file
+          # We update both frontend and backend tags to match the current commit SHA
+  
+          # Install yq
+          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+  
+          # Update the file
+          yq -i '.image.frontend.tag = "${{ github.sha }}"' helm/lingualeap/values.yaml
+          yq -i '.image.backend.tag = "${{ github.sha }}"' helm/lingualeap/values.yaml
+  
+          echo "Updated values.yaml image tags to ${{ github.sha }}"
+          cat helm/lingualeap/values.yaml | grep tag
+  
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+  
+          git add helm/lingualeap/values.yaml
+  
+          # Only commit if there are changes
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update image tags to ${{ github.sha }} [skip ci]"
+            git push
+          fi
