@@ -1,0 +1,119 @@
+# Dependabot configuration for automated dependency updates
+version: 2
+updates:
+  # Frontend dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "danielkape"
+    assignees:
+      - "danielkape"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "frontend"
+    # Security updates
+    allow:
+      - dependency-type: "all"
+    # Ignore specific packages if needed
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    # Group related updates
+    groups:
+      react-ecosystem:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      ui-components:
+        patterns:
+          - "@radix-ui/*"
+          - "lucide-react"
+      build-tools:
+        patterns:
+          - "next"
+          - "typescript"
+          - "eslint*"
+          - "tailwindcss*"
+
+  # Backend dependencies
+  - package-ecosystem: "npm"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "danielkape"
+    assignees:
+      - "danielkape"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "backend"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      express-ecosystem:
+        patterns:
+          - "express*"
+          - "cors"
+          - "body-parser"
+      database:
+        patterns:
+          - "mongoose*"
+          - "mongodb*"
+      security:
+        patterns:
+          - "bcrypt*"
+          - "jsonwebtoken"
+          - "helmet"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    reviewers:
+      - "danielkape"
+    assignees:
+      - "danielkape"
+    commit-message:
+      prefix: "docker"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+    reviewers:
+      - "danielkape"
+    assignees:
+      - "danielkape"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"

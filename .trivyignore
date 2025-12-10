@@ -1,0 +1,20 @@
+# Trivy ignore file for container vulnerability scanning
+
+# Ignore specific CVEs that are false positives or accepted risks
+# Format: CVE-YYYY-NNNN
+
+# Example: Ignore a specific CVE that doesn't apply to our use case
+# CVE-2023-12345
+
+# Ignore low severity vulnerabilities in base images that we can't control
+# These should be reviewed periodically and removed when fixes are available
+
+# Node.js base image vulnerabilities that are not exploitable in our context
+# (Review these regularly and remove when patches are available)
+
+# Alpine Linux vulnerabilities in development tools not used in production
+# (Only if using Alpine-based images)
+
+# Temporary ignores for vulnerabilities with no available fixes
+# TODO: Review and remove these when patches become available
+# CVE-2023-XXXXX  # Description of why this is temporarily ignored

@@ -1,0 +1,16 @@
+FROM node:25-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json* ./
+RUN npm install
+
+RUN mkdir -p /app/.next && chown -R node:node /app/.next
+
+# Switch to non-root user
+USER node
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

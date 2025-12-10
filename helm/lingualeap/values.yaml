@@ -1,0 +1,147 @@
+# Default values for lingualeap
+replicaCount:
+  frontend: 2
+  backend: 2
+image:
+  registry: ghcr.io
+  repository: dkape
+  frontend:
+    name: lingualeap-frontend
+    tag: "v1.0.230"
+  backend:
+    name: lingualeap-backend
+    tag: "v1.0.230"
+  pullPolicy: Always
+imagePullSecrets:
+  - name: ghcr-secret
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+podAnnotations: {}
+podSecurityContext:
+  fsGroup: 1001
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1001
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+service:
+  type: ClusterIP
+  frontend:
+    port: 80
+    targetPort: 3000
+  backend:
+    port: 80
+    targetPort: 3001
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: lingualeap.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: frontend
+        - path: /api
+          pathType: Prefix
+          service: backend
+  tls: []
+resources:
+  frontend:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  backend:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+nodeSelector: {}
+tolerations: []
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - lingualeap
+          topologyKey: kubernetes.io/hostname
+# MongoDB configuration
+mongodb:
+  enabled: true
+  auth:
+    enabled: true
+    rootUser: admin
+    username: admin
+    password: password_placeholder
+    database: lingualeap
+  persistence:
+    enabled: false
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+# Application configuration
+config:
+  nodeEnv: production
+  emailFrom: "noreply@lingualeap.local"
+  clientUrl: "http://lingualeap.local"
+  # Default secrets for dev - override these in production using ExternalSecret
+  jwtSecret: "change-me-in-production"
+  googleGenaiApiKey: ""
+  appVersion: "v1.0.230"
+  # SMTP configuration
+  smtp:
+    host: "mailhog"
+    port: 1025
+    secure: false
+    user: ""
+    password: ""
+# Secret Management
+externalSecret:
+  enabled: true
+  name: lingualeap-secrets
+# Monitoring
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    path: /metrics
+# Health checks
+healthCheck:
+  enabled: true
+  frontend:
+    path: /
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  backend:
+    path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10

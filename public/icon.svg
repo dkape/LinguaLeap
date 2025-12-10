@@ -1,0 +1,11 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="icon-gradient" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+<stop stop-color="#6366F1"/>
+<stop offset="1" stop-color="#A855F7"/>
+</linearGradient>
+</defs>
+<rect width="192" height="192" rx="48" fill="url(#icon-gradient)"/>
+<path d="M76 60H96V132H76V60Z" fill="white"/>
+<path d="M76 132H116V112H76V132Z" fill="white"/>
+</svg>

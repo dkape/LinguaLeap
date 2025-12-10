@@ -1,0 +1,22 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "lingualeap.fullname" . }}
+  labels:
+    {{- include "lingualeap.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - web
+  routes:
+  {{- range .Values.ingress.hosts }}
+  {{- $host := .host }}
+  {{- range .paths }}
+    - kind: Rule
+      match: Host(`{{ $host }}`) && PathPrefix(`{{ .path }}`)
+      services:
+        - name: {{ include "lingualeap.fullname" $ }}-{{ .service }}
+          port: {{ if eq .service "frontend" }}{{ $.Values.service.frontend.port }}{{ else }}{{ $.Values.service.backend.port }}{{ end }}
+  {{- end }}
+  {{- end }}
+{{- end }}

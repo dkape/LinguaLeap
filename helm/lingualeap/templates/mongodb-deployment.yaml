@@ -1,0 +1,48 @@
+{{- if .Values.mongodb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "lingualeap.fullname" . }}-mongodb
+  labels:
+    {{- include "lingualeap.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "lingualeap.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mongodb
+  template:
+    metadata:
+      labels:
+        {{- include "lingualeap.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:4.4.18
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.mongodb.auth.rootUser }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.mongodb.auth.password }}
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.mongodb.auth.database }}
+          resources:
+            {{- toYaml .Values.mongodb.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.mongodb.persistence.enabled }}
+            - name: data
+              mountPath: /data/db
+            {{- end }}
+      volumes:
+        {{- if .Values.mongodb.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "lingualeap.fullname" . }}-mongodb
+        {{- end }}
+{{- end }}
