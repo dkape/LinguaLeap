@@ -29,7 +29,10 @@ spec:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: {{ .Values.mongodb.auth.rootUser }}
             - name: MONGO_INITDB_ROOT_PASSWORD
-              value: {{ .Values.mongodb.auth.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lingualeap.secretName" . }}
+                  key: mongodb-root-password
             - name: MONGO_INITDB_DATABASE
               value: {{ .Values.mongodb.auth.database }}
           resources:
