@@ -40,7 +40,7 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await axios.post("/classes", values);
+      await axios.post("classes", values);
       toast({
         title: t('createClassForm.successTitle'),
         description: t('createClassForm.successDescription'),
