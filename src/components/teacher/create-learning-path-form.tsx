@@ -64,7 +64,7 @@ export function CreateLearningPathForm({ onSuccess }: CreateLearningPathFormProp
     setIsGenerating(true);
     setGeneratedPath(null);
     try {
-      const response = await axios.post("/learning-paths/generate", values);
+      const response = await axios.post("learning-paths/generate", values);
       setGeneratedPath(response.data);
       toast({ title: t('createLearningPathForm.successTitle'), description: t('createLearningPathForm.successDescription') });
     } catch {
@@ -76,7 +76,7 @@ export function CreateLearningPathForm({ onSuccess }: CreateLearningPathFormProp
   async function onSave() {
     setIsSaving(true);
     try {
-      await axios.post("/learning-paths", generatedPath);
+      await axios.post("learning-paths", generatedPath);
       toast({ title: t('createLearningPathForm.saveSuccessTitle'), description: t('createLearningPathForm.saveSuccessDescription') });
       setGeneratedPath(null);
       form.reset();
