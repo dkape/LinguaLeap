@@ -7,10 +7,10 @@ image:
   repository: dkape
   frontend:
     name: lingualeap-frontend
-    tag: "v1.0.230"
+    tag: "v1.0.273"
   backend:
     name: lingualeap-backend
-    tag: "v1.0.230"
+    tag: "v1.0.273"
   pullPolicy: Always
 imagePullSecrets:
   - name: ghcr-secret
@@ -115,7 +115,7 @@ config:
   # Default secrets for dev - override these in production using ExternalSecret
   jwtSecret: "change-me-in-production"
   googleGenaiApiKey: ""
-  appVersion: "v1.0.230"
+  appVersion: "v1.0.273"
   # SMTP configuration
   smtp:
     host: "mailhog"
