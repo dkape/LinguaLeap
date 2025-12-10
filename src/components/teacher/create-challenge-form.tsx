@@ -146,7 +146,7 @@ export function CreateChallengeForm() {
         setIsLoadingDetails(true);
         setFullEditingChallengeDetails(null);
         try {
-          const response = await axios.get(`/challenges/${editingChallenge._id}`);
+          const response = await axios.get(`challenges/${editingChallenge._id}`);
           setFullEditingChallengeDetails(response.data);
         } catch (error) {
           console.error('Error fetching challenge details:', error);
@@ -167,7 +167,7 @@ export function CreateChallengeForm() {
 
   const fetchClasses = async () => {
     try {
-      const response = await axios.get('/classes/teacher');
+      const response = await axios.get('classes/teacher');
       setClasses(response.data.classes);
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -176,7 +176,7 @@ export function CreateChallengeForm() {
 
   const fetchChallenges = async () => {
     try {
-      const response = await axios.get('/challenges/teacher');
+      const response = await axios.get('challenges/teacher');
       setExistingChallenges(response.data.challenges);
     } catch (error) {
       console.error('Error fetching challenges:', error);
@@ -214,7 +214,7 @@ export function CreateChallengeForm() {
     setIsSaving(true);
     try {
       const formValues = form.getValues();
-      await axios.post("/challenges", {
+      await axios.post("challenges", {
         title: challenge.title,
         description: challenge.description,
         topic: formValues.topic,
@@ -265,7 +265,7 @@ export function CreateChallengeForm() {
   const toggleChallengeStatus = async (challengeId: string) => {
     setIsTogglingStatus(challengeId);
     try {
-      const response = await axios.patch(`/challenges/${challengeId}/toggle-status`);
+      const response = await axios.patch(`challenges/${challengeId}/toggle-status`);
       setExistingChallenges((prev: ExistingChallenge[]) =>
         prev.map((c: ExistingChallenge) => c._id === challengeId ? { ...c, isActive: response.data.isActive } : c)
       );
