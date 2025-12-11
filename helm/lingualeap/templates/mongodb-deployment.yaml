@@ -46,18 +46,18 @@ spec:
             {{- if .Values.mongodb.persistence.enabled }}
             - name: data
               mountPath: /data/db
+            {{- end }}
             - name: init-mongo
               mountPath: /docker-entrypoint-initdb.d/init-mongo.sh
               subPath: init-mongo.sh
-            {{- end }}
       volumes:
         {{- if .Values.mongodb.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "lingualeap.fullname" . }}-mongodb
+        {{- end }}
         - name: init-mongo
           configMap:
             name: {{ include "lingualeap.fullname" . }}-mongodb-init
             defaultMode: 0755
-        {{- end }}
 {{- end }}

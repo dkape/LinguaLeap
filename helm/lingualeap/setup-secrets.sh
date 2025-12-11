@@ -61,7 +61,7 @@ kubectl create secret generic $SECRET_NAME \
     --from-literal=google-genai-api-key="$GOOGLE_GENAI_API_KEY" \
     --from-literal=admin-username="$ADMIN_USERNAME" \
     --from-literal=admin-password="$ADMIN_PASSWORD" \
-    --from-literal=mongodb-uri="mongodb://lingualeap:$MONGODB_PASSWORD_ENCODED@lingualeap-mongodb:27017/lingualeap" \
+    --from-literal=mongodb-uri="mongodb://lingualeap:$MONGODB_PASSWORD_ENCODED@lingualeap-mongodb:27017/lingualeap?authSource=lingualeap" \
     --dry-run=client -o yaml | kubectl apply -f -
 
 echo "Secret $SECRET_NAME created successfully in namespace $NAMESPACE"
