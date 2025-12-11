@@ -35,17 +35,29 @@ spec:
                   key: mongodb-root-password
             - name: MONGO_INITDB_DATABASE
               value: {{ .Values.mongodb.auth.database }}
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lingualeap.secretName" . }}
+                  key: mongodb-password
           resources:
             {{- toYaml .Values.mongodb.resources | nindent 12 }}
           volumeMounts:
             {{- if .Values.mongodb.persistence.enabled }}
             - name: data
               mountPath: /data/db
+            - name: init-mongo
+              mountPath: /docker-entrypoint-initdb.d/init-mongo.sh
+              subPath: init-mongo.sh
             {{- end }}
       volumes:
         {{- if .Values.mongodb.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "lingualeap.fullname" . }}-mongodb
+        - name: init-mongo
+          configMap:
+            name: {{ include "lingualeap.fullname" . }}-mongodb-init
+            defaultMode: 0755
         {{- end }}
 {{- end }}
