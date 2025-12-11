@@ -46,6 +46,15 @@ mongodb:
     password: "secure-mongodb-lingualeap-password"  # Change this!
 ```
 
+### 3. Generate Secrets
+We recommend using the provided script to securely generate secrets (including Admin credentials):
+```bash
+cd helm/lingualeap
+./setup-secrets.sh lingualeap
+```
+Follow the prompts to set MongoDB passwords, JWT Secret, SMTP credentials, and Admin User credentials.
+
+
 ### 3. Deploy with Helm
 ```bash
 # Add MongoDB Helm repository (if using external MongoDB)

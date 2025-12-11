@@ -74,9 +74,16 @@ npm install && cd server && npm install && cd ..
 
 ### System
 - Secure email verification
+- Admin Dashboard for user management
 - German/English language switching
 - Real-time progress tracking
 - Mobile-responsive design
+
+### Admin Access
+To access the admin dashboard:
+1. Ensure the admin user is seeded (via `ADMIN_USERNAME`/`ADMIN_PASSWORD` env vars).
+2. Log in with the admin credentials.
+3. Navigate to `/admin`.
 
 ## 🏗️ Built With
 

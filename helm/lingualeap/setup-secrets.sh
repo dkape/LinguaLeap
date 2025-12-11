@@ -23,8 +23,21 @@ read -s -p "Enter JWT Secret: " JWT_SECRET
 echo
 read -s -p "Enter SMTP Password: " SMTP_PASSWORD
 echo
+read -p "Enter SMTP Host (e.g., smtp.gmail.com): " SMTP_HOST
+echo
+read -p "Enter SMTP Port (e.g., 587): " SMTP_PORT
+echo
+read -p "Enter SMTP User: " SMTP_USER
+echo
+read -p "Enter SMTP Secure (true/false): " SMTP_SECURE
+echo
 read -s -p "Enter Google Gemini API Key: " GOOGLE_GENAI_API_KEY
 echo
+read -p "Enter Admin Username: " ADMIN_USERNAME
+echo
+read -s -p "Enter Admin Password: " ADMIN_PASSWORD
+echo
+
 
 # Create the secret
 kubectl create secret generic $SECRET_NAME \
@@ -33,7 +46,13 @@ kubectl create secret generic $SECRET_NAME \
     --from-literal=mongodb-password="$MONGODB_PASSWORD" \
     --from-literal=jwt-secret="$JWT_SECRET" \
     --from-literal=smtp-password="$SMTP_PASSWORD" \
+    --from-literal=smtp-host="$SMTP_HOST" \
+    --from-literal=smtp-port="$SMTP_PORT" \
+    --from-literal=smtp-user="$SMTP_USER" \
+    --from-literal=smtp-secure="$SMTP_SECURE" \
     --from-literal=google-genai-api-key="$GOOGLE_GENAI_API_KEY" \
+    --from-literal=admin-username="$ADMIN_USERNAME" \
+    --from-literal=admin-password="$ADMIN_PASSWORD" \
     --from-literal=mongodb-uri="mongodb://lingualeap:$MONGODB_PASSWORD@lingualeap-mongodb:27017/lingualeap" \
     --dry-run=client -o yaml | kubectl apply -f -
 

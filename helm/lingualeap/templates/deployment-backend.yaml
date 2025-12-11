@@ -89,6 +89,16 @@ spec:
                 secretKeyRef:
                   name: {{ include "lingualeap.secretName" . }}
                   key: google-genai-api-key
+            - name: ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lingualeap.secretName" . }}
+                  key: admin-username
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lingualeap.secretName" . }}
+                  key: admin-password
           {{- if .Values.healthCheck.enabled }}
           livenessProbe:
             httpGet:

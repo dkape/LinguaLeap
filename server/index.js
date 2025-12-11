@@ -10,6 +10,8 @@ const classRoutes = require('./routes/classes');
 const challengeRoutes = require('./routes/challenges');
 const learningPathRoutes = require('./routes/learning-paths');
 const analyticsRoutes = require('./routes/analytics');
+const adminRoutes = require('./routes/admin');
+const seedAdmin = require('./scripts/seedAdmin');
 
 const app = express();
 app.set('trust proxy', 1); // Trust reverse proxy
@@ -30,6 +32,7 @@ app.use('/api/classes', classRoutes);
 app.use('/api/challenges', challengeRoutes);
 app.use('/api/learning-paths', learningPathRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/achievements', require('./routes/achievements'));
 
 app.get('/', (req, res) => {
@@ -47,6 +50,7 @@ app.get('/health', (req, res) => {
 const startServer = async () => {
   try {
     await connectDB();
+    await seedAdmin();
     app.listen(port, () => {
       console.log(`Server listening on port ${port}`);
     });
