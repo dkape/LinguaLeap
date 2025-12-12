@@ -169,7 +169,7 @@ jobs:
 
     # 9. Upload all security results as artifacts (for private repositories)
     - name: Upload Comprehensive Security Results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: comprehensive-security-results
         path: |
@@ -203,7 +203,7 @@ jobs:
         echo "Check the Actions tab for detailed logs and any failures." >> security-report.md
 
     - name: Upload Security Report as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: security-report
         path: |
