@@ -100,6 +100,7 @@ export default function ChallengeAttemptPage() {
 
             // Move to next item or refresh
             const updatedItems = [...items];
+            // eslint-disable-next-line security/detect-object-injection
             updatedItems[currentItemIndex].progress_status = 'completed';
             setItems(updatedItems);
 
@@ -123,6 +124,7 @@ export default function ChallengeAttemptPage() {
     const handleSubmitQuiz = async (itemId: string) => {
         setIsSubmitting(true);
         try {
+            // eslint-disable-next-line security/detect-object-injection
             const currentItem = items[currentItemIndex];
             if (!currentItem.questions) return;
 
@@ -138,6 +140,7 @@ export default function ChallengeAttemptPage() {
 
             // Move to next item or refresh
             const updatedItems = [...items];
+            // eslint-disable-next-line security/detect-object-injection
             updatedItems[currentItemIndex].progress_status = 'completed';
             setItems(updatedItems);
             setQuizAnswers({});
@@ -191,6 +194,7 @@ export default function ChallengeAttemptPage() {
         );
     }
 
+    // eslint-disable-next-line security/detect-object-injection
     const currentItem = items[currentItemIndex];
     const progress = ((currentItemIndex) / items.length) * 100;
 

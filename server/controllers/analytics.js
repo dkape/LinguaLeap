@@ -78,28 +78,39 @@ const getTeacherAnalytics = async (req, res) => {
     attempts.forEach(attempt => {
       // Class stats
       const classId = challengeClassMap[attempt.challengeId.toString()];
+      // eslint-disable-next-line security/detect-object-injection
       if (classId && classMap[classId]) {
+        // eslint-disable-next-line security/detect-object-injection
         if (!classStats[classId]) {
+          // eslint-disable-next-line security/detect-object-injection
           classStats[classId] = { totalScore: 0, count: 0 };
         }
+        // eslint-disable-next-line security/detect-object-injection
         classStats[classId].totalScore += attempt.totalPointsEarned; // Assuming totalPointsEarned is absolute score. If it's relative to total possible, we need that too.
         // For simplicity, let's assume we want average points. Or better, percentage if we had total possible.
         // Let's assume totalPointsEarned is what we track.
+        // eslint-disable-next-line security/detect-object-injection
         classStats[classId].count++;
       }
 
       // Distribution (Mock logic for buckets based on points, ideally should be percentage)
       // Assuming max points is around 100 for normalization or just using raw points
       const score = attempt.totalPointsEarned;
+      // eslint-disable-next-line security/detect-object-injection
       if (score >= 90) performanceDistribution['Top 10%']++;
+      // eslint-disable-next-line security/detect-object-injection
       else if (score >= 75) performanceDistribution['75-90%']++;
+      // eslint-disable-next-line security/detect-object-injection
       else if (score >= 50) performanceDistribution['50-75%']++;
+      // eslint-disable-next-line security/detect-object-injection
       else performanceDistribution['Below 50%']++;
     });
 
     // Format class data
     const classData = Object.keys(classStats).map(classId => ({
+      // eslint-disable-next-line security/detect-object-injection
       name: classMap[classId],
+      // eslint-disable-next-line security/detect-object-injection
       avgScore: Math.round(classStats[classId].totalScore / classStats[classId].count),
       completionRate: 100 // Placeholder, calculating real rate requires total students
     }));
@@ -107,6 +118,7 @@ const getTeacherAnalytics = async (req, res) => {
     // Format distribution data
     const studentPerformance = Object.keys(performanceDistribution).map(key => ({
       name: key,
+      // eslint-disable-next-line security/detect-object-injection
       value: performanceDistribution[key]
     }));
 

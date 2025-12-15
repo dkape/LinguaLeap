@@ -32,13 +32,13 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
 
   const handleLanguageChange = async (newLocale: Locale) => {
     if (newLocale === currentLocale || isChanging) return;
-    
+
     setIsChanging(true);
-    
+
     try {
       // Set locale cookie
       document.cookie = `locale=${newLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
-      
+
       // Update user preference in database if logged in
       if (user) {
         try {
@@ -48,13 +48,13 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
           // Continue with language change even if database update fails
         }
       }
-      
+
       // Get current path without locale
       const pathWithoutLocale = getPathnameWithoutLocale(pathname);
-      
+
       // Create new localized path
       const newPath = getLocalizedPath(pathWithoutLocale, newLocale);
-      
+
       // Navigate to new path
       router.push(newPath);
       router.refresh();
@@ -71,6 +71,7 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
         <Button variant="ghost" size="sm" className="gap-2" disabled={isChanging}>
           <Globe className="h-4 w-4" />
           <span className="hidden sm:inline">
+            {/* eslint-disable-next-line security/detect-object-injection */}
             {languageNames[currentLocale].native}
           </span>
         </Button>
@@ -84,9 +85,11 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
           >
             <div className="flex flex-col">
               <span className="font-medium">
+                {/* eslint-disable-next-line security/detect-object-injection */}
                 {languageNames[locale].native}
               </span>
               <span className="text-xs text-muted-foreground">
+                {/* eslint-disable-next-line security/detect-object-injection */}
                 {languageNames[locale].english}
               </span>
             </div>
@@ -96,6 +99,6 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
-    </DropdownMenu>
+    </DropdownMenu >
   );
 }

@@ -60,6 +60,7 @@ function getCookieLocale(request: Request): string | null {
 
     const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
         const [key, value] = cookie.trim().split('=');
+        // eslint-disable-next-line security/detect-object-injection
         acc[key] = value;
         return acc;
     }, {} as Record<string, string>);

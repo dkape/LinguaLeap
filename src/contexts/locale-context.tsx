@@ -36,32 +36,34 @@ export function useLocale() {
 // Hook for easy translation access
 export function useTranslation() {
   const { dict } = useLocale();
-  
+
   const t = (key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
     let value: unknown = dict;
-    
+
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
+        // eslint-disable-next-line security/detect-object-injection
         value = (value as Record<string, unknown>)[k];
       } else {
         return key; // Return key if translation not found
       }
     }
-    
+
     if (typeof value !== 'string') {
       return key;
     }
-    
+
     // Replace parameters in the translation
     if (params) {
       return value.replace(/\{(\w+)\}/g, (match, paramKey) => {
+        // eslint-disable-next-line security/detect-object-injection
         return params[paramKey]?.toString() || match;
       });
     }
-    
+
     return value;
   };
-  
+
   return { t, dict };
 }

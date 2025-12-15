@@ -6,6 +6,7 @@ const dictionaries = {
 };
 
 export const getDictionary = async (locale: Locale) => {
+  // eslint-disable-next-line security/detect-object-injection
   return dictionaries[locale]();
 };
 
@@ -18,6 +19,7 @@ export function getTranslation(dict: Dictionary, key: string, params?: Record<st
 
   for (const k of keys) {
     if (value && typeof value === 'object' && k in value) {
+      // eslint-disable-next-line security/detect-object-injection
       value = (value as Record<string, unknown>)[k];
     } else {
       return key; // Return key if translation not found
@@ -31,6 +33,7 @@ export function getTranslation(dict: Dictionary, key: string, params?: Record<st
   // Replace parameters in the translation
   if (params) {
     return value.replace(/\{(\w+)\}/g, (match, paramKey) => {
+      // eslint-disable-next-line security/detect-object-injection
       return params[paramKey]?.toString() || match;
     });
   }

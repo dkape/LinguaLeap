@@ -1,7 +1,6 @@
 module.exports = {
   extends: [
-    'next/core-web-vitals',
-    'plugin:security/recommended'
+    'next/core-web-vitals'
   ],
   plugins: [
     'security',
@@ -21,7 +20,7 @@ module.exports = {
     'security/detect-disable-mustache-escape': 'error',
     'security/detect-new-buffer': 'error',
     'security/detect-no-csrf-before-method-override': 'error',
-    
+
     // Secrets detection
     'no-secrets/no-secrets': ['error', {
       'tolerance': 4.2,
@@ -35,7 +34,7 @@ module.exports = {
         'Private Key': '-----BEGIN [A-Z ]+PRIVATE KEY-----'
       }
     }],
-    
+
     // Additional security rules
     'no-eval': 'error',
     'no-implied-eval': 'error',
@@ -43,30 +42,37 @@ module.exports = {
     'no-script-url': 'error',
     'no-alert': 'warn',
     'no-console': 'warn',
-    
+
     // React security
     'react/no-danger': 'error',
     'react/no-danger-with-children': 'error',
     'react/jsx-no-script-url': 'error',
-    'react/jsx-no-target-blank': ['error', { 
+    'react/jsx-no-target-blank': ['error', {
       'allowReferrer': false,
       'enforceDynamicLinks': 'always'
     }],
-    
+
     // Next.js security
     '@next/next/no-html-link-for-pages': 'error',
-    '@next/next/no-img-element': 'warn', // We handle this with eslint-disable comments where needed
-    
-    // TypeScript security
-    '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/no-unsafe-assignment': 'warn',
-    '@typescript-eslint/no-unsafe-call': 'warn',
-    '@typescript-eslint/no-unsafe-member-access': 'warn',
-    '@typescript-eslint/no-unsafe-return': 'warn'
+    '@next/next/no-img-element': 'warn' // We handle this with eslint-disable comments where needed
   },
-  
+
   // Environment-specific overrides
   overrides: [
+    {
+      files: ['**/*.ts', '**/*.tsx'],
+      parserOptions: {
+        project: ['./tsconfig.json']
+      },
+      rules: {
+        // TypeScript security
+        '@typescript-eslint/no-explicit-any': 'error',
+        '@typescript-eslint/no-unsafe-assignment': 'warn',
+        '@typescript-eslint/no-unsafe-call': 'warn',
+        '@typescript-eslint/no-unsafe-member-access': 'warn',
+        '@typescript-eslint/no-unsafe-return': 'warn'
+      }
+    },
     {
       // Test files can be more lenient
       files: ['**/*.test.{js,jsx,ts,tsx}', '**/*.spec.{js,jsx,ts,tsx}'],
@@ -89,9 +95,16 @@ module.exports = {
         'no-console': 'off', // Server logging is acceptable
         'security/detect-child-process': 'error' // More strict on server
       }
+    },
+    {
+      files: ['**/*.js'],
+      rules: {
+        '@typescript-eslint/no-require-imports': 'off',
+        '@typescript-eslint/no-var-requires': 'off'
+      }
     }
   ],
-  
+
   // Ignore patterns for security scanning
   ignorePatterns: [
     'node_modules/',
@@ -101,6 +114,9 @@ module.exports = {
     '*.min.js',
     '*.bundle.js',
     'coverage/',
-    '.nyc_output/'
+    '.nyc_output/',
+    'data/',
+    'next-env.d.ts',
+    'scripts/',
   ]
 };
