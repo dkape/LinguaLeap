@@ -143,7 +143,8 @@
     "previousSlide": "Previous slide",
     "nextSlide": "Next slide",
     "close": "Close",
-    "toggleSidebar": "Toggle Sidebar"
+    "toggleSidebar": "Toggle Sidebar",
+    "noResults": "No results found"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -407,7 +408,11 @@
   "teacher": {
     "analytics": {
       "title": "Analytics",
+      "description": "Analyze student performance.",
       "classAverageScores": "Class Average Scores",
+      "classAverageScoresDesc": "Average scores per class.",
+      "studentPerformance": "Student Performance",
+      "studentPerformanceDesc": "Detailed student performance metrics.",
       "studentPerformanceDistribution": "Student Performance Distribution"
     },
     "challenges": {
@@ -445,43 +450,53 @@
       "description": "Manage your learning paths here.",
       "createButton": "Create New Learning Path"
     },
-    "settings": {
-      "title": "Settings",
-      "description": "Manage your settings here.",
-      "profileCardTitle": "Profile",
-      "passwordCardTitle": "Password",
-      "profileCardDescription": "Update your profile information.",
-      "passwordCardDescription": "Change your password.",
-      "nameLabel": "Name",
-      "emailLabel": "Email",
-      "currentPasswordLabel": "Current Password",
-      "newPasswordLabel": "New Password",
-      "confirmNewPasswordLabel": "Confirm New Password",
-      "saveButton": "Save Changes",
-      "changePasswordButton": "Change Password"
-    }
+    "title": "Settings",
+    "description": "Manage your settings here.",
+    "profile": "Profile",
+    "profileDesc": "Manage your personal information.",
+    "password": "Password",
+    "passwordDesc": "Change your password.",
+    "profileCardTitle": "Profile",
+    "passwordCardTitle": "Password",
+    "profileCardDescription": "Update your profile information.",
+    "passwordCardDescription": "Change your password.",
+    "name": "Name",
+    "email": "Email",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "currentPassword": "Current Password",
+    "currentPasswordLabel": "Current Password",
+    "newPassword": "New Password",
+    "newPasswordLabel": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "confirmNewPasswordLabel": "Confirm New Password",
+    "saveChanges": "Save Changes",
+    "saveButton": "Save Changes",
+    "changePassword": "Change Password",
+    "changePasswordButton": "Change Password"
+  }
+},
+"student": {
+  "progress": {
+    "title": "Student Progress"
   },
-  "student": {
-    "progress": {
-      "title": "Student Progress"
-    },
-    "achievements": {
-      "title": "My Achievements",
-      "description": "Collect badges and celebrate your milestones.",
-      "items": {
-        "firstLogin": {
-          "title": "First Steps",
-          "description": "Logged in for the first time."
-        },
-        "completed5": {
-          "title": "High Five",
-          "description": "Completed 5 challenges."
-        },
-        "perfectScore": {
-          "title": "Perfectionist",
-          "description": "Achieved 100% score in a challenge."
-        }
+  "achievements": {
+    "title": "My Achievements",
+    "description": "Collect badges and celebrate your milestones.",
+    "items": {
+      "firstLogin": {
+        "title": "First Steps",
+        "description": "Logged in for the first time."
+      },
+      "completed5": {
+        "title": "High Five",
+        "description": "Completed 5 challenges."
+      },
+      "perfectScore": {
+        "title": "Perfectionist",
+        "description": "Achieved 100% score in a challenge."
       }
     }
   }
+}
 }
