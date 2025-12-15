@@ -474,29 +474,28 @@
     "saveButton": "Save Changes",
     "changePassword": "Change Password",
     "changePasswordButton": "Change Password"
-  }
-},
-"student": {
-  "progress": {
-    "title": "Student Progress"
   },
-  "achievements": {
-    "title": "My Achievements",
-    "description": "Collect badges and celebrate your milestones.",
-    "items": {
-      "firstLogin": {
-        "title": "First Steps",
-        "description": "Logged in for the first time."
-      },
-      "completed5": {
-        "title": "High Five",
-        "description": "Completed 5 challenges."
-      },
-      "perfectScore": {
-        "title": "Perfectionist",
-        "description": "Achieved 100% score in a challenge."
+  "student": {
+    "progress": {
+      "title": "Student Progress"
+    },
+    "achievements": {
+      "title": "My Achievements",
+      "description": "Collect badges and celebrate your milestones.",
+      "items": {
+        "firstLogin": {
+          "title": "First Steps",
+          "description": "Logged in for the first time."
+        },
+        "completed5": {
+          "title": "High Five",
+          "description": "Completed 5 challenges."
+        },
+        "perfectScore": {
+          "title": "Perfectionist",
+          "description": "Achieved 100% score in a challenge."
+        }
       }
     }
   }
-}
 }

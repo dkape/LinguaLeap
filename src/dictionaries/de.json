@@ -474,29 +474,28 @@
     "saveButton": "Änderungen speichern",
     "changePassword": "Passwort ändern",
     "changePasswordButton": "Passwort ändern"
-  }
-},
-"student": {
-  "progress": {
-    "title": "Schülerfortschritt"
   },
-  "achievements": {
-    "title": "Meine Erfolge",
-    "description": "Sammle Abzeichen und feiere deine Meilensteine.",
-    "items": {
-      "firstLogin": {
-        "title": "Erste Schritte",
-        "description": "Zum ersten Mal angemeldet."
-      },
-      "completed5": {
-        "title": "High Five",
-        "description": "5 Herausforderungen abgeschlossen."
-      },
-      "perfectScore": {
-        "title": "Perfektionist",
-        "description": "100% Punktzahl in einer Herausforderung erreicht."
+  "student": {
+    "progress": {
+      "title": "Schülerfortschritt"
+    },
+    "achievements": {
+      "title": "Meine Erfolge",
+      "description": "Sammle Abzeichen und feiere deine Meilensteine.",
+      "items": {
+        "firstLogin": {
+          "title": "Erste Schritte",
+          "description": "Zum ersten Mal angemeldet."
+        },
+        "completed5": {
+          "title": "High Five",
+          "description": "5 Herausforderungen abgeschlossen."
+        },
+        "perfectScore": {
+          "title": "Perfektionist",
+          "description": "100% Punktzahl in einer Herausforderung erreicht."
+        }
       }
     }
   }
-}
 }
