@@ -119,7 +119,6 @@ jobs:
             p/typescript
             p/react
             p/nodejs
-          sarif: true
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN || '' }}
         continue-on-error: true
