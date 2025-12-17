@@ -33,7 +33,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "18"
+          node-version: "20"
           # Note: cache disabled because we generate lock files dynamically
 
       # 1. Secrets Detection with TruffleHog
@@ -192,7 +192,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install frontend dependencies
         run: npm ci
@@ -271,7 +271,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install backend dependencies
         run: cd server && npm ci
@@ -366,7 +366,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile.frontend
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: |
             ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
@@ -389,7 +389,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile.backend
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: |
             ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME_BACKEND }}:latest
