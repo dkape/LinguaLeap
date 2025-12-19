@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const mongoose = require('mongoose');
+const transporter = require('../config/mailer');
 
 const getUsers = async (req, res) => {
     try {
@@ -47,4 +49,27 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, updateUser, deleteUser };
+const getSystemStatus = async (req, res) => {
+    try {
+        const status = {
+            backend: 'connected',
+            database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+            smtp: 'disconnected'
+        };
+
+        try {
+            await transporter.verify();
+            status.smtp = 'connected';
+        } catch (error) {
+            console.error('SMTP verify error:', error);
+            status.smtpError = error.message;
+        }
+
+        res.status(200).json(status);
+    } catch (error) {
+        console.error('System status error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+module.exports = { getUsers, updateUser, deleteUser, getSystemStatus };

@@ -5,13 +5,15 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { User } from '@/lib/types';
-import { Loader2, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, Trash2, CheckCircle, XCircle, Server, Database, Mail } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AdminPage() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const [users, setUsers] = useState<User[]>([]);
     const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+    const [systemStatus, setSystemStatus] = useState<any>(null);
 
     useEffect(() => {
         if (!loading && (!user || user.role !== 'admin')) {
@@ -21,6 +23,7 @@ export default function AdminPage() {
 
         if (user?.role === 'admin') {
             fetchUsers();
+            fetchStatus();
         }
     }, [user, loading, router]);
 
@@ -33,6 +36,15 @@ export default function AdminPage() {
             console.error('Failed to fetch users', error);
         } finally {
             setIsLoadingUsers(false);
+        }
+    };
+
+    const fetchStatus = async () => {
+        try {
+            const response = await axios.get('/admin/status');
+            setSystemStatus(response.data);
+        } catch (error) {
+            console.error('Failed to fetch system status', error);
         }
     };
 
@@ -72,6 +84,58 @@ export default function AdminPage() {
         <div className="container mx-auto py-10">
             <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
 
+            {/* System Status Tiles */}
+            <div className="grid gap-4 md:grid-cols-3 mb-6">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Backend</CardTitle>
+                        <Server className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold capitalize">{systemStatus?.backend || 'Unknown'}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {systemStatus?.backend === 'connected' ? (
+                                <span className="text-green-500 flex items-center gap-1"><CheckCircle size={12} /> Operational</span>
+                            ) : (
+                                <span className="text-red-500 flex items-center gap-1"><XCircle size={12} /> Issues Detected</span>
+                            )}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Database</CardTitle>
+                        <Database className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold capitalize">{systemStatus?.database || 'Unknown'}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {systemStatus?.database === 'connected' ? (
+                                <span className="text-green-500 flex items-center gap-1"><CheckCircle size={12} /> Operational</span>
+                            ) : (
+                                <span className="text-red-500 flex items-center gap-1"><XCircle size={12} /> Disconnected</span>
+                            )}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">SMTP</CardTitle>
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold capitalize">{systemStatus?.smtp || 'Unknown'}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {systemStatus?.smtp === 'connected' ? (
+                                <span className="text-green-500 flex items-center gap-1"><CheckCircle size={12} /> Operational</span>
+                            ) : (
+                                <span className="text-red-500 flex items-center gap-1"><XCircle size={12} /> {systemStatus?.smtpError || 'Connection Failed'}</span>
+                            )}
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="p-6 border-b">
                     <h2 className="text-xl font-semibold">User Management</h2>
@@ -101,8 +165,8 @@ export default function AdminPage() {
                                         <td className="p-4">{u.email}</td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 rounded text-xs font-semibold ${u.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                                                    u.role === 'teacher' ? 'bg-blue-100 text-blue-800' :
-                                                        'bg-green-100 text-green-800'
+                                                u.role === 'teacher' ? 'bg-blue-100 text-blue-800' :
+                                                    'bg-green-100 text-green-800'
                                                 }`}>
                                                 {u.role.toUpperCase()}
                                             </span>

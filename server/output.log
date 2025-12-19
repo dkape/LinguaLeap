@@ -1,0 +1,34 @@
+Database connection error: MongooseServerSelectionError: getaddrinfo EAI_AGAIN mongodb
+    at _handleConnectionErrors (/home/suadmin/workspaces/LinguaLeap/node_modules/mongoose/lib/connection.js:1169:11)
+    at NativeConnection.openUri (/home/suadmin/workspaces/LinguaLeap/node_modules/mongoose/lib/connection.js:1100:11)
+    at async connectDB (/home/suadmin/workspaces/LinguaLeap/server/config/database.js:5:18)
+    at async startServer (/home/suadmin/workspaces/LinguaLeap/server/index.js:52:5) {
+  errorLabelSet: Set(0) {},
+  reason: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) { 'mongodb:27017' => [ServerDescription] },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    setName: null,
+    maxElectionId: null,
+    maxSetVersion: null,
+    commonWireVersion: 0,
+    logicalSessionTimeoutMinutes: null
+  },
+  code: undefined,
+  cause: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) { 'mongodb:27017' => [ServerDescription] },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    setName: null,
+    maxElectionId: null,
+    maxSetVersion: null,
+    commonWireVersion: 0,
+    logicalSessionTimeoutMinutes: null
+  }
+}
