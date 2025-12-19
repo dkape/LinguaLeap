@@ -25,7 +25,7 @@ const signup = async (req, res) => {
     }
 
     const uid = Date.now().toString();
-    
+
     // Generate email verification token
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
     const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
@@ -45,7 +45,7 @@ const signup = async (req, res) => {
 
     // Send verification email
     const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${emailVerificationToken}`;
-    
+
     const mailOptions = {
       from: process.env.EMAIL_FROM,
       to: email,
@@ -69,7 +69,7 @@ const signup = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'Registration successful! Please check your email to verify your account.',
       email: email
     });
@@ -97,10 +97,16 @@ const login = async (req, res) => {
 
     // Check if email is verified
     if (!user.isEmailVerified) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: 'Please verify your email address before logging in. Check your inbox for the verification email.',
         emailVerificationRequired: true
       });
+    }
+
+
+    // Force admin role for suadmin
+    if (user.email === 'suadmin@lingualeap.fun') {
+      user.role = 'admin';
     }
 
     const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -185,7 +191,7 @@ const resendVerification = async (req, res) => {
 
     // Send verification email
     const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=${emailVerificationToken}`;
-    
+
     const mailOptions = {
       from: process.env.EMAIL_FROM,
       to: email,
@@ -244,6 +250,11 @@ const me = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Force admin role for suadmin
+    if (user.email === 'suadmin@lingualeap.fun') {
+      user.role = 'admin';
     }
 
     const userInfo = {
