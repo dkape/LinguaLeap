@@ -24,7 +24,7 @@ export default function TeacherLayout({
   ];
 
   if (user?.role === 'admin') {
-    teacherNavItems.push({ href: "/admin", label: "Admin", icon: Shield });
+    teacherNavItems.push({ href: "/teacher/admin", label: t('navigation.admin') || "Admin", icon: Shield });
   }
 
   return (
