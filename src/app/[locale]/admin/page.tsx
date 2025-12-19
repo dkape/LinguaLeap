@@ -7,13 +7,21 @@ import axios from 'axios';
 import { User } from '@/lib/types';
 import { Loader2, Trash2, CheckCircle, XCircle, Server, Database, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+interface SystemStatus {
+    backend: string;
+    database: string;
+    smtp: string;
+    smtpError?: string;
+}
 
 export default function AdminPage() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const [users, setUsers] = useState<User[]>([]);
     const [isLoadingUsers, setIsLoadingUsers] = useState(false);
-    const [systemStatus, setSystemStatus] = useState<any>(null);
+    const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
 
     useEffect(() => {
         if (!loading && (!user || user.role !== 'admin')) {
@@ -159,7 +167,10 @@ export default function AdminPage() {
                                 {users.map((u) => (
                                     <tr key={u.id} className="border-b hover:bg-gray-50">
                                         <td className="p-4 flex items-center gap-3">
-                                            <img src={u.avatarUrl} alt={u.name} className="w-8 h-8 rounded-full" />
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={u.avatarUrl} alt={u.name} />
+                                                <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
                                             {u.name}
                                         </td>
                                         <td className="p-4">{u.email}</td>
