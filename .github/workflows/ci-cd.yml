@@ -223,6 +223,7 @@ jobs:
         continue-on-error: true
 
       - name: Install Playwright browsers
+        if: github.actor != 'dependabot[bot]'
         run: npx playwright install --with-deps
         continue-on-error: false
 
